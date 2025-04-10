@@ -1,2 +1,2 @@
-# BTIntershipBE
-Bloomteq Intership BE
+# BT Internship BE
+Bloomteq Internship BE
