@@ -2,6 +2,7 @@ import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { configDefaults } from 'vitest/config';
+import tailwindcss from '@tailwindcss/vite';
 
 export default ({ mode }: { mode: string }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
@@ -10,7 +11,7 @@ export default ({ mode }: { mode: string }) => {
   process.env.NODE_ENV = mode === 'test' ? 'test' : 'development';
 
   return defineConfig({
-    plugins: [react(), tsconfigPaths()],
+    plugins: [react(), tsconfigPaths(), tailwindcss(),],
     server: {
       host: process.env.VITE_HOST,
       port: parseInt(process.env.VITE_PORT || ''),
