@@ -26,6 +26,9 @@ generator nestjsDto {
 model User {
   id        String @id @default(uuid())
   email     String @unique
+  password  String
   firstName String
   lastName  String
+
+  @@map("users")
 }
