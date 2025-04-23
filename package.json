@@ -21,10 +21,13 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prepare": "husky install",
     "db:reset": "prisma migrate reset --force --skip-seed",
-    "db:migrate:generate": "prisma migrate dev --name",
     "db:migrate": "prisma migrate deploy",
     "db:studio": "prisma studio",
-    "db:seed": "ts-node prisma/seed.ts"
+    "db:seed": "ts-node prisma/seed.ts",
+    "start:migrate:prod": "prisma migrate deploy && npm run start:prod",
+    "pretty": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json}\"",
+    "db:migrate:generate": "npm run db:migrate:generate:name --",
+    "db:migrate:generate:name": "prisma migrate dev && npm run pretty"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -51,6 +54,9 @@
     "@types/jest": "^29.5.14",
     "@types/node": "^22.10.7",
     "@types/supertest": "^6.0.2",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "@vegardit/prisma-generator-nestjs-dto": "^1.5.1",
     "eslint": "^9.24.0",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-prettier": "^5.2.6",

@@ -1,10 +1,10 @@
-import { INestApplication, Logger, RequestMethod } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { execSync } from 'child_process';
 import { AppModule } from './app.module';
 import { AppConfigService } from 'config/service/appConfig.service';
-import { PrismaModule } from 'prisma/prisma.module';
+import { INestApplication, Logger, RequestMethod } from '@nestjs/common';
+import { PrismaModule } from './prisma/prisma.module';
 
 // if (isFlagEnabled(FEATURE_FLAGS.DEV_DROP_DATABASE)) {
 //   console.log('*** Start:  Dropping the db ***');
