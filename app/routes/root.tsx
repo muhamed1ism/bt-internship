@@ -5,16 +5,23 @@ import { queryClient } from '../utils/query-client.ts';
 import routeNames from './route-names.tsx';
 import { Contact } from '@app/pages/Contact.tsx';
 import { Home } from '@app/pages/Home.tsx';
+import { Layout } from '@app/components/layout/Layout.tsx';
 
 const router = createBrowserRouter([
   {
-    path: routeNames.root(),
-    element: <Home />,
-  },
-  {
-    path: routeNames.contact(),
-    element: <Contact />,
-  },
+    path: '/',
+    element: <Layout />,
+    children: [
+      {
+        path: routeNames.root(),
+        element: <Home />,
+      },
+      {
+        path: routeNames.contact(),
+        element: <Contact />,
+      },
+    ]
+  }
 ]);
 
 export default function Root() {

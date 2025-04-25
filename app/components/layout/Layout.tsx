@@ -1,15 +1,11 @@
-import { ReactNode } from "react";
 import { SideBar } from "./SideBar"
 import { TopBar } from "./TopBar"
+import { Outlet } from "react-router-dom";
 
-type LayoutProps = {
-  children: ReactNode;
-};
-
-export const Layout = ({ children }: LayoutProps) => {
+export const Layout = () => {
   return <>
     <TopBar />
     <SideBar />
-    {children}
+    <Outlet />
   </>
 }
