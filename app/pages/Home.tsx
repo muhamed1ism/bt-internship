@@ -1,3 +1,5 @@
+import { UserCard } from '@app/features/users/UserCard';
+
 export const Home = () => {
   return (
     <div className="flex h-screen flex-col items-center justify-center bg-gray-100">
