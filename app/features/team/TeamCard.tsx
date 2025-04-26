@@ -16,12 +16,17 @@ interface TeamCardProps {
   onEdit?: () => void;
 }
 
+const FAKE_TEAM = {
+  teamNumber: 5,
+  teamLead: { firstName: 'firstName', lastName: 'lastName' },
+};
+
 export const TeamCard = ({
   teamNumber,
   teamLead,
   onView,
   onEdit,
-}: TeamCardProps) => {
+}: TeamCardProps = FAKE_TEAM) => {
   return (
     <Card className="relative flex h-72 w-64 flex-col items-center rounded-[2rem] border-2 border-black p-4">
       <div className="mt-4 mb-2 flex items-center justify-center">
