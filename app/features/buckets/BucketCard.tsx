@@ -1,25 +1,14 @@
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from '../../components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { useNavigate } from 'react-router-dom';
+import { FAKE_BUCKET } from '@app/constants/example';
 
 interface TempBucket {
   title: string;
   description: string;
   levels: string[];
 }
-
-const FAKE_BUCKET = {
-  title: 'Software Engineer',
-  description:
-    'Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit.',
-  levels: ['Lvl1', 'Lvl2', 'Lvl3'],
-};
 
 export const BucketCard = ({ bucket }: { bucket: TempBucket }) => {
   const { title, description, levels } = bucket || FAKE_BUCKET;
@@ -30,10 +19,7 @@ export const BucketCard = ({ bucket }: { bucket: TempBucket }) => {
   }
 
   return (
-    <Card
-      className="w-full max-w-xs rounded-3xl border-2 px-2 py-6"
-      onClick={navigateTo}
-    >
+    <Card className="w-full max-w-xs rounded-3xl border-2 px-2 py-6" onClick={navigateTo}>
       <CardHeader>
         <h2 className="text-xl font-bold tracking-tight">{title}</h2>
       </CardHeader>
@@ -51,10 +37,7 @@ export const BucketCard = ({ bucket }: { bucket: TempBucket }) => {
         </div>
       </CardContent>
       <CardFooter>
-        <Button
-          variant="outline"
-          className="pointer w-full cursor-pointer rounded-md"
-        >
+        <Button variant="outline" className="pointer w-full cursor-pointer rounded-md">
           Edit Bucket
         </Button>
       </CardFooter>
