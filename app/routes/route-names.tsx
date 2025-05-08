@@ -12,6 +12,7 @@ const routeNames = {
   root: (params?: Record<string, string>): string => generateRoute('/', params),
   contact: (params?: Record<string, string>): string => generateRoute('/contact', params),
   buckets: (params?: Record<string, string>): string => generateRoute('/buckets', params),
+  bucketDefinition: (params?: Record<string, string>): string => generateRoute('/buckets/:bucketId', params),
   dashboard: (params?: Record<string, string>): string => generateRoute('/dashboard', params),
   evaluation: (params?: Record<string, string>): string => generateRoute('/evaluation', params),
   roles: (params?: Record<string, string>): string => generateRoute('/roles', params),

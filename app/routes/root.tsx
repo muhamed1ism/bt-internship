@@ -1,5 +1,6 @@
 import { Layout } from '@app/components/layout/Layout.tsx';
 import { Buckets } from '@app/pages/Buckets.tsx';
+import { BucketView } from '@app/pages/BucketView.tsx';
 import { Contact } from '@app/pages/Contact.tsx';
 import { Evaluation } from '@app/pages/Evaluation.tsx';
 import { Home } from '@app/pages/Home.tsx';
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
       {
         path: routeNames.buckets(),
         element: <Buckets />,
+      },
+      {
+        path: routeNames.bucketDefinition(),
+        element: <BucketView />,
       },
       {
         path: routeNames.evaluation(),
