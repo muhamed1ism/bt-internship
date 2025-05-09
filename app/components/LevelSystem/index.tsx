@@ -53,7 +53,8 @@ export const LevelSystem = ({
       <div className="text-2xl font-semibold">
         {currentLevel === fixedCurrentLevel ? 'Current Level:' : 
          currentLevel < fixedCurrentLevel ? 'Previous Level:' : 
-         'Next Level:'} {title} {currentLevel}
+         currentLevel === fixedNextLevel ? 'Next Level:' :
+         'Level:'} {title} {currentLevel}
       </div>
     </div>
   );
