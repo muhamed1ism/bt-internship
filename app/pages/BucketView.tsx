@@ -1,110 +1,26 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '@app/components/ui/button';
-import arrowPng from '../assets/logo/iconmonstr-arrow-right-thin-64.png';
-
-const bucketData = {
-  '1': {
-    title: 'Software Engineer',
-    description: 'A software engineer is responsible for designing, developing, and maintaining software applications. They work with various programming languages and frameworks to create efficient and scalable solutions.',
-    skills: [
-      'Proficiency in multiple programming languages',
-      'Understanding of software development principles',
-      'Experience with version control systems',
-      'Knowledge of database management',
-      'Problem-solving abilities'
-    ],
-    levels: {
-      1: 'Basic understanding of programming concepts and tools',
-      2: 'Intermediate skills in multiple programming languages',
-      3: 'Advanced expertise in software architecture and design'
-    }
-  },
-  '2': {
-    title: 'Data Engineer',
-    description: 'A data engineer is responsible for designing, building, and maintaining data pipelines and infrastructure. They ensure data is properly collected, processed, and made available for analysis.',
-    skills: [
-      'Experience with data warehousing solutions',
-      'Knowledge of ETL processes',
-      'Proficiency in SQL and NoSQL databases',
-      'Understanding of data modeling',
-      'Experience with big data technologies'
-    ],
-    levels: {
-      1: 'Basic understanding of data processing and storage',
-      2: 'Intermediate skills in data pipeline development',
-      3: 'Advanced expertise in data architecture and optimization'
-    }
-  },
-  '3': {
-    title: 'AI Engineer',
-    description: 'An AI engineer specializes in developing and implementing artificial intelligence and machine learning solutions. They work on creating intelligent systems that can learn and adapt.',
-    skills: [
-      'Strong background in machine learning',
-      'Experience with deep learning frameworks',
-      'Knowledge of natural language processing',
-      'Understanding of computer vision',
-      'Proficiency in Python and AI libraries'
-    ],
-    levels: {
-      1: 'Basic understanding of machine learning concepts',
-      2: 'Intermediate skills in model development and training',
-      3: 'Advanced expertise in AI system architecture and optimization'
-    }
-  }
-};
-
-const LevelIndicator = ({ currentLevel, totalLevels, title }: { currentLevel: number; totalLevels: number; title: string }) => {
-  return (
-    <div className="flex flex-col items-center gap-10">
-      <div className="flex w-full justify-around items-center" style={{ maxWidth: '400px' }}>
-        {Array.from({ length: totalLevels * 2 - 1 }).map((_, idx) => {
-          if (idx % 2 === 0) {
-            // Circle
-            const circleIdx = Math.floor(idx / 2) + 1;
-            return (
-              <div
-                key={`circle-${circleIdx}`}
-                className={`w-18 h-18 rounded-full flex items-center justify-center border border-black
-                  ${circleIdx === currentLevel ? 'bg-green-200 scale-135 ml-3 mr-3 border-3' :
-                    circleIdx === currentLevel + 1 ? 'bg-cyan-200 border-2' :
-                    'bg-transparent'}
-                `}
-              >
-                {circleIdx}
-              </div>
-            );
-          } else {
-            return (
-              <img
-                key={`arrow-${idx}`}
-                src={arrowPng}
-                alt="arrow"
-                className="w-12 h-6 m-0 p-0"
-              />
-            );
-          }
-        })}
-      </div>
-      <div className="text-2xl font-semibold">
-        Current Level: {title} {currentLevel}
-      </div>
-    </div>
-  );
-};
+import { Switch } from '@app/components/ui/switch';
+import { useState } from 'react';
+import { LevelSystem } from '@app/components/LevelSystem';
 
 export const BucketView = () => {
-  const { bucketId } = useParams();
   const navigate = useNavigate();
-  const bucket = bucketData[bucketId as keyof typeof bucketData];
+  const [selectedLevel, setSelectedLevel] = useState(2);
+  const [isAdvanceMode, setIsAdvanceMode] = useState(false);
+  const currentLevel = 2;
+  const nextLevel = currentLevel + 1;
 
-  if (!bucket) {
-    return (
-      <div className="flex w-full h-screen items-center justify-center">
-        <h1 className="text-2xl">Bucket not found</h1>
-      </div>
-    );
-  }
+  const handleLevelClick = (level: number) => {
+    setSelectedLevel(level);
+  };
+
+  const getSectionBgColor = (level: number) => {
+    if (level === currentLevel) return 'bg-green-200';
+    if (level === nextLevel) return 'bg-cyan-200';
+    return 'bg-gray-300';
+  };
 
   return (
     <div className="flex w-full h-screen flex-col items-center justify-start bg-gray-100 pt-10">
@@ -118,7 +34,97 @@ export const BucketView = () => {
           <ArrowLeft className="h-6 w-6" />
         </Button>
       </div>
-      <LevelIndicator currentLevel={2} totalLevels={3} title={bucket.title} />
+      <LevelSystem 
+        currentLevel={selectedLevel} 
+        totalLevels={6} 
+        title="Software Engineer" 
+        onLevelClick={handleLevelClick}
+        fixedCurrentLevel={currentLevel}
+        fixedNextLevel={nextLevel}
+      />
+      <div className="flex flex-row items-center justify-between gap-2 w-[30%] pt-10 scale-125">
+        <p className="pl-4">To Advance:</p>
+        <Switch 
+          className="cursor-pointer"
+          checked={isAdvanceMode}
+          onCheckedChange={setIsAdvanceMode}
+        />
+      </div>
+      <div className="w-[50%] max-w-4xl px-6 flex flex-col justify-evenly pt-10">
+        {!isAdvanceMode ? (
+          <div className="flex flex-col">
+            <h1 className={`text-3xl w-full h-15 pl-4 flex items-center transition-colors duration-200 ${getSectionBgColor(selectedLevel)}`}>
+              Your Level Expectations
+            </h1>
+            <ul className="list-['-_'] pl-8 bg-gray-200 pt-5 pb-5">
+              <li>
+                Independently lead development of full-stack features, from front-end UI to back-end APIs.
+              </li>
+              <li>
+                Collaborate with PMs, designers and QA engineers to deliver high quality products.
+              </li>
+            </ul>
+            
+            <div className="w-full">
+              <h2 className={`text-3xl w-full h-15 pl-4 flex items-center transition-colors duration-200 ${getSectionBgColor(selectedLevel)}`}>
+                Skills
+              </h2>
+              <ul className="list-['-_'] pl-8 bg-gray-200 pt-5 pb-5">
+                <li>Front-End: React.js/Vue</li>
+                <li>Back-End: Express.js</li>
+                <li>Cloud: AWS</li>
+              </ul>
+            </div>
+
+            <div className="w-full">
+              <h2 className={`text-3xl w-full h-15 pl-4 flex items-center transition-colors duration-200 ${getSectionBgColor(selectedLevel)}`}>
+                Tools
+              </h2>
+              <div className="flex flex-row gap-4 pl-8 bg-gray-200 pt-5 pb-5">
+                <div className="flex h-8 px-4 flex-col items-center justify-center rounded-md border-2 border-black bg-blue-400">
+                  <p className="font-semibold text-white">React.js</p>
+                </div>
+                <div className="flex h-8 px-4 flex-col items-center justify-center rounded-md border-2 border-black bg-green-500">
+                  <p className="font-semibold text-white">Vue</p>
+                </div>
+                <div className="flex h-8 px-4 flex-col items-center justify-center rounded-md border-2 border-black bg-gray-600">
+                  <p className="font-semibold text-white">Express.js</p>
+                </div>
+                <div className="flex h-8 px-4 flex-col items-center justify-center rounded-md border-2 border-black bg-orange-500">
+                  <p className="font-semibold text-white">AWS</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full">
+              <h2 className={`text-3xl w-full h-15 pl-4 flex items-center transition-colors duration-200 ${getSectionBgColor(selectedLevel)}`}>
+                Knowledge
+              </h2>
+              <div className="space-y-2 pl-8 bg-gray-200 pt-5 pb-5">
+                <p>Level 1: Basic description</p>
+                <p>Level 2: Intermediate description</p>
+                <p>Level 3: Advanced description</p>
+              </div>
+            </div>
+            <div className={`w-full h-4 transition-colors duration-200 ${getSectionBgColor(selectedLevel)}`}></div>
+          </div>
+        ) : (
+          <div className="flex flex-col">
+            <div className="w-full">
+              <h2 className={`text-3xl w-full h-15 pl-4 flex items-center transition-colors duration-200 ${getSectionBgColor(selectedLevel)}`}>
+                To Advance:
+              </h2>
+              <ul className="list-['-_'] pl-8 bg-gray-200 pt-5 pb-5">
+                <li>Complete all current level requirements</li>
+                <li>Demonstrate proficiency in next level skills</li>
+                <li>Get approval from team lead</li>
+                <li>Pass technical assessment</li>
+              </ul>
+            </div>
+            <div className={`w-full h-4 transition-colors duration-200 ${getSectionBgColor(selectedLevel)}`}></div>
+          </div>
+        )}
+      </div>
     </div>
   );
-}; 
+};

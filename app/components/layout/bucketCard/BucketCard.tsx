@@ -17,7 +17,6 @@ const BucketCard: React.FC<CardProps> = ({ title, currentLevel, isActive, id }) 
     if (isActive) {
       navigate(routeNames.bucketDefinition({ bucketId: id }));
     } else {
-      // Handle taking the bucket
       console.log('Taking bucket:', id);
     }
   };
@@ -29,7 +28,13 @@ const BucketCard: React.FC<CardProps> = ({ title, currentLevel, isActive, id }) 
       }`}
     >
       <div className="flex flex-col gap-2">
-        <h1 className="text-4xl">{title}</h1>
+        <h1 className="text-4xl flex flex-col">
+          {title.split(' ').map((word, index) => (
+            <div key={index} className="leading-tight">
+              {word}
+            </div>
+          ))}
+        </h1>
 
         {isActive && (
           <>
