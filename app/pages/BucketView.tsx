@@ -23,7 +23,7 @@ export const BucketView = () => {
   };
 
   return (
-    <div className="flex w-full h-screen flex-col items-center justify-start bg-gray-100 pt-10">
+    <div className="flex w-full h-auto flex-col items-center justify-start bg-gray-100 pt-10 pb-10">
       <div className="w-full px-10 mb-6">
         <Button
           variant="ghost"
