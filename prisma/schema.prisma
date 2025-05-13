@@ -24,11 +24,13 @@ generator nestjsDto {
 }
 
 model User {
-  id        String @id @default(uuid())
-  email     String @unique
-  password  String
-  firstName String
-  lastName  String
+  id          String   @id @default(uuid())
+  firebaseUid String   @unique
+  email       String   @unique
+  firstName   String
+  lastName    String
+  phoneNumber String
+  dateOfBirth DateTime @db.Date
 
   @@map("users")
 }

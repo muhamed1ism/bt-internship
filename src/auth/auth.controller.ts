@@ -1,20 +1,22 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto';
-import { CreateUserDto } from 'prisma/generated/user/dto';
+import { RegisterDto } from './dto/register.dto';
+import { GetUser } from './decorator/get-user.decorator';
+import { User } from 'src/user/type/user.type';
+import { FirebaseJwtGuard } from './guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @Post('register')
-  register(@Body() dto: CreateUserDto) {
+  register(@Body() dto: RegisterDto) {
     return this.authService.register(dto);
   }
 
-  @HttpCode(HttpStatus.OK)
-  @Post('login')
-  login(@Body() dto: LoginDto) {
-    return this.authService.login(dto);
+  @Get('current-user')
+  @UseGuards(FirebaseJwtGuard)
+  currentUser(@GetUser() user: User) {
+    return user;
   }
 }

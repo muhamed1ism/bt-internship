@@ -1,53 +1,43 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
-import { LoginDto } from './dto';
-import { CreateUserDto } from 'prisma/generated/user/dto';
+import { RegisterDto } from './dto/register.dto';
+import { FirebaseService } from 'src/firebase/firebase.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private prisma: PrismaService,
-  ) { }
+    private readonly prisma: PrismaService,
+    private readonly firebase: FirebaseService,
+  ) {}
 
-  async register(dto: CreateUserDto) {
+  async register(dto: RegisterDto) {
     try {
-      const user = await this.prisma.user.create({
+      const userRecord = await this.firebase.getAuth().createUser({
+        displayName: `${dto.firstName} ${dto.lastName}`,
+        email: dto.email,
+        password: dto.password,
+      });
+
+      await this.prisma.user.create({
         data: {
+          firebaseUid: userRecord.uid,
           email: dto.email,
-          password: dto.password,
           firstName: dto.firstName,
           lastName: dto.lastName,
+          phoneNumber: dto.phoneNumber,
+          dateOfBirth: dto.dateOfBirth,
         },
       });
 
-      return user;
+      return { message: 'Register successful', uid: userRecord.uid };
     } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          throw new ForbiddenException('Credentials taken');
-        }
+      if (error.code === 'P2002') {
+        throw new ForbiddenException('Prisma: Credentials taken');
+      }
+      if (error instanceof Error) {
+        throw new ForbiddenException(error);
       }
       throw error;
     }
-  }
-
-  async login(dto: LoginDto) {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        email: dto.email,
-      },
-    });
-
-    if (!user) throw new ForbiddenException(
-      'Credentials incorrect',
-    );
-
-
-    if (dto.password !== user.password) throw new ForbiddenException(
-      'Credentials incorrect',
-    )
-
-    return { msg: "Login Successful" };
   }
 }
