@@ -286,3 +286,9 @@ export const USER_TABLE_COLUMNS: Array<keyof UserType> = [
   'role',
   'status',
 ];
+export const FAKE_BUCKET = {
+  title: 'Software Engineer',
+  description:
+    'Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit.',
+  levels: ['Lvl1', 'Lvl2', 'Lvl3'],
+};
