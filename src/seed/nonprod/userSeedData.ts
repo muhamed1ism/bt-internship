@@ -1,9 +1,8 @@
 export const userSeedData = [
   {
     id: '00000000-0000-1000-a000-000000000010',
-    firebaseUid: '00000000-0000-1000-a000-000000000010',
+    firebaseUid: 'oJ3m2C59cYNW7jcRJnT3YDGpfIH3',
     email: 'johndoe@example.com',
-    password: 'pass',
     firstName: 'John',
     lastName: 'Doe',
     phoneNumber: '+38761234567',
