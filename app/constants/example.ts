@@ -10,4 +10,10 @@ export const FAKE_USERCARD = {
     { title: 'Cloud Architect', level: 5 },
     { title: 'Cloud Architect', level: 6 },
   ],
+
+  export const FAKE_BUCKET = {
+  title: 'Software Engineer',
+  description:
+    'Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit.',
+  levels: ['Lvl1', 'Lvl2', 'Lvl3'],
 };
