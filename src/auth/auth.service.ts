@@ -29,7 +29,7 @@ export class AuthService {
         },
       });
 
-      return { message: 'Register successful' };
+      return { message: 'Register successful', uid: userRecord.uid };
     } catch (error) {
       if (error.code === 'P2002') {
         throw new ForbiddenException('Prisma: Credentials taken');
