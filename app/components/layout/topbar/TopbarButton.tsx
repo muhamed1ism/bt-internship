@@ -10,10 +10,9 @@ export const TopbarButton = () => {
       type="button"
       variant="ghost"
       onClick={toggleSidebar}
-      className="text-secondary hover:text-secondary/80 hover:bg-primary/0 min-lg:hidden
-      cursor-pointer"
+      className="text-secondary hover:text-secondary/80 hover:bg-primary/0 cursor-pointer min-lg:hidden"
     >
       <Menu className="size-8" />
     </Button>
   );
-}
+};

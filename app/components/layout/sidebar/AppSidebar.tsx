@@ -23,7 +23,7 @@ import { SidebarButton } from './SidebarButton';
 import routeNames from '@app/routes/route-names';
 
 const items = [
-  { title: 'Dashboard', url: routeNames.root(), icon: <Home /> },
+  { title: 'Dashboard', url: routeNames.dashboard(), icon: <Home /> },
   { title: 'People', url: routeNames.people(), icon: <UserRoundSearch /> },
   { title: 'Buckets', url: routeNames.buckets(), icon: <Layers /> },
   { title: 'Evaluation', url: routeNames.evaluation(), icon: <ClipboardCheck /> },
