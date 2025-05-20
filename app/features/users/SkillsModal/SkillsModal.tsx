@@ -9,7 +9,7 @@ function SkillsModal({
   onOpenChange: (open: boolean) => void;
   user: UserType | null;
 }) {
-  console.log(open, onOpenChange, user);
+  // console.log(open, onOpenChange, user);
   return <div>SkillsModal</div>;
 }
 

@@ -8,7 +8,7 @@ export interface UserPermissionsModalProps {
 }
 
 function UserPermissionsModal({ open, onOpenChange, user, onSave }: UserPermissionsModalProps) {
-  console.log(open, onOpenChange, user, onSave);
+  // console.log(open, onOpenChange, user, onSave);
   return <div>UserPermissionsModal</div>;
 }
 

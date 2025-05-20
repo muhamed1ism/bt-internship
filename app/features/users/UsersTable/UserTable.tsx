@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { fake_users } from '../fake-data';
 
-import { UserModalType, UserType } from '../../../types/types';
+import { SortDirection, UserModalType, UserType } from '../../../types/types';
 
 import {
   Table,
@@ -32,9 +32,9 @@ import { UserActionsDropdown } from './UserActionsDropdown ';
 import { SortableHeader } from './SortableHeader';
 import { PaginationControls } from './PaginationControls';
 import { USER_TABLE_COLUMNS } from '@app/constants/example';
-import PersonalInfoModal from '../PersonalInfoModal/PersonalInfoModal';
 import SkillsModal from '../SkillsModal/SkillsModal';
 import UserPermissionsModal from '../UserPermissionsModal/UserPermissionsModal';
+import { PersonalInfoModal } from '../PersonalInfoModal/PersonalInfoModal';
 
 const users = fake_users;
 
@@ -66,7 +66,9 @@ export default function UserTable() {
     setSortConfig((prevConfig) => ({
       key,
       direction:
-        prevConfig.key === key && prevConfig.direction === 'ascending' ? 'descending' : 'ascending',
+        prevConfig.key === key && prevConfig.direction === SortDirection.Ascending
+          ? SortDirection.Descending
+          : SortDirection.Ascending,
     }));
   };
 

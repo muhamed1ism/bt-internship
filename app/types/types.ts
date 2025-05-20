@@ -34,7 +34,7 @@ export interface PersonalInfoFormType {
   confirmPassword: string;
   dateOfBirth: string;
   phoneNumber: string;
-  experienceLevel: string;
+  experienceLevel: 'intern' | 'junior' | 'medior' | 'senior' | 'lead';
   github: string;
   linkedin: string;
 }
