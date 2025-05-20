@@ -1,4 +1,4 @@
-import { RoleType, UserType } from '../types/types';
+import { RoleType, UserType } from '../../types/types';
 
 export const fake_users: UserType[] = [
   {
@@ -277,18 +277,3 @@ export const availableRoles = [
   { id: 'manager', name: 'Manager', description: 'Can manage users and content' },
   { id: 'contributor', name: 'Contributor', description: 'Can add content but not edit others' },
 ];
-
-export const USER_TABLE_COLUMNS: Array<keyof UserType> = [
-  'id',
-  'firstName',
-  'lastName',
-  'email',
-  'role',
-  'status',
-];
-export const FAKE_BUCKET = {
-  title: 'Software Engineer',
-  description:
-    'Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit.',
-  levels: ['Lvl1', 'Lvl2', 'Lvl3'],
-};
