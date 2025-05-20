@@ -1,3 +1,5 @@
+import { RoleType, UserType } from '../types/types';
+
 export const FAKE_USERCARD = {
   id: 1,
   name: 'Jonas Schm',
@@ -10,8 +12,7 @@ export const FAKE_USERCARD = {
     { title: 'Cloud Architect', level: 5 },
     { title: 'Cloud Architect', level: 6 },
   ],
-
-import { RoleType, UserType } from '../types/types';
+};
 
 export const fake_users: UserType[] = [
   {

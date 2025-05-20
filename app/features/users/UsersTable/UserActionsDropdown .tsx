@@ -13,15 +13,19 @@ type UserActionsDropdownProps = {
   onOpenPersonal: () => void;
   onOpenSkills: () => void;
   onOpenRoles: () => void;
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
 };
 
 export function UserActionsDropdown({
   onOpenPersonal,
   onOpenSkills,
   onOpenRoles,
+  open,
+  onOpenChange,
 }: UserActionsDropdownProps) {
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={onOpenChange}>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="h-8 w-8">
           <MoreVertical className="h-4 w-4" />

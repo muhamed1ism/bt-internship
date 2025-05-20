@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { fake_users } from '../fake-data';
 
@@ -41,6 +41,8 @@ const users = fake_users;
 export default function UserTable() {
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
   const [activeModal, setActiveModal] = useState<null | UserModalType>(null);
+  // const triggerButtonRef = useRef(null);
+  const [dropdownOpenUserId, setDropdownOpenUserId] = useState<number | null>(null);
 
   const {
     filteredUsers,
@@ -150,11 +152,29 @@ export default function UserTable() {
                       {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
                     </Badge>
                   </TableCell>
-                  <TableCell>
+                  {/* <TableCell>
                     <UserActionsDropdown
                       onOpenPersonal={() => openModal('personal', user)}
                       onOpenSkills={() => openModal('skills', user)}
                       onOpenRoles={() => openModal('roles', user)}
+                    />
+                  </TableCell> */}
+                  <TableCell>
+                    <UserActionsDropdown
+                      open={dropdownOpenUserId === user.id}
+                      onOpenChange={(open) => setDropdownOpenUserId(open === true ? user.id : null)}
+                      onOpenPersonal={() => {
+                        openModal('personal', user);
+                        setDropdownOpenUserId(null);
+                      }}
+                      onOpenSkills={() => {
+                        openModal('skills', user);
+                        setDropdownOpenUserId(null);
+                      }}
+                      onOpenRoles={() => {
+                        openModal('roles', user);
+                        setDropdownOpenUserId(null);
+                      }}
                     />
                   </TableCell>
                 </TableRow>
@@ -190,6 +210,7 @@ export default function UserTable() {
         open={activeModal === 'personal'}
         onOpenChange={() => setActiveModal(null)}
         user={selectedUser}
+        // triggerRef={triggerButtonRef}
       />
 
       {/* Skills Modal */}
