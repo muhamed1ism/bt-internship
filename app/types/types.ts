@@ -8,9 +8,14 @@ export interface UserType {
   customRole?: RoleType;
 }
 
-export interface SortConfig {
+export type SortConfig = {
   key: keyof UserType | null;
-  direction: 'ascending' | 'descending';
+  direction: SortDirection;
+};
+
+export enum SortDirection {
+  Ascending = 'ascending',
+  Descending = 'descending',
 }
 
 export type RoleType = {

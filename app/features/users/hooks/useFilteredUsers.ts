@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { SortConfig, UserType } from '../../../types/types';
+import { SortConfig, SortDirection, UserType } from '../../../types/types';
 import { ITEMS_PER_PAGE } from '@app/utils/constants';
 import { getTotalPages } from '@app/utils/getTotalPages';
 
@@ -9,24 +9,25 @@ export function useFilteredUsers(users: UserType[]) {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: 'ascending' });
+  const [sortConfig, setSortConfig] = useState<SortConfig>({
+    key: null,
+    direction: SortDirection.Ascending,
+  });
 
   const [filteredUsers, setFilteredUsers] = useState<UserType[]>(users);
 
-  // Apply filters and sorting
+  const searchableFields = ['firstName', 'lastName', 'email', 'id', 'role'];
+
   useEffect(() => {
     let result = [...users];
 
     // Apply search filter
     if (searchQuery) {
       const lowerCaseQuery = searchQuery.toLowerCase();
-      result = result.filter(
-        (user) =>
-          user.firstName.toLowerCase().includes(lowerCaseQuery) ||
-          user.lastName.toLowerCase().includes(lowerCaseQuery) ||
-          user.email.toLowerCase().includes(lowerCaseQuery) ||
-          user.id.toLowerCase().includes(lowerCaseQuery) ||
-          user.role.toLowerCase().includes(lowerCaseQuery),
+      result = result.filter((user) =>
+        searchableFields.some((field) =>
+          user[field as keyof UserType]?.toString().toLowerCase().includes(lowerCaseQuery),
+        ),
       );
     }
 
@@ -42,10 +43,10 @@ export function useFilteredUsers(users: UserType[]) {
         const bValue = b[sortConfig.key as keyof UserType];
 
         if (aValue < bValue) {
-          return sortConfig.direction === 'ascending' ? -1 : 1;
+          return sortConfig.direction === SortDirection.Ascending ? -1 : 1;
         }
         if (aValue > bValue) {
-          return sortConfig.direction === 'ascending' ? 1 : -1;
+          return sortConfig.direction === SortDirection.Ascending ? 1 : -1;
         }
         return 0;
       });
@@ -53,9 +54,9 @@ export function useFilteredUsers(users: UserType[]) {
 
     setFilteredUsers(result);
     setCurrentPage(1); // Reset to first page when filters change
-  }, [searchQuery, statusFilter, sortConfig]);
+  }, [searchQuery, statusFilter, sortConfig, users]);
 
-  // Calculate pagination
+  // Pagination
   const totalPages = getTotalPages(filteredUsers.length, itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
