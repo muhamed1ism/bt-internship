@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { FirebaseService } from 'src/firebase/firebase.service';
@@ -12,6 +16,14 @@ export class AuthService {
 
   async register(dto: RegisterDto) {
     try {
+      const defaultRole = await this.prisma.role.findFirst({
+        where: { isDefault: true },
+      });
+
+      if (!defaultRole) {
+        throw new NotFoundException('Default role is not found.');
+      }
+
       const userRecord = await this.firebase.getAuth().createUser({
         displayName: `${dto.firstName} ${dto.lastName}`,
         email: dto.email,
@@ -26,6 +38,7 @@ export class AuthService {
           lastName: dto.lastName,
           phoneNumber: dto.phoneNumber,
           dateOfBirth: dto.dateOfBirth,
+          roleId: defaultRole?.id,
         },
       });
 

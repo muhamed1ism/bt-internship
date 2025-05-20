@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { FirebaseModule } from './firebase/firebase.module';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
+import { CaslModule } from './casl/casl.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { UserModule } from './user/user.module';
     AuthModule,
     FirebaseModule,
     UserModule,
+    CaslModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppConfigService],

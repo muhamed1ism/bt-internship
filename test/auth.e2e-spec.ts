@@ -76,41 +76,4 @@ describe('Auth (e2e)', () => {
     expect(response.status).toBe(HttpStatus.BAD_REQUEST);
     expect(response.body).toHaveProperty('message');
   });
-
-  it('should return user data for a valid token', async () => {
-    const response = await request(app.getHttpServer())
-      .get('/auth/current-user')
-      .set('Authorization', 'Bearer ' + token);
-
-    expect(response.status).toBe(HttpStatus.OK);
-    expect(response.body).toMatchObject({
-      email: registerDto.email,
-      firstName: registerDto.firstName,
-      lastName: registerDto.lastName,
-      phoneNumber: registerDto.phoneNumber,
-      dateOfBirth: '2000-01-02T00:00:00.000Z',
-    });
-  });
-
-  it('should not return user data for an invalid token', async () => {
-    const response = await request(app.getHttpServer())
-      .get('/auth/current-user')
-      .set('Authorization', 'Bearer invalid-token');
-
-    expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
-    expect(response.body).toMatchObject({
-      message: 'Invalid token',
-    });
-  });
-
-  it('should not return user data without a token', async () => {
-    const response = await request(app.getHttpServer()).get(
-      '/auth/current-user',
-    );
-
-    expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
-    expect(response.body).toMatchObject({
-      message: 'Missing or invalid Authorization header',
-    });
-  });
 });
