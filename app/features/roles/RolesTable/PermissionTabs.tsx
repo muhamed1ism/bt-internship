@@ -2,6 +2,7 @@ import { allPermissions } from '@app/constants/constants';
 import { Checkbox } from '../../../components/ui/checkbox';
 import { Label } from '../../../components/ui/label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../../components/ui/tabs';
+import { useMemo } from 'react';
 
 export function PermissionTabs({
   selectedPermissions,
@@ -28,8 +29,11 @@ export function PermissionTabs({
     });
   };
 
-  const isPermissionSelected = (category: string, permission: string) =>
-    selectedPermissions[category]?.includes(permission) || false;
+  const isPermissionSelected = useMemo(
+    () => (category: string, permission: string) =>
+      selectedPermissions[category]?.includes(permission) || false,
+    [selectedPermissions],
+  );
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
