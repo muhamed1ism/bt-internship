@@ -1,10 +1,6 @@
 import { Card, CardFooter } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
-import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from '../../components/ui/avatar';
+import { Avatar, AvatarImage, AvatarFallback } from '../../components/ui/avatar';
 
 interface TeamCardProps {
   teamNumber: number;
@@ -21,12 +17,7 @@ const FAKE_TEAM = {
   teamLead: { firstName: 'firstName', lastName: 'lastName' },
 };
 
-export const TeamCard = ({
-  teamNumber,
-  teamLead,
-  onView,
-  onEdit,
-}: TeamCardProps = FAKE_TEAM) => {
+export const TeamCard = ({ teamNumber, teamLead, onView, onEdit }: TeamCardProps = FAKE_TEAM) => {
   return (
     <Card className="relative flex h-72 w-64 flex-col items-center rounded-[2rem] border-2 border-black p-4">
       <div className="mt-4 mb-2 flex items-center justify-center">
@@ -47,9 +38,7 @@ export const TeamCard = ({
       </div>
 
       <div className="w-full flex-1 space-y-1">
-        <h3 className="bold text-center text-2xl font-medium">
-          Team {teamNumber}
-        </h3>
+        <h3 className="bold text-center text-2xl font-medium">Team {teamNumber}</h3>
         <p className="text-left text-sm font-medium">Team Lead:</p>
         <p>
           {teamLead.firstName} {teamLead.lastName}
@@ -59,14 +48,14 @@ export const TeamCard = ({
       <CardFooter className="flex w-full justify-between gap-4 pb-4">
         <Button
           onClick={onView}
-          className="flex-1 rounded-lg border-1 border-black bg-[#a8d8ff] text-black hover:bg-[#8ac6ff]"
+          className="flex-1 rounded-lg border-1 border-black bg-[var(--color-sky)] text-black hover:bg-[var(--color-sky-hover)]"
           variant="outline"
         >
           View
         </Button>
         <Button
           onClick={onEdit}
-          className="flex-1 rounded-lg border-1 border-black bg-[#fff4a8] text-black hover:bg-[#ffef8a]"
+          className="flex-1 rounded-lg border-1 border-black bg-[var(--color-lemon)] text-black hover:bg-[var(--color-lemon-hover)]"
           variant="outline"
         >
           Edit
