@@ -1,5 +1,6 @@
 import { auth } from '@app/lib/firebase';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { BASE_URL, ENDPOINTS } from './api-config';
 
 interface registerFormDataType {
   firstName: string;
@@ -21,8 +22,6 @@ interface User {
   roleId: string;
 }
 
-const apiUrl = import.meta.env.VITE_API_URL;
-
 const getCurrentUser = (): Promise<ReturnType<typeof getAuth>['currentUser']> => {
   const auth = getAuth();
   return new Promise((resolve) => {
@@ -35,8 +34,8 @@ const getCurrentUser = (): Promise<ReturnType<typeof getAuth>['currentUser']> =>
 
 export const registerApi = async (formData: registerFormDataType) => {
   try {
-    const res = await fetch(apiUrl + '/api/auth/register', {
-      method: 'POST',
+    const res = await fetch(BASE_URL + ENDPOINTS.auth.register.uri, {
+      method: ENDPOINTS.auth.register.method,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -83,8 +82,8 @@ export const currentUserApi = async (): Promise<User | null> => {
     }
 
     const idToken = await user?.getIdToken();
-    const res = await fetch(apiUrl + '/api/auth/current-user', {
-      method: 'GET',
+    const res = await fetch(BASE_URL + ENDPOINTS.auth.currentUser.uri, {
+      method: ENDPOINTS.auth.currentUser.method,
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + idToken,

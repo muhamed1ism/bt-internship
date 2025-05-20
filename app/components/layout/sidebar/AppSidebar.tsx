@@ -55,6 +55,7 @@ export const AppSidebar = () => {
       <SidebarHeader>
         <SidebarButton />
       </SidebarHeader>
+
       <SidebarContent>
         <SidebarMenu className="gap-2 p-2">
           {items.map((item) => (

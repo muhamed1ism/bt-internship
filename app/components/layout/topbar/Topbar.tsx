@@ -15,6 +15,7 @@ export const Topbar = () => {
     <div className="bg-primary fixed z-10 inline-flex h-16 w-full items-center justify-between">
       <div className="inline-flex h-full items-center gap-2 pl-1 md:pl-4">
         {isAuthenticated && <TopbarButton />}
+
         <Link
           to={isAuthenticated ? routeNames.dashboard() : routeNames.root()}
           className="flex h-full items-center hover:opacity-80 min-lg:pl-4"
@@ -22,6 +23,7 @@ export const Topbar = () => {
           <img src={logo} alt="Bloomteq Logo" className="text-secondary h-22" />
         </Link>
       </div>
+
       <div className="inline-flex h-full items-center gap-4 pr-3 md:pr-8">
         <Button
           variant="ghost"
@@ -29,12 +31,14 @@ export const Topbar = () => {
         >
           <MessageCircleIcon className="size-6" />
         </Button>
+
         <Button
           variant="ghost"
           className="hover:bg-primary/0 text-secondary hover:text-secondary/80 h-full w-8 cursor-pointer"
         >
           <Bell className="size-6" />
         </Button>
+
         {isAuthenticated ? (
           <UserMenu />
         ) : (

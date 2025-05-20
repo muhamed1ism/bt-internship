@@ -18,6 +18,19 @@ export const UserMenu = () => {
     mutate();
   };
 
+  const menuItems = [
+    {
+      icon: <UserRound />,
+      label: 'Profile',
+      onClick: undefined,
+    },
+    {
+      icon: <Settings />,
+      label: 'Settings',
+      onClick: undefined,
+    },
+  ];
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -28,34 +41,25 @@ export const UserMenu = () => {
           <UserRound className="size-8" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="mt-2 mr-1 w-56">
-        <DropdownMenuGroup>
-          <DropdownMenuItem className="mb-2 flex flex-col gap-0">
-            <p className="w-full text-start text-lg font-semibold">
-              {user?.firstName} {user?.lastName}
-            </p>
-            <p className="text-primary/80 w-full">{user?.email}</p>
-          </DropdownMenuItem>
+
+      <DropdownMenuContent className="mt-2 mr-1 w-56 rounded-xl p-2">
+        <div className="mb-3 flex flex-col px-1">
+          <p className="w-full text-lg font-semibold">{user?.firstName + ' ' + user?.lastName}</p>
+          <p className="text-primary/80 w-full">{user?.email}</p>
+        </div>
+
+        <DropdownMenuGroup className="mb-3">
+          {menuItems.map((item) => (
+            <DropdownMenuItem className="mb-1" onClick={item.onClick}>
+              {item.icon}
+              {item.label}
+            </DropdownMenuItem>
+          ))}
         </DropdownMenuGroup>
-        <DropdownMenuGroup className="mx-2">
-          <DropdownMenuItem>
-            <UserRound />
-            Profile
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuGroup className="mx-2">
-          <DropdownMenuItem>
-            <Settings />
-            Settings
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuGroup className="mt-2">
-          <DropdownMenuItem>
-            <Button onClick={handleLogout} className="w-full">
-              Log out
-            </Button>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
+
+        <Button onClick={handleLogout} className="text-md w-full font-semibold">
+          Log out
+        </Button>
       </DropdownMenuContent>
     </DropdownMenu>
   );

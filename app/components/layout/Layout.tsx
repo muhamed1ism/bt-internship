@@ -10,7 +10,9 @@ export const Layout = () => {
   return (
     <SidebarProvider>
       <Topbar />
+
       {isAuthenticated && <AppSidebar />}
+
       <main className="flex-grow pt-14">
         <Outlet />
       </main>
