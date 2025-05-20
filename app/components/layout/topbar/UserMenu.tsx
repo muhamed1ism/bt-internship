@@ -49,8 +49,8 @@ export const UserMenu = () => {
         </div>
 
         <DropdownMenuGroup className="mb-3">
-          {menuItems.map((item) => (
-            <DropdownMenuItem className="mb-1" onClick={item.onClick}>
+          {menuItems.map((item, idx) => (
+            <DropdownMenuItem key={idx} className="mb-1" onClick={item.onClick}>
               {item.icon}
               {item.label}
             </DropdownMenuItem>
