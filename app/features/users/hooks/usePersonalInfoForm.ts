@@ -35,13 +35,14 @@ export function usePersonalInfoForm(user: UserType | null) {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
-        dateOfBirth: '01.02.1993.',
-        phoneNumber: '+387 61 234 5678 91',
-        experienceLevel: 'medior',
-        github: '',
-        linkedin: '',
-        password: '',
-        confirmPassword: '',
+        dateOfBirth: user.dateOfBirth ?? '',
+        phoneNumber: user.phoneNumber ?? '',
+        experienceLevel:
+          (user.experienceLevel as 'intern' | 'junior' | 'medior' | 'senior' | 'lead') ?? 'medior',
+        github: user.github ?? '',
+        linkedin: user.linkedin ?? '',
+        password: user.password ?? '',
+        confirmPassword: user.password ?? '',
       });
     }
   }, [user, reset]);

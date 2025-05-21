@@ -9,12 +9,13 @@ import {
 } from '@app/components/ui/select';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
 import { PersonalInfoFormType } from '@app/types/types';
+import { EXPERIENCE_LEVELS } from '../fake-data';
 
 interface BasicInfoFormProps {
   register: UseFormRegister<PersonalInfoFormType>;
   errors: FieldErrors<PersonalInfoFormType>;
-  experienceLevel: string;
-  onExperienceLevelChange: (value: string) => void;
+  experienceLevel: 'intern' | 'junior' | 'medior' | 'senior' | 'lead';
+  onExperienceLevelChange: (value: 'intern' | 'junior' | 'medior' | 'senior' | 'lead') => void;
 }
 
 export const BasicInfoForm = ({
@@ -66,11 +67,11 @@ export const BasicInfoForm = ({
             <SelectValue placeholder="Select experience level" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="intern">Intern (0-1 Yr.)</SelectItem>
-            <SelectItem value="junior">Junior (1-2 Yr.)</SelectItem>
-            <SelectItem value="medior">Medior (2-5 Yr.)</SelectItem>
-            <SelectItem value="senior">Senior (5+ Yr.)</SelectItem>
-            <SelectItem value="lead">Lead (8+ Yr.)</SelectItem>
+            {EXPERIENCE_LEVELS.map((level) => (
+              <SelectItem key={level.value} value={level.value}>
+                {level.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>

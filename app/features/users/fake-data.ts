@@ -8,6 +8,7 @@ export const fake_users: UserType[] = [
     email: 'john.doe@example.com',
     role: 'Admin',
     status: 'active',
+    password: 'test123',
   },
   {
     id: '002',
@@ -16,6 +17,7 @@ export const fake_users: UserType[] = [
     email: 'jane.smith@example.com',
     role: 'Editor',
     status: 'active',
+    password: 'test123',
   },
   {
     id: '003',
@@ -24,6 +26,7 @@ export const fake_users: UserType[] = [
     email: 'robert.johnson@example.com',
     role: 'Viewer',
     status: 'inactive',
+    password: 'test123',
   },
   {
     id: '004',
@@ -32,6 +35,7 @@ export const fake_users: UserType[] = [
     email: 'emily.williams@example.com',
     role: 'Editor',
     status: 'pending',
+    password: 'test123',
   },
   {
     id: '005',
@@ -40,6 +44,7 @@ export const fake_users: UserType[] = [
     email: 'michael.brown@example.com',
     role: 'Admin',
     status: 'active',
+    password: 'test123',
   },
   {
     id: '006',
@@ -48,6 +53,7 @@ export const fake_users: UserType[] = [
     email: 'sarah.davis@example.com',
     role: 'Viewer',
     status: 'inactive',
+    password: 'test123',
   },
   {
     id: '007',
@@ -56,6 +62,7 @@ export const fake_users: UserType[] = [
     email: 'david.miller@example.com',
     role: 'Editor',
     status: 'active',
+    password: 'test123',
   },
   {
     id: '008',
@@ -64,6 +71,7 @@ export const fake_users: UserType[] = [
     email: 'jessica.wilson@example.com',
     role: 'Viewer',
     status: 'pending',
+    password: 'test123',
   },
   {
     id: '009',
@@ -72,6 +80,7 @@ export const fake_users: UserType[] = [
     email: 'thomas.anderson@example.com',
     role: 'Admin',
     status: 'active',
+    password: 'test123',
   },
   {
     id: '010',
@@ -80,6 +89,7 @@ export const fake_users: UserType[] = [
     email: 'lisa.taylor@example.com',
     role: 'Editor',
     status: 'active',
+    password: 'test123',
   },
   {
     id: '011',
@@ -88,6 +98,7 @@ export const fake_users: UserType[] = [
     email: 'james.moore@example.com',
     role: 'Viewer',
     status: 'inactive',
+    password: 'test123',
   },
   {
     id: '012',
@@ -96,6 +107,7 @@ export const fake_users: UserType[] = [
     email: 'patricia.jackson@example.com',
     role: 'Editor',
     status: 'pending',
+    password: 'test123',
   },
   {
     id: '013',
@@ -104,6 +116,7 @@ export const fake_users: UserType[] = [
     email: 'richard.white@example.com',
     role: 'Admin',
     status: 'active',
+    password: 'test123',
   },
   {
     id: '014',
@@ -112,6 +125,7 @@ export const fake_users: UserType[] = [
     email: 'jennifer.harris@example.com',
     role: 'Viewer',
     status: 'inactive',
+    password: 'test123',
   },
   {
     id: '015',
@@ -120,6 +134,7 @@ export const fake_users: UserType[] = [
     email: 'charles.martin@example.com',
     role: 'Editor',
     status: 'active',
+    password: 'test123',
   },
 ];
 
@@ -276,4 +291,12 @@ export const availableRoles = [
   { id: 'viewer', name: 'Viewer', description: 'Read-only access' },
   { id: 'manager', name: 'Manager', description: 'Can manage users and content' },
   { id: 'contributor', name: 'Contributor', description: 'Can add content but not edit others' },
+];
+
+export const EXPERIENCE_LEVELS = [
+  { value: 'intern', label: 'Intern (0-1 Yr.)' },
+  { value: 'junior', label: 'Junior (1-2 Yr.)' },
+  { value: 'medior', label: 'Medior (2-5 Yr.)' },
+  { value: 'senior', label: 'Senior (5+ Yr.)' },
+  { value: 'lead', label: 'Lead (8+ Yr.)' },
 ];

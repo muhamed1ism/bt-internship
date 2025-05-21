@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
 import { fake_users } from '../fake-data';
 
@@ -42,7 +42,7 @@ export default function UserTable() {
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
   const [activeModal, setActiveModal] = useState<null | UserModalType>(null);
   // const triggerButtonRef = useRef(null);
-  const [dropdownOpenUserId, setDropdownOpenUserId] = useState<number | null>(null);
+  const [dropdownOpenUserId, setDropdownOpenUserId] = useState<string | number | null>(null);
 
   const {
     filteredUsers,
@@ -152,13 +152,6 @@ export default function UserTable() {
                       {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
                     </Badge>
                   </TableCell>
-                  {/* <TableCell>
-                    <UserActionsDropdown
-                      onOpenPersonal={() => openModal('personal', user)}
-                      onOpenSkills={() => openModal('skills', user)}
-                      onOpenRoles={() => openModal('roles', user)}
-                    />
-                  </TableCell> */}
                   <TableCell>
                     <UserActionsDropdown
                       open={dropdownOpenUserId === user.id}

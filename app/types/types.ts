@@ -1,4 +1,10 @@
 export interface UserType {
+  password: string;
+  linkedin?: string;
+  github?: string;
+  experienceLevel?: string;
+  phoneNumber?: string;
+  dateOfBirth?: string;
   id: string;
   firstName: string;
   lastName: string;
@@ -32,11 +38,11 @@ export interface PersonalInfoFormType {
   email: string;
   password: string;
   confirmPassword: string;
-  dateOfBirth: string;
-  phoneNumber: string;
+  dateOfBirth?: string;
+  phoneNumber?: string;
   experienceLevel: 'intern' | 'junior' | 'medior' | 'senior' | 'lead';
-  github: string;
-  linkedin: string;
+  github?: string;
+  linkedin?: string;
 }
 
 export type UserModalType = 'personal' | 'skills' | 'roles';
