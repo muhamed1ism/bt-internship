@@ -9,7 +9,7 @@ import { Button } from '@app/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@app/components/ui/tabs';
 
 import { usePersonalInfoForm } from '../hooks/usePersonalInfoForm';
-import { PersonalInfoFormType, UserType } from '@app/types/types';
+import { experienceLevelType, PersonalInfoFormType, UserType } from '@app/types/types';
 
 import { AvatarPreview } from './AvatarPreview';
 import { BasicInfoForm } from './BasicInfoForm';
@@ -63,10 +63,7 @@ export function PersonalInfoModal({ open, onOpenChange, user }: PersonalInfoModa
                   errors={errors}
                   experienceLevel={experienceLevel}
                   onExperienceLevelChange={(value) =>
-                    setValue(
-                      'experienceLevel',
-                      value as 'intern' | 'junior' | 'medior' | 'senior' | 'lead',
-                    )
+                    setValue('experienceLevel', value as experienceLevelType)
                   }
                 />
               </TabsContent>

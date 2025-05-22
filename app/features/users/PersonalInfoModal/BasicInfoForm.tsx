@@ -1,5 +1,6 @@
-import { Input } from '@app/components/ui/input';
-import { Label } from '@app/components/ui/label';
+import { FieldErrors, UseFormRegister } from 'react-hook-form';
+import { experienceLevelType, PersonalInfoFormType } from '@app/types/types';
+import { EXPERIENCE_LEVELS } from '../fake-data';
 import {
   Select,
   SelectContent,
@@ -7,15 +8,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@app/components/ui/select';
-import { FieldErrors, UseFormRegister } from 'react-hook-form';
-import { PersonalInfoFormType } from '@app/types/types';
-import { EXPERIENCE_LEVELS } from '../fake-data';
+import { Label } from '@app/components/ui/label';
+import { FormInput } from '@app/components/ui/form-input';
 
 interface BasicInfoFormProps {
   register: UseFormRegister<PersonalInfoFormType>;
   errors: FieldErrors<PersonalInfoFormType>;
-  experienceLevel: 'intern' | 'junior' | 'medior' | 'senior' | 'lead';
-  onExperienceLevelChange: (value: 'intern' | 'junior' | 'medior' | 'senior' | 'lead') => void;
+  experienceLevel: experienceLevelType;
+  onExperienceLevelChange: (value: experienceLevelType) => void;
 }
 
 export const BasicInfoForm = ({
@@ -27,37 +27,43 @@ export const BasicInfoForm = ({
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="firstName">First Name</Label>
-          <Input id="firstName" {...register('firstName')} />
-          {errors.firstName && <p className="text-sm text-red-500">{errors.firstName.message}</p>}
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="lastName">Last Name</Label>
-          <Input id="lastName" {...register('lastName')} />
-          {errors.lastName && <p className="text-sm text-red-500">{errors.lastName.message}</p>}
-        </div>
+        <FormInput
+          id="firstName"
+          label="First Name"
+          register={register}
+          error={errors.firstName?.message}
+        />
+        <FormInput
+          id="lastName"
+          label="Last Name"
+          register={register}
+          error={errors.lastName?.message}
+        />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" {...register('email')} />
-        {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
-      </div>
+      <FormInput
+        id="email"
+        label="Email"
+        type="email"
+        register={register}
+        error={errors.email?.message}
+      />
 
       <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" {...register('password')} />
-          {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="confirmPassword">Confirm Password</Label>
-          <Input id="confirmPassword" type="password" {...register('confirmPassword')} />
-          {errors.confirmPassword && (
-            <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>
-          )}
-        </div>
+        <FormInput
+          id="password"
+          label="Password"
+          type="password"
+          register={register}
+          error={errors.password?.message}
+        />
+        <FormInput
+          id="confirmPassword"
+          label="Confirm Password"
+          type="password"
+          register={register}
+          error={errors.confirmPassword?.message}
+        />
       </div>
 
       <div className="space-y-2">

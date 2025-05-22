@@ -41,7 +41,6 @@ const users = fake_users;
 export default function UserTable() {
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
   const [activeModal, setActiveModal] = useState<null | UserModalType>(null);
-  // const triggerButtonRef = useRef(null);
   const [dropdownOpenUserId, setDropdownOpenUserId] = useState<string | number | null>(null);
 
   const {
@@ -83,8 +82,14 @@ export default function UserTable() {
     setActiveModal(type);
   };
 
+  const handleOpenModal = (modalType: UserModalType, user: UserType) => {
+    openModal(modalType, user);
+    setDropdownOpenUserId(null);
+  };
+
   return (
     <div className="mx-auto mt-12 w-full max-w-6xl p-4">
+      {/* SEARCH & FILTER */}
       <div className="mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
         <div className="relative w-full max-w-sm flex-1 md:w-auto">
           <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
@@ -121,6 +126,7 @@ export default function UserTable() {
         </div>
       </div>
 
+      {/* TABLE */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -155,19 +161,10 @@ export default function UserTable() {
                   <TableCell>
                     <UserActionsDropdown
                       open={dropdownOpenUserId === user.id}
-                      onOpenChange={(open) => setDropdownOpenUserId(open === true ? user.id : null)}
-                      onOpenPersonal={() => {
-                        openModal('personal', user);
-                        setDropdownOpenUserId(null);
-                      }}
-                      onOpenSkills={() => {
-                        openModal('skills', user);
-                        setDropdownOpenUserId(null);
-                      }}
-                      onOpenRoles={() => {
-                        openModal('roles', user);
-                        setDropdownOpenUserId(null);
-                      }}
+                      onOpenChange={(open) => setDropdownOpenUserId(open ? user.id : null)}
+                      onOpenPersonal={() => handleOpenModal('personal', user)}
+                      onOpenSkills={() => handleOpenModal('skills', user)}
+                      onOpenRoles={() => handleOpenModal('roles', user)}
                     />
                   </TableCell>
                 </TableRow>
@@ -183,6 +180,7 @@ export default function UserTable() {
         </Table>
       </div>
 
+      {/* PAGINATION */}
       {hasPagination && (
         <div className="flex justify-center py-4">
           <PaginationControls
@@ -198,22 +196,17 @@ export default function UserTable() {
         {Math.min(indexOfLastItem, filteredUsers.length)} of {filteredUsers.length} users
       </div>
 
-      {/* Personal Info Modal */}
+      {/* MODALS */}
       <PersonalInfoModal
         open={activeModal === 'personal'}
         onOpenChange={() => setActiveModal(null)}
         user={selectedUser}
-        // triggerRef={triggerButtonRef}
       />
-
-      {/* Skills Modal */}
       <SkillsModal
         open={activeModal === 'skills'}
         onOpenChange={() => setActiveModal(null)}
         user={selectedUser}
       />
-
-      {/* Roles Modal */}
       <UserPermissionsModal
         open={activeModal === 'roles'}
         onOpenChange={() => setActiveModal(null)}

@@ -40,9 +40,11 @@ export interface PersonalInfoFormType {
   confirmPassword: string;
   dateOfBirth?: string;
   phoneNumber?: string;
-  experienceLevel: 'intern' | 'junior' | 'medior' | 'senior' | 'lead';
+  experienceLevel: experienceLevelType;
   github?: string;
   linkedin?: string;
 }
 
 export type UserModalType = 'personal' | 'skills' | 'roles';
+
+export type experienceLevelType = 'intern' | 'junior' | 'medior' | 'senior' | 'lead';
