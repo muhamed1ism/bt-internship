@@ -13,6 +13,8 @@ const routeNames = {
   contact: (params?: Record<string, string>): string => generateRoute('/contact', params),
   login: (params?: Record<string, string>): string => generateRoute('/login', params),
   register: (params?: Record<string, string>): string => generateRoute('/register', params),
+  googleRegister: (params?: Record<string, string>): string =>
+    generateRoute('/google-register', params),
   dashboard: (params?: Record<string, string>): string => generateRoute('/dashboard', params),
   buckets: (params?: Record<string, string>): string => generateRoute('/buckets', params),
   evaluation: (params?: Record<string, string>): string => generateRoute('/evaluation', params),

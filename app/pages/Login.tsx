@@ -5,12 +5,13 @@ import { Button } from '@app/components/ui/button';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import routeNames from '@app/routes/route-names';
-import { useLogin } from '@app/hooks/auth';
+import { useLogin, useGoogleSignIn } from '@app/hooks/auth';
 import { authSchema, LoginFormValues } from '@app/schemas';
 import { FormInputField } from '@app/components/forms/FormInputField';
 
 export const Login = () => {
   const { mutate, isPending, error } = useLogin();
+  const { mutate: signInWithGoogle, isPending: googleIsPending } = useGoogleSignIn();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(authSchema.login),
@@ -22,6 +23,10 @@ export const Login = () => {
 
   const onSubmit = (formData: LoginFormValues) => {
     mutate(formData);
+  };
+
+  const handleGoogle = () => {
+    signInWithGoogle();
   };
 
   return (
@@ -50,6 +55,16 @@ export const Login = () => {
               {isPending ? 'Loading...' : 'Login'}
             </Button>
           </div>
+          <Button
+            type="button"
+            size="lg"
+            variant="ghost"
+            onClick={handleGoogle}
+            disabled={googleIsPending}
+            className="bg-primary-foreground border-primary/15 text-primary h-12 w-full border-1"
+          >
+            {googleIsPending ? 'Loading...' : 'Sign up with Google'}
+          </Button>
         </form>
       </Form>
     </div>

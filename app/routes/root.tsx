@@ -18,6 +18,7 @@ import { Teams } from '@app/pages/Teams.tsx';
 import { Users } from '@app/pages/Users.tsx';
 import { Login } from '@app/pages/Login.tsx';
 import { Register } from '@app/pages/Register.tsx';
+import { GoogleRegister } from '@app/pages/GoogleRegister.tsx';
 
 const routesForPublic = [
   {
@@ -35,6 +36,7 @@ const routesForNotAuthenticated = [
       { path: routeNames.root(), element: <Home /> },
       { path: routeNames.login(), element: <Login /> },
       { path: routeNames.register(), element: <Register /> },
+      { path: routeNames.googleRegister(), element: <GoogleRegister /> },
     ],
   },
 ];

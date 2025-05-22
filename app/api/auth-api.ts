@@ -1,5 +1,5 @@
-import { auth } from '@app/lib/firebase';
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { auth, getCurrentUser, googleProvider } from '@app/lib/firebase';
+import { signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth';
 import { BASE_URL, ENDPOINTS } from './api-config';
 
 interface registerFormDataType {
@@ -21,16 +21,6 @@ interface User {
   dateOfBirth: Date;
   roleId: string;
 }
-
-const getCurrentUser = (): Promise<ReturnType<typeof getAuth>['currentUser']> => {
-  const auth = getAuth();
-  return new Promise((resolve) => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      unsubscribe();
-      resolve(user);
-    });
-  });
-};
 
 export const registerApi = async (formData: registerFormDataType) => {
   try {
@@ -64,6 +54,59 @@ export const loginApi = async (email: string, password: string) => {
   });
 };
 
+export const googleSignInApi = async () => {
+  try {
+    await signInWithPopup(auth, googleProvider);
+
+    const user = await getCurrentUser();
+    const idToken = await user?.getIdToken();
+
+    const res = await fetch(BASE_URL + ENDPOINTS.auth.googleSignIn.uri, {
+      method: ENDPOINTS.auth.googleSignIn.method,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + idToken,
+      },
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message || 'Google register failed');
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error('Google register failed: ', error);
+    throw error;
+  }
+};
+
+export const googleRegisterApi = async (formData: registerFormDataType) => {
+  try {
+    const user = await getCurrentUser();
+    const idToken = await user?.getIdToken();
+
+    const res = await fetch(BASE_URL + ENDPOINTS.auth.googleRegister.uri, {
+      method: ENDPOINTS.auth.googleRegister.method,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + idToken,
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message || 'Register failed');
+    }
+
+    return res.json();
+  } catch (error) {
+    console.error('Register failed: ', error);
+    throw error;
+  }
+};
+
 export const logoutApi = async () => {
   try {
     await signOut(auth);
@@ -76,12 +119,8 @@ export const logoutApi = async () => {
 export const currentUserApi = async (): Promise<User | null> => {
   try {
     const user = await getCurrentUser();
-
-    if (!user) {
-      throw new Error('User not found');
-    }
-
     const idToken = await user?.getIdToken();
+
     const res = await fetch(BASE_URL + ENDPOINTS.auth.currentUser.uri, {
       method: ENDPOINTS.auth.currentUser.method,
       headers: {
