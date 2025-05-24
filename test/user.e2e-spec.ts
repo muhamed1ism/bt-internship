@@ -1,5 +1,5 @@
 import * as request from 'supertest';
-import { app, setupE2ETest, teardownE2ETest, prisma } from './setup.e2e';
+import { app, setupE2ETest, teardownE2ETest, prisma } from './setup';
 import { HttpStatus, NotFoundException } from '@nestjs/common';
 
 describe('User (e2e)', () => {

@@ -1,6 +1,6 @@
 import * as request from 'supertest';
 import { RegisterDto } from 'src/auth/dto';
-import { app, setupE2ETest, teardownE2ETest } from './setup.e2e';
+import { app, prisma, setupE2ETest, teardownE2ETest } from './setup';
 import { HttpStatus } from '@nestjs/common';
 
 describe('Auth (e2e)', () => {
@@ -56,7 +56,7 @@ describe('Auth (e2e)', () => {
   });
 
   it('should not register a user with a weak password', async () => {
-    const weakPasswordDto = { ...registerDto, password: '123' }; // Weak password
+    const weakPasswordDto = { ...registerDto, password: '123' };
 
     const response = await request(app.getHttpServer())
       .post('/auth/register')
@@ -75,5 +75,27 @@ describe('Auth (e2e)', () => {
 
     expect(response.status).toBe(HttpStatus.BAD_REQUEST);
     expect(response.body).toHaveProperty('message');
+  });
+
+  it('should return hasAccount is true if user has account in database', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/auth/google-signin')
+      .set('Authorization', 'Bearer ' + token);
+
+    expect(response.status).toBe(HttpStatus.OK);
+    expect(response.body).toMatchObject({ hasAccount: true });
+  });
+
+  it("should return hasAccount is false if user doesn't have account in database", async () => {
+    await prisma.user.delete({
+      where: { email: registerDto.email },
+    });
+
+    const response = await request(app.getHttpServer())
+      .get('/auth/google-signin')
+      .set('Authorization', 'Bearer ' + token);
+
+    expect(response.status).toBe(HttpStatus.OK);
+    expect(response.body).toMatchObject({ hasAccount: false });
   });
 });
