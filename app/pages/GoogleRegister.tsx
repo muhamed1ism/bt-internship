@@ -52,7 +52,7 @@ export const GoogleRegister = () => {
             <FormInputField control={form.control} name="lastName" label="Last Name" />
           </div>
 
-          <FormInputField control={form.control} name="email" label="Email" />
+          <FormInputField control={form.control} name="email" label="Email" disabled />
 
           <FormInputField control={form.control} type="password" name="password" label="Password" />
 
