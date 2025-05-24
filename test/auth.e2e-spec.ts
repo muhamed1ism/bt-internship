@@ -2,6 +2,7 @@ import * as request from 'supertest';
 import { RegisterDto } from 'src/auth/dto';
 import { app, prisma, setupE2ETest, teardownE2ETest } from './setup';
 import { HttpStatus } from '@nestjs/common';
+import { auth, FirebaseUser } from './__mocks__/firebase-admin';
 
 describe('Auth (e2e)', () => {
   beforeAll(async () => {
@@ -97,5 +98,45 @@ describe('Auth (e2e)', () => {
 
     expect(response.status).toBe(HttpStatus.OK);
     expect(response.body).toMatchObject({ hasAccount: false });
+  });
+
+  it('should return 401 Unauthorized when signing in with an invalid Google token', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/auth/google-signin')
+      .set('Authorization', 'Bearer invalid-token');
+
+    expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+  });
+
+  it('should register user after Google Sign-In and Firebase user creation', async () => {
+    // Creates a user in the Firebase mock to mimic a user created via Google Sign-In,
+    // but not yet registered in the backend database
+    const firebaseUser: FirebaseUser = {
+      displayName: 'John Doe',
+      email: registerDto.email,
+      password: registerDto.password,
+    };
+    const user = await auth().createUser(firebaseUser);
+    token = user.uid;
+
+    const response = await request(app.getHttpServer())
+      .post('/auth/google-register')
+      .set('Authorization', 'Bearer ' + token)
+      .send(registerDto);
+
+    expect(response.status).toBe(HttpStatus.CREATED);
+    expect(response.body).toEqual({
+      message: 'Register successful',
+      uid: token,
+    });
+  });
+
+  it('should return 401 Unauthorized when registering with an invalid Google token', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/auth/google-register')
+      .set('Authorization', 'Bearer invalid-token')
+      .send(registerDto);
+
+    expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
   });
 });

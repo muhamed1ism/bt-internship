@@ -25,6 +25,7 @@ export const setupE2ETest = async () => {
   prisma = app.get(PrismaService);
 
   // Suppress all console.error output during tests to keep test logs clean
+  // Comment out the next line if you want to debug tests
   jest.spyOn(console, 'error').mockImplementation(() => {});
 
   await prisma.cleanDb();

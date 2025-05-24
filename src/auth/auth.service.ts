@@ -2,6 +2,7 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
@@ -89,7 +90,7 @@ export class AuthService {
       return { hasAccount: true };
     } catch (error) {
       if (error instanceof Error) {
-        throw new ForbiddenException(error);
+        throw new UnauthorizedException(error);
       }
       throw error;
     }
@@ -110,7 +111,7 @@ export class AuthService {
       return { message: 'Register successful', uid };
     } catch (error) {
       if (error instanceof Error) {
-        throw new ForbiddenException(error);
+        throw new UnauthorizedException(error);
       }
       throw error;
     }
