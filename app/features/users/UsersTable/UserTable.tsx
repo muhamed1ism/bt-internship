@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { fake_users } from '../fake-data';
 
-import { UserModalType, UserType } from '../../../types/types';
+import { SortDirection, UserModalType, UserType } from '../../../types/types';
 
 import {
   Table,
@@ -32,15 +32,16 @@ import { UserActionsDropdown } from './UserActionsDropdown ';
 import { SortableHeader } from './SortableHeader';
 import { PaginationControls } from './PaginationControls';
 import { USER_TABLE_COLUMNS } from '@app/constants/example';
-import PersonalInfoModal from '../PersonalInfoModal/PersonalInfoModal';
 import SkillsModal from '../SkillsModal/SkillsModal';
 import UserPermissionsModal from '../UserPermissionsModal/UserPermissionsModal';
+import { PersonalInfoModal } from '../PersonalInfoModal/PersonalInfoModal';
 
 const users = fake_users;
 
 export default function UserTable() {
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
   const [activeModal, setActiveModal] = useState<null | UserModalType>(null);
+  const [dropdownOpenUserId, setDropdownOpenUserId] = useState<string | number | null>(null);
 
   const {
     filteredUsers,
@@ -66,7 +67,9 @@ export default function UserTable() {
     setSortConfig((prevConfig) => ({
       key,
       direction:
-        prevConfig.key === key && prevConfig.direction === 'ascending' ? 'descending' : 'ascending',
+        prevConfig.key === key && prevConfig.direction === SortDirection.Ascending
+          ? SortDirection.Descending
+          : SortDirection.Ascending,
     }));
   };
 
@@ -79,8 +82,14 @@ export default function UserTable() {
     setActiveModal(type);
   };
 
+  const handleOpenModal = (modalType: UserModalType, user: UserType) => {
+    openModal(modalType, user);
+    setDropdownOpenUserId(null);
+  };
+
   return (
     <div className="mx-auto mt-12 w-full max-w-6xl p-4">
+      {/* SEARCH & FILTER */}
       <div className="mb-6 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
         <div className="relative w-full max-w-sm flex-1 md:w-auto">
           <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
@@ -117,6 +126,7 @@ export default function UserTable() {
         </div>
       </div>
 
+      {/* TABLE */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -150,9 +160,11 @@ export default function UserTable() {
                   </TableCell>
                   <TableCell>
                     <UserActionsDropdown
-                      onOpenPersonal={() => openModal('personal', user)}
-                      onOpenSkills={() => openModal('skills', user)}
-                      onOpenRoles={() => openModal('roles', user)}
+                      open={dropdownOpenUserId === user.id}
+                      onOpenChange={(open) => setDropdownOpenUserId(open ? user.id : null)}
+                      onOpenPersonal={() => handleOpenModal('personal', user)}
+                      onOpenSkills={() => handleOpenModal('skills', user)}
+                      onOpenRoles={() => handleOpenModal('roles', user)}
                     />
                   </TableCell>
                 </TableRow>
@@ -168,6 +180,7 @@ export default function UserTable() {
         </Table>
       </div>
 
+      {/* PAGINATION */}
       {hasPagination && (
         <div className="flex justify-center py-4">
           <PaginationControls
@@ -183,21 +196,17 @@ export default function UserTable() {
         {Math.min(indexOfLastItem, filteredUsers.length)} of {filteredUsers.length} users
       </div>
 
-      {/* Personal Info Modal */}
+      {/* MODALS */}
       <PersonalInfoModal
         open={activeModal === 'personal'}
         onOpenChange={() => setActiveModal(null)}
         user={selectedUser}
       />
-
-      {/* Skills Modal */}
       <SkillsModal
         open={activeModal === 'skills'}
         onOpenChange={() => setActiveModal(null)}
         user={selectedUser}
       />
-
-      {/* Roles Modal */}
       <UserPermissionsModal
         open={activeModal === 'roles'}
         onOpenChange={() => setActiveModal(null)}
