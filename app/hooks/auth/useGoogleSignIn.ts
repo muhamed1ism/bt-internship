@@ -10,7 +10,6 @@ export const useGoogleSignIn = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: googleSignInApi,
     onSuccess: (data) => {
-      console.log({ data });
       if (data.hasAccount === true) {
         navigate(routeNames.dashboard());
         window.location.reload();

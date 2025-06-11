@@ -1,28 +1,9 @@
-import { auth, getCurrentUser, googleProvider } from '@app/lib/firebase';
+import { auth, getAuthHeaders, googleProvider } from '@app/lib/firebase';
 import { signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth';
 import { BASE_URL, ENDPOINTS } from './api-config';
+import { RegisterFormValues } from '@app/schemas';
 
-interface registerFormDataType {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  phoneNumber: string;
-  dateOfBirth: Date;
-}
-
-interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  dateOfBirth: Date;
-  roleId: string;
-}
-
-export const registerApi = async (formData: registerFormDataType) => {
+export const registerApi = async (formData: RegisterFormValues) => {
   try {
     const res = await fetch(BASE_URL + ENDPOINTS.auth.register.uri, {
       method: ENDPOINTS.auth.register.method,
@@ -58,14 +39,12 @@ export const googleSignInApi = async () => {
   try {
     await signInWithPopup(auth, googleProvider);
 
-    const user = await getCurrentUser();
-    const idToken = await user?.getIdToken();
+    const authHeaders = await getAuthHeaders();
 
     const res = await fetch(BASE_URL + ENDPOINTS.auth.googleSignIn.uri, {
       method: ENDPOINTS.auth.googleSignIn.method,
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + idToken,
+        ...authHeaders,
       },
     });
 
@@ -81,16 +60,15 @@ export const googleSignInApi = async () => {
   }
 };
 
-export const googleRegisterApi = async (formData: registerFormDataType) => {
+export const googleRegisterApi = async (formData: RegisterFormValues) => {
   try {
-    const user = await getCurrentUser();
-    const idToken = await user?.getIdToken();
+    const authHeaders = await getAuthHeaders();
 
     const res = await fetch(BASE_URL + ENDPOINTS.auth.googleRegister.uri, {
       method: ENDPOINTS.auth.googleRegister.method,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + idToken,
+        ...authHeaders,
       },
       body: JSON.stringify(formData),
     });
@@ -112,28 +90,6 @@ export const logoutApi = async () => {
     await signOut(auth);
   } catch (error) {
     console.error('Logout failed: ', error);
-    throw error;
-  }
-};
-
-export const currentUserApi = async (): Promise<User | null> => {
-  try {
-    const user = await getCurrentUser();
-    const idToken = await user?.getIdToken();
-
-    const res = await fetch(BASE_URL + ENDPOINTS.auth.currentUser.uri, {
-      method: ENDPOINTS.auth.currentUser.method,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + idToken,
-      },
-    });
-
-    if (!res.ok) throw new Error('Unauthorized');
-
-    return await res.json();
-  } catch (error) {
-    console.error('Error fetching current user: ', error);
     throw error;
   }
 };

@@ -36,4 +36,13 @@ export const getCurrentUser = (): Promise<ReturnType<typeof getAuth>['currentUse
   });
 };
 
+export const getAuthHeaders = async (): Promise<{ Authorization: string } | {}> => {
+  const user = await getCurrentUser();
+  const idToken = await user?.getIdToken();
+
+  return {
+    Authorization: `Bearer ${idToken}`,
+  };
+};
+
 export default app;

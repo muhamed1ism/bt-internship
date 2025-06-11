@@ -14,6 +14,9 @@ export const ENDPOINTS = {
       uri: '/auth/google-register',
       method: 'POST',
     },
+  },
+
+  user: {
     currentUser: {
       uri: '/user/current-user',
       method: 'GET',
