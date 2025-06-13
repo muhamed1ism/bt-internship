@@ -1,14 +1,10 @@
 import { loginApi } from '@app/api/auth-api';
+import { LoginFormValues } from '@app/schemas';
 import { useMutation } from '@tanstack/react-query';
-
-interface FormDataType {
-  email: string;
-  password: string;
-}
 
 export const useLogin = () => {
   const { mutate, isPending, error } = useMutation({
-    mutationFn: (formData: FormDataType) => loginApi(formData.email, formData.password),
+    mutationFn: (formData: LoginFormValues) => loginApi(formData.email, formData.password),
     onSuccess: () => {
       window.location.reload();
     },

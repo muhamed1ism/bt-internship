@@ -7,9 +7,16 @@ interface FormInputFieldProps {
   type?: string;
   name: string;
   label: string;
+  disabled?: boolean;
 }
 
-export const FormInputField = ({ control, type = 'text', name, label }: FormInputFieldProps) => {
+export const FormInputField = ({
+  control,
+  type = 'text',
+  name,
+  label,
+  disabled = false,
+}: FormInputFieldProps) => {
   return (
     <FormField
       control={control}
@@ -24,6 +31,7 @@ export const FormInputField = ({ control, type = 'text', name, label }: FormInpu
               placeholder={label}
               className="border-primary/50 border-1"
               {...field}
+              disabled={disabled}
             />
           </FormControl>
 

@@ -1,4 +1,4 @@
-import { currentUserApi } from '@app/api/auth-api';
+import { currentUserApi } from '@app/api/user-api';
 import { useQuery } from '@tanstack/react-query';
 
 export const useCheckAuth = () => {

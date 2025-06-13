@@ -6,8 +6,19 @@ export const ENDPOINTS = {
       uri: '/auth/register',
       method: 'POST',
     },
+    googleSignIn: {
+      uri: '/auth/google-signin',
+      method: 'GET',
+    },
+    googleRegister: {
+      uri: '/auth/google-register',
+      method: 'POST',
+    },
+  },
+
+  user: {
     currentUser: {
-      uri: '/auth/current-user',
+      uri: '/user/current-user',
       method: 'GET',
     },
   },
