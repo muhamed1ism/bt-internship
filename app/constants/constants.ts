@@ -1,4 +1,14 @@
-import { RoleType } from '@app/types/types';
+import { RoleType, UserType } from '@app/types/types';
+
+// User table columns for sorting and display
+export const USER_TABLE_COLUMNS: (keyof UserType)[] = [
+  'id',
+  'firstName',
+  'lastName',
+  'email',
+  'role',
+  'status',
+];
 
 export const allPermissions = {
   'User Management': [
