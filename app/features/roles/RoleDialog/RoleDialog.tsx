@@ -13,6 +13,7 @@ import { RoleType } from '@app/types/types';
 import { RoleFormFields } from './RoleFormFields';
 import { RoleSaveOptionsDialog } from './RoleSaveOptionsDialog';
 import { useRoleForm, getSchema } from './useRoleForm';
+import { usePermissionManager } from '../shared/usePermissionManager';
 
 export type RoleDialogProps = {
   open: boolean;
@@ -36,21 +37,17 @@ export function RoleDialog({ open, onOpenChange, role, isNew, onSave, allRoles }
     formState: { errors },
   } = useRoleForm({ allRoles, currentName });
 
-  const [selectedPermissions, setSelectedPermissions] = useState<{ [category: string]: string[] }>(
-    {},
-  );
-  const [activeTab, setActiveTab] = useState<string>('User Management');
+  const { selectedPermissions, setSelectedPermissions, activeTab, setActiveTab, resetPermissions } =
+    usePermissionManager();
   const [showSaveOptions, setShowSaveOptions] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (role) {
       reset({ roleName: role.name });
-      setSelectedPermissions(role.permissions || {});
-      const firstCategory = Object.keys(role.permissions || {})[0] || 'User Management';
-      setActiveTab(firstCategory);
+      resetPermissions(role.permissions || {});
     }
-  }, [role, reset]);
+  }, [role, reset, resetPermissions]);
 
   const onSubmit = (data: { roleName: string }) => {
     const updatedRole: RoleType = {
