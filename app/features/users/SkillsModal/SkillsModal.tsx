@@ -13,7 +13,11 @@ import { UserType } from '@app/types/types';
 import { SkillsFormType } from './skillsSchema';
 
 import { SkillsForm } from './SkillsForm';
+<<<<<<< HEAD
 import { TopicsForm } from '../UserPermissionsModal/TopicsForm';
+=======
+import { TopicsForm } from './TopicsForm';
+>>>>>>> 2db62e907dfbf97e64de329d5e661b15d0e577ac
 import { BucketsForm } from './BucketsForm';
 
 type SkillsModalProps = {
