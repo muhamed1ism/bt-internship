@@ -7,7 +7,6 @@ import AuthProvider from '@app/context/AuthContext.tsx';
 import { UnauthenticatedRoute } from './UnauthenticatedRoute.tsx';
 import { ProtectedRoute } from './ProtectedRoute.tsx';
 import { Layout } from '@app/components/layout/Layout.tsx';
-import { BucketView } from '@app/pages/BucketView.tsx';
 import { Contact } from '@app/pages/Contact.tsx';
 import { Home } from '@app/pages/Home.tsx';
 import { Dashboard } from '@app/pages/Dashboard.tsx';
