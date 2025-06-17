@@ -1,8 +1,60 @@
+import { useState } from 'react';
+import { MOCK_TEAMS } from '@app/constants/teams';
+import { ViewMode } from '@app/types/team';
+import { useFilteredTeams, TeamsControls, TeamsGrid, TeamsEmptyState } from '@app/features/team';
+
 export const Teams = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+
+  const { filteredTeams } = useFilteredTeams(MOCK_TEAMS, searchQuery);
+
+  const handleViewTeam = (teamId: number) => {
+    console.log('View team:', teamId);
+    // TODO: Navigate to team details page
+  };
+
+  const handleEditTeam = (teamId: number) => {
+    console.log('Edit team:', teamId);
+    // TODO: Open edit team modal or navigate to edit page
+  };
+
   return (
-    <div className="flex h-screen flex-col items-center justify-center bg-gray-100">
-      <h1 className="mb-4 text-4xl font-bold">Welcome to the Team Page!</h1>
-      <p className="text-lg">This is a simple example of a React component.</p>
+    <div className="bg-background min-h-screen p-6">
+      <div className="mx-auto max-w-7xl">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-foreground mb-2 text-3xl font-bold">Teams</h1>
+          <p className="text-muted-foreground">Manage and view all teams in your organization</p>
+        </div>
+
+        {/* Search and Controls */}
+        <TeamsControls
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+        />
+
+        {/* Results Count */}
+        <div className="mb-6">
+          <p className="text-muted-foreground text-sm">
+            Found {filteredTeams.length} team{filteredTeams.length !== 1 ? 's' : ''}
+          </p>
+        </div>
+
+        {/* Teams Grid or Empty State */}
+        {filteredTeams.length > 0 ? (
+          <TeamsGrid
+            teams={filteredTeams}
+            viewMode={viewMode}
+            onViewTeam={handleViewTeam}
+            onEditTeam={handleEditTeam}
+          />
+        ) : (
+          <TeamsEmptyState />
+        )}
+      </div>
     </div>
   );
 };
