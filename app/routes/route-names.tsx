@@ -23,6 +23,8 @@ const routeNames = {
   roles: (params?: Record<string, string>): string => generateRoute('/roles', params),
   teams: (params?: Record<string, string>): string => generateRoute('/teams', params),
   teamView: (params?: Record<string, string>): string => generateRoute('/teams/:teamId', params),
+  teamMembers: (params?: Record<string, string>): string =>
+    generateRoute('/teams/:teamId/members', params),
   users: (params?: Record<string, string>): string => generateRoute('/users', params),
   people: (params?: Record<string, string>): string => generateRoute('/people', params),
 };
