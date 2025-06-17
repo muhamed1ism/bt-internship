@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import clsx from 'clsx';
 import { Button } from '@app/components/ui/button';
 import { Input } from '@app/components/ui/input';
 import { Label } from '@app/components/ui/label';
@@ -15,11 +16,18 @@ interface SkillsFormProps {
   onBiographyFileChange?: (file: File | null) => void;
 }
 
+const getSkillBadgeColor = (index: number) => {
+  const colors = [
+    'bg-green-100 text-green-800 hover:bg-green-200',
+    'bg-blue-100 text-blue-800 hover:bg-blue-200',
+    'bg-purple-100 text-purple-800 hover:bg-purple-200',
+  ];
+  return colors[index % 3];
+};
+
 export const SkillsForm = ({
   skills,
   onSkillsChange,
-  resumeFile,
-  biographyFile,
   onResumeFileChange,
   onBiographyFileChange,
 }: SkillsFormProps) => {
@@ -65,13 +73,7 @@ export const SkillsForm = ({
             skills.map((skill, index) => (
               <Badge
                 key={index}
-                className={`px-3 py-1 ${
-                  index % 3 === 0
-                    ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                    : index % 3 === 1
-                      ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-                      : 'bg-purple-100 text-purple-800 hover:bg-purple-200'
-                }`}
+                className={clsx('px-3 py-1', getSkillBadgeColor(index))}
                 variant="outline"
               >
                 {skill}

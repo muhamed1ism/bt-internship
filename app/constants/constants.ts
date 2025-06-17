@@ -35,6 +35,20 @@ export const allPermissions = {
   ],
 };
 
+export const TOOLS = [
+  { name: 'React.js', bg: 'bg-blue-400' },
+  { name: 'Vue', bg: 'bg-green-500' },
+  { name: 'Express.js', bg: 'bg-gray-600' },
+  { name: 'AWS', bg: 'bg-orange-500' },
+];
+
+export const mockBuckets = [
+  { id: '1', title: 'Software Engineer', currentLevel: 2, isActive: true },
+  { id: '2', title: 'Data Engineer', currentLevel: 3, isActive: true },
+  { id: '3', title: 'AI Engineer', currentLevel: 2, isActive: true },
+  { id: '4', title: 'Software Engineer', currentLevel: 2, isActive: false },
+];
+
 export const initialRoles: RoleType[] = [
   {
     id: '1',
