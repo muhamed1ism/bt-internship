@@ -1,18 +1,18 @@
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { MOCK_TEAM_DETAILS } from '@app/constants/team-members';
 import { TeamHeader, MembersGrid, TeamFormModal, useTeamForm } from '@app/features/team';
 
 export const TeamView = () => {
   // In a real app, you'd fetch team data based on the ID from params
   const { teamId } = useParams<{ teamId: string }>();
+  const navigate = useNavigate();
   console.log('Team ID:', teamId); // TODO: Remove when implementing real data fetching
   const [teamDetails] = useState(MOCK_TEAM_DETAILS);
   const { formState, openEditForm, closeForm, handleSave, handleRemove } = useTeamForm();
 
   const handleManageMembers = () => {
-    console.log('Manage members clicked');
-    // TODO: Open manage members modal or navigate to management page
+    navigate(`/teams/${teamId}/members`);
   };
 
   const handleEditTeam = () => {

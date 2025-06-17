@@ -15,6 +15,7 @@ import { People } from '@app/pages/People.tsx';
 import { Roles } from '@app/pages/Roles.tsx';
 import { Teams } from '@app/pages/Teams.tsx';
 import { TeamView } from '@app/pages/TeamView.tsx';
+import { TeamMembers } from '@app/pages/TeamMembers.tsx';
 import { Users } from '@app/pages/Users.tsx';
 import { Login } from '@app/pages/Login.tsx';
 import { Register } from '@app/pages/Register.tsx';
@@ -64,6 +65,10 @@ const routesForNotAuthenticated = [
         element: <TeamView />,
       },
       {
+        path: routeNames.teamMembers(),
+        element: <TeamMembers />,
+      },
+      {
         path: routeNames.users(),
         element: <Users />,
       },
@@ -94,6 +99,7 @@ const routesForAuthenticated = [
       { path: routeNames.evaluation(), element: <Evaluation /> },
       { path: routeNames.teams(), element: <Teams /> },
       { path: routeNames.teamView(), element: <TeamView /> },
+      { path: routeNames.teamMembers(), element: <TeamMembers /> },
       { path: routeNames.users(), element: <Users /> },
       { path: routeNames.roles(), element: <Roles /> },
     ],
