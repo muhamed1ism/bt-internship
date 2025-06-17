@@ -2,7 +2,14 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MOCK_TEAMS } from '@app/constants/teams';
 import { ViewMode } from '@app/types/team';
-import { useFilteredTeams, TeamsControls, TeamsGrid, TeamsEmptyState } from '@app/features/team';
+import {
+  useFilteredTeams,
+  TeamsControls,
+  TeamsGrid,
+  TeamsEmptyState,
+  TeamFormModal,
+  useTeamForm,
+} from '@app/features/team';
 import routeNames from '@app/routes/route-names';
 
 export const Teams = () => {
@@ -11,14 +18,44 @@ export const Teams = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
   const { filteredTeams } = useFilteredTeams(MOCK_TEAMS, searchQuery);
+  const { formState, openCreateForm, openEditForm, closeForm, handleSave, handleRemove } =
+    useTeamForm();
 
   const handleViewTeam = (teamId: number) => {
     navigate(routeNames.teamView({ teamId: teamId.toString() }));
   };
 
   const handleEditTeam = (teamId: number) => {
-    console.log('Edit team:', teamId);
-    // TODO: Open edit team modal or navigate to edit page
+    const team = MOCK_TEAMS.find((t) => t.id === teamId);
+    if (team) {
+      // Convert team data to form format
+      const formData = {
+        id: team.id,
+        name: `Team ${team.teamNumber}`,
+        technologies: [
+          { id: 'react', name: 'React', color: 'bg-blue-500' },
+          { id: 'nodejs', name: 'Node.js', color: 'bg-emerald-600' },
+        ],
+        client: 'Sample Client',
+        status: 'in-progress',
+        startDate: '2025-03-19',
+        endDate: '2025-06-19',
+        projectDescription:
+          'This is a comprehensive project that involves building a modern web application using cutting-edge technologies and best practices.',
+        projectName: 'Cloud Migration Project',
+        githubUrls: [
+          'https://github.com/company/cloud-migration',
+          'https://github.com/company/migration-scripts',
+        ],
+        jiraUrls: [
+          'https://company.atlassian.net/browse/CM',
+          'https://company.atlassian.net/browse/CM-DOCS',
+        ],
+        budget: 150000,
+        priority: 'high' as const,
+      };
+      openEditForm(formData);
+    }
   };
 
   return (
@@ -36,6 +73,7 @@ export const Teams = () => {
           onSearchChange={setSearchQuery}
           viewMode={viewMode}
           onViewModeChange={setViewMode}
+          onCreateTeam={openCreateForm}
         />
 
         {/* Results Count */}
@@ -54,8 +92,18 @@ export const Teams = () => {
             onEditTeam={handleEditTeam}
           />
         ) : (
-          <TeamsEmptyState />
+          <TeamsEmptyState onCreateTeam={openCreateForm} />
         )}
+
+        {/* Team Form Modal */}
+        <TeamFormModal
+          isOpen={formState.isOpen}
+          onClose={closeForm}
+          onSave={handleSave}
+          onRemove={handleRemove}
+          mode={formState.mode}
+          team={formState.team}
+        />
       </div>
     </div>
   );
