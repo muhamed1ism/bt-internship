@@ -32,7 +32,7 @@ import { UserActionsDropdown } from './UserActionsDropdown ';
 import { SortableHeader } from './SortableHeader';
 import { PaginationControls } from './PaginationControls';
 import { USER_TABLE_COLUMNS } from '@app/constants/example';
-import SkillsModal from '../SkillsModal/SkillsModal';
+import { SkillsModal } from '../SkillsModal/SkillsModal';
 import UserPermissionsModal from '../UserPermissionsModal/UserPermissionsModal';
 import { PersonalInfoModal } from '../PersonalInfoModal/PersonalInfoModal';
 

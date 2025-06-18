@@ -14,7 +14,6 @@ import { Home } from '@app/pages/Home.tsx';
 import { Dashboard } from '@app/pages/Dashboard.tsx';
 import { Evaluation } from '@app/pages/Evaluation.tsx';
 import { People } from '@app/pages/People.tsx';
-import { Buckets } from '@app/pages/Buckets.tsx';
 import { Roles } from '@app/pages/Roles.tsx';
 import { Teams } from '@app/pages/Teams.tsx';
 import { Users } from '@app/pages/Users.tsx';
@@ -86,6 +85,7 @@ const routesForAuthenticated = [
       { path: routeNames.dashboard(), element: <Dashboard /> },
       { path: routeNames.people(), element: <People /> },
       { path: routeNames.buckets(), element: <Buckets /> },
+      { path: routeNames.bucketDefinition(), element: <BucketView /> },
       { path: routeNames.evaluation(), element: <Evaluation /> },
       { path: routeNames.teams(), element: <Teams /> },
       { path: routeNames.users(), element: <Users /> },
@@ -95,8 +95,8 @@ const routesForAuthenticated = [
 ];
 
 const router = createBrowserRouter([
-  ...routesForNotAuthenticated,
   ...routesForAuthenticated,
+  ...routesForNotAuthenticated,
   ...routesForPublic,
 ]);
 
