@@ -19,6 +19,7 @@ import { Login } from '@app/pages/Login.tsx';
 import { Register } from '@app/pages/Register.tsx';
 import { GoogleRegister } from '@app/pages/GoogleRegister.tsx';
 import { Buckets } from '@app/pages/Buckets.tsx';
+import { BucketView } from '@app/pages/BucketView.tsx';
 
 const routesForPublic = [
   {
