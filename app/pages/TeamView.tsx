@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { MOCK_TEAM_DETAILS } from '@app/constants/team-members';
-import { TeamHeader, MembersGrid } from '@app/features/team/TeamView';
+import { TeamHeader, MembersGrid, TeamFormModal, useTeamForm } from '@app/features/team';
 
 export const TeamView = () => {
   // In a real app, you'd fetch team data based on the ID from params
   const { teamId } = useParams<{ teamId: string }>();
   console.log('Team ID:', teamId); // TODO: Remove when implementing real data fetching
   const [teamDetails] = useState(MOCK_TEAM_DETAILS);
+  const { formState, openEditForm, closeForm, handleSave, handleRemove } = useTeamForm();
 
   const handleManageMembers = () => {
     console.log('Manage members clicked');
@@ -15,8 +16,29 @@ export const TeamView = () => {
   };
 
   const handleEditTeam = () => {
-    console.log('Edit team clicked');
-    // TODO: Open edit team modal or navigate to edit page
+    // Convert team details to form format
+    const formData = {
+      id: teamDetails.id,
+      name: `Team ${teamDetails.teamNumber}`,
+      technologies: [
+        { id: 'react', name: 'React', color: 'bg-blue-500' },
+        { id: 'nodejs', name: 'Node.js', color: 'bg-emerald-600' },
+      ],
+      client: 'Enterprise Client',
+      status: 'in-progress',
+      startDate: teamDetails.project?.startDate || '2025-03-19',
+      endDate: '2025-06-19',
+      projectDescription: teamDetails.project?.description || 'Project description',
+      projectName: teamDetails.project?.name || 'Project Name',
+      githubUrls: ['https://github.com/company/project', 'https://github.com/company/project-docs'],
+      jiraUrls: [
+        'https://company.atlassian.net/browse/PROJ',
+        'https://company.atlassian.net/browse/PROJ-QA',
+      ],
+      budget: 200000,
+      priority: 'high' as const,
+    };
+    openEditForm(formData);
   };
 
   const handleSubmitReport = (memberId: string) => {
@@ -52,6 +74,16 @@ export const TeamView = () => {
             onChangePosition={handleChangePosition}
           />
         </div>
+
+        {/* Team Form Modal */}
+        <TeamFormModal
+          isOpen={formState.isOpen}
+          onClose={closeForm}
+          onSave={handleSave}
+          onRemove={handleRemove}
+          mode={formState.mode}
+          team={formState.team}
+        />
       </div>
     </div>
   );
