@@ -1,12 +1,18 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useFilteredTeams, TeamsControls, TeamsGrid, TeamsEmptyState } from '@app/features/team';
+import routeNames from '@app/routes/route-names';
 import { MOCK_TEAMS } from '@app/constants/teams';
 import { ViewMode } from '@app/types/team';
 import { useFilteredTeams, TeamsControls, TeamsGrid, TeamsEmptyState } from '@app/features/team';
-import routeNames from '@app/routes/route-names';
+
+export const Teams = () => {
+
+
 
 export const Teams = () => {
   const navigate = useNavigate();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
@@ -14,6 +20,8 @@ export const Teams = () => {
 
   const handleViewTeam = (teamId: number) => {
     navigate(routeNames.teamView({ teamId: teamId.toString() }));
+    console.log('View team:', teamId);
+    // TODO: Navigate to team details page
   };
 
   const handleEditTeam = (teamId: number) => {
