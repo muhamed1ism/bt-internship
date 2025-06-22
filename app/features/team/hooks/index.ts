@@ -1,0 +1,1 @@
+export { useFilteredTeams } from './useFilteredTeams';
