@@ -4,11 +4,6 @@ import { useFilteredTeams, TeamsControls, TeamsGrid, TeamsEmptyState } from '@ap
 import routeNames from '@app/routes/route-names';
 import { MOCK_TEAMS } from '@app/constants/teams';
 import { ViewMode } from '@app/types/team';
-import { useFilteredTeams, TeamsControls, TeamsGrid, TeamsEmptyState } from '@app/features/team';
-
-export const Teams = () => {
-
-
 
 export const Teams = () => {
   const navigate = useNavigate();
