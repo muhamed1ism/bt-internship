@@ -1,6 +1,6 @@
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
 import { experienceLevelType, PersonalInfoFormType } from '@app/types/types';
-import { EXPERIENCE_LEVELS } from '../fake-data';
+import { EXPERIENCE_LEVELS } from '@mocks/users';
 import {
   Select,
   SelectContent,

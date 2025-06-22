@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@app/components/ui/button';
-import { Label } from '@app/components/ui/label';
+// import { Label } from '@app/components/ui/label'; // Currently unused
 import { Badge } from '@app/components/ui/badge';
 import {
   Select,
@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from '@app/components/ui/select';
 import { Plus, X } from 'lucide-react';
-import { roles } from '../fake-data';
+import { MOCK_ROLES as roles } from '@mocks/users';
 
 interface RoleAssignmentFormProps {
   assignedRoles: string[];

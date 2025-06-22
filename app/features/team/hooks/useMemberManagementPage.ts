@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react';
-import { MOCK_TEAM_MEMBERS } from '@app/constants/member-management';
+import { MOCK_TEAM_MEMBER_CARDS } from '@app/__mocks__/team-members';
 import type { TeamMemberCard, ViewMode, MemberPosition } from '@app/types/member-management';
 
 export const useMemberManagementPage = () => {
-  const [members, setMembers] = useState<TeamMemberCard[]>(MOCK_TEAM_MEMBERS);
+  const [members, setMembers] = useState<TeamMemberCard[]>(MOCK_TEAM_MEMBER_CARDS);
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
 

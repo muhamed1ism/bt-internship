@@ -1,26 +1,14 @@
-export interface MemberPosition {
-  title: string;
-  level: string;
-  department: string;
-  isLead?: boolean;
-}
+import { BaseMember, Position, BaseStatus, Project } from './shared';
 
-export interface MemberProject {
+export interface MemberProject extends Pick<Project, 'name' | 'code' | 'role'> {
   name: string;
   code: string;
   role?: string;
 }
 
-export interface TeamMemberCard {
-  id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-  position: MemberPosition;
+export interface TeamMemberCard extends BaseMember {
   projects: MemberProject[];
-  joinDate: string;
-  status: 'active' | 'inactive' | 'pending';
-  skills: string[];
+  status: BaseStatus;
 }
 
 export interface MemberManagementProps {
@@ -37,9 +25,10 @@ export interface MemberManagementProps {
 export interface AddMemberFormData {
   name: string;
   email: string;
-  position: MemberPosition;
+  position: Position;
   projects: string[];
   startDate: string;
 }
 
-export type ViewMode = 'grid' | 'list';
+// Re-export shared types for backward compatibility
+export type { Position as MemberPosition, ViewMode } from './shared';

@@ -24,8 +24,8 @@ export const AVAILABLE_PROJECTS: MemberProject[] = [
   { name: 'Security Audit', code: 'Sec Aud 1' },
 ];
 
-// Mock team members
-export const MOCK_TEAM_MEMBERS: TeamMemberCard[] = [
+// Mock team members for member management (different structure from teams.ts)
+export const MOCK_TEAM_MEMBER_CARDS: TeamMemberCard[] = [
   {
     id: 'tm-001',
     name: 'Jonas Schn',

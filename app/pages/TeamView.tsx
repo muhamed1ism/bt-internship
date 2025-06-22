@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { MOCK_TEAM_DETAILS } from '@app/constants/team-members';
+import { MOCK_TEAM_DETAILS, createFormDataFromTeamDetails } from '@app/__mocks__/teams';
 import { TeamHeader, MembersGrid, TeamFormModal, useTeamForm } from '@app/features/team';
 
 export const TeamView = () => {
@@ -16,28 +16,8 @@ export const TeamView = () => {
   };
 
   const handleEditTeam = () => {
-    // Convert team details to form format
-    const formData = {
-      id: teamDetails.id,
-      name: `Team ${teamDetails.teamNumber}`,
-      technologies: [
-        { id: 'react', name: 'React', color: 'bg-blue-500' },
-        { id: 'nodejs', name: 'Node.js', color: 'bg-emerald-600' },
-      ],
-      client: 'Enterprise Client',
-      status: 'in-progress',
-      startDate: teamDetails.project?.startDate || '2025-03-19',
-      endDate: '2025-06-19',
-      projectDescription: teamDetails.project?.description || 'Project description',
-      projectName: teamDetails.project?.name || 'Project Name',
-      githubUrls: ['https://github.com/company/project', 'https://github.com/company/project-docs'],
-      jiraUrls: [
-        'https://company.atlassian.net/browse/PROJ',
-        'https://company.atlassian.net/browse/PROJ-QA',
-      ],
-      budget: 200000,
-      priority: 'high' as const,
-    };
+    // Use clean, backend-ready form data from mocks
+    const formData = createFormDataFromTeamDetails(teamDetails);
     openEditForm(formData);
   };
 

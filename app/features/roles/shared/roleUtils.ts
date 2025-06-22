@@ -1,4 +1,4 @@
-import { roles } from '../../users/fake-data';
+import { MOCK_ROLES as roles } from '@mocks/users';
 
 // Get combined permissions from multiple roles
 export const getCombinedRolePermissions = (roleNames: string[]) => {

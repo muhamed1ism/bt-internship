@@ -1,31 +1,11 @@
-export interface TeamMember {
-  id: string;
-  name: string;
-  email: string;
-  position: TeamPosition;
-  status: MemberStatus;
-  avatar?: string;
-  skills: string[];
-  joinDate: string;
+import { BaseMember, StatusObject, Project } from './shared';
+
+export interface TeamMember extends BaseMember {
+  status: StatusObject;
   lastActivity?: string;
 }
 
-export interface TeamPosition {
-  title: string;
-  level: string;
-  department: string;
-  isLead?: boolean;
-}
-
-export interface MemberStatus {
-  type: 'active' | 'in-progress' | 'pending' | 'completed' | 'inactive';
-  label: string;
-  color: string;
-}
-
-export interface TeamProject {
-  id: string;
-  name: string;
+export interface TeamProject extends Project {
   status: string;
   startDate: string;
   description: string;
@@ -52,4 +32,9 @@ export interface MemberCardProps {
   onChangePosition?: (memberId: string) => void;
 }
 
-export type MemberStatusType = 'active' | 'in-progress' | 'pending' | 'completed' | 'inactive';
+// Re-export shared types for backward compatibility
+export type {
+  Position as TeamPosition,
+  StatusObject as MemberStatus,
+  ExtendedStatus as MemberStatusType,
+} from './shared';

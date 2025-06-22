@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { fake_users } from '../fake-data';
+import { MOCK_USERS as fake_users } from '@mocks/users';
 
 import { SortDirection, UserModalType, UserType } from '../../../types/types';
 
@@ -74,6 +74,7 @@ export default function UserTable() {
   };
 
   const handleSavePermissions = (updatedUser: UserType) => {
+    console.log(updatedUser);
     // setFilteredUsers(users.map((user) => (user.id === updatedUser.id ? updatedUser : user)));
   };
 
@@ -134,8 +135,8 @@ export default function UserTable() {
               {USER_TABLE_COLUMNS.map((key) => (
                 <SortableHeader
                   key={key}
-                  column={key}
-                  sortKey={sortConfig.key}
+                  column={key as keyof UserType}
+                  sortKey={sortConfig.key as keyof UserType}
                   direction={sortConfig.direction}
                   onSort={handleSort}
                 />

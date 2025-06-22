@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from '@app/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@app/components/ui/card';
-import { fake_availableBuckets } from '../fake-data';
+import { MOCK_AVAILABLE_BUCKETS as fake_availableBuckets } from '@mocks/users';
 
 type AvailableBucket = {
   id: string;

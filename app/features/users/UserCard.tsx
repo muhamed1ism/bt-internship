@@ -1,9 +1,9 @@
-import { UserCardProps } from '@app/components/types/user-card.types';
+import type { UserCardProps } from '@app/types/shared';
 import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
 import { Button } from '../../components/ui/button';
 import { Card, CardFooter } from '../../components/ui/card';
 import { UserSkill } from './UserSkill';
-import { FAKE_USERCARD } from '@app/constants/example';
+import { FAKE_USERCARD } from '@app/__mocks__/users';
 
 export const UserCard = ({ userInfo }: { userInfo: UserCardProps }) => {
   const user = userInfo || FAKE_USERCARD;

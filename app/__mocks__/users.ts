@@ -1,6 +1,44 @@
-import { RoleType, UserType } from '../../types/types';
+import type { Role as RoleType } from '@app/types/shared';
+import type { UserType } from '@app/types/types';
 
-export const fake_users: UserType[] = [
+// All available permissions
+export const allPermissions = {
+  'User Management': [
+    'user.create',
+    'user.edit',
+    'user.delete',
+    'user.view',
+    'user.assign_role',
+    'user.assign_permission',
+    'user.view_permissions',
+  ],
+  'Bucket Management': ['bucket.level.assign_user'],
+  Dashboards: ['dashboard.admin.view', 'dashboard.team_lead.view', 'dashboard.user.view'],
+  'Evaluation & Promotions': [
+    'evaluation.create',
+    'evaluation.view',
+    'evaluation.comment',
+    'evaluation.promote',
+    'evaluation.summary.view',
+    'evaluation.report.download',
+  ],
+  Reports: [
+    'report.user.view',
+    'report.user.summary',
+    'report.user.modal_view',
+    'report.user.write',
+  ],
+  'Roles & Permissions': [
+    'role.create',
+    'role.edit',
+    'role.delete',
+    'role.view',
+    'permission.view_all',
+  ],
+};
+
+// Standardized naming: MOCK_USERS instead of fake_users
+export const MOCK_USERS: UserType[] = [
   {
     id: '001',
     firstName: 'John',
@@ -138,7 +176,7 @@ export const fake_users: UserType[] = [
   },
 ];
 
-export const fake_availableBuckets = [
+export const MOCK_AVAILABLE_BUCKETS = [
   {
     id: 'software-engineer',
     name: 'Software Engineer',
@@ -191,11 +229,7 @@ export const fake_availableBuckets = [
   },
 ];
 
-// Import allPermissions from constants to avoid duplication
-import { allPermissions } from '@app/constants/constants';
-export { allPermissions };
-
-export const roles: RoleType[] = [
+export const MOCK_ROLES: RoleType[] = [
   {
     id: '1',
     name: 'Admin',
@@ -254,7 +288,7 @@ export const roles: RoleType[] = [
   },
 ];
 
-export const availableRoles = [
+export const MOCK_AVAILABLE_ROLES = [
   { id: 'admin', name: 'Admin', description: 'Full system access' },
   { id: 'editor', name: 'Editor', description: 'Can edit content but not settings' },
   { id: 'viewer', name: 'Viewer', description: 'Read-only access' },
@@ -269,3 +303,21 @@ export const EXPERIENCE_LEVELS = [
   { value: 'senior', label: 'Senior (5+ Yr.)' },
   { value: 'lead', label: 'Lead (8+ Yr.)' },
 ];
+
+// Default user card for component development
+export const FAKE_USERCARD = {
+  name: 'John Doe',
+  avatarUrl: '/placeholder-avatar.jpg',
+  skills: [
+    { title: 'React', level: 'Senior' },
+    { title: 'TypeScript', level: 'Intermediate' },
+    { title: 'Node.js', level: 'Advanced' },
+  ],
+  currentGoals: [{ title: 'Software Engineer', level: 'Level 3' }],
+};
+
+// Backward compatibility - export with old names
+export const fake_users = MOCK_USERS;
+export const roles = MOCK_ROLES;
+export const availableRoles = MOCK_AVAILABLE_ROLES;
+export const fake_availableBuckets = MOCK_AVAILABLE_BUCKETS;

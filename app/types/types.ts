@@ -1,36 +1,21 @@
+import { Role, BaseStatus, ExperienceLevel } from './shared';
+
+// User-specific types
 export interface UserType {
-  password: string;
-  linkedin?: string;
-  github?: string;
-  experienceLevel?: string;
-  phoneNumber?: string;
-  dateOfBirth?: string;
   id: string;
   firstName: string;
   lastName: string;
   email: string;
+  password: string;
   role: string;
-  status: 'active' | 'inactive' | 'pending';
-  customRole?: RoleType;
+  status: BaseStatus;
+  experienceLevel?: ExperienceLevel;
+  phoneNumber?: string;
+  dateOfBirth?: string;
+  linkedin?: string;
+  github?: string;
+  customRole?: Role;
 }
-
-export type SortConfig = {
-  key: keyof UserType | null;
-  direction: SortDirection;
-};
-
-export enum SortDirection {
-  Ascending = 'ascending',
-  Descending = 'descending',
-}
-
-export type RoleType = {
-  id: string;
-  name: string;
-  permissions: {
-    [category: string]: string[];
-  };
-};
 
 export interface PersonalInfoFormType {
   firstName: string;
@@ -40,11 +25,18 @@ export interface PersonalInfoFormType {
   confirmPassword: string;
   dateOfBirth?: string;
   phoneNumber?: string;
-  experienceLevel: experienceLevelType;
+  experienceLevel: ExperienceLevel;
   github?: string;
   linkedin?: string;
 }
 
-export type UserModalType = 'personal' | 'skills' | 'roles';
+// Re-export shared types for backward compatibility
+export type {
+  Role as RoleType,
+  SortConfig,
+  UserModalType,
+  ExperienceLevel as experienceLevelType,
+} from './shared';
 
-export type experienceLevelType = 'intern' | 'junior' | 'medior' | 'senior' | 'lead';
+// Export enum directly (not as type) so it can be used as value
+export { SortDirection } from './shared';
