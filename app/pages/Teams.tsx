@@ -4,6 +4,7 @@ import { ViewMode } from '@app/types/team';
 import { useFilteredTeams, TeamsControls, TeamsGrid, TeamsEmptyState } from '@app/features/team';
 
 export const Teams = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
