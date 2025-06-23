@@ -21,7 +21,7 @@ import {
   FormMessage,
 } from '@app/components/ui/form';
 import { Trash2, Users, DollarSign } from 'lucide-react';
-import { teamFormSchema, TeamFormData } from '@app/schemas/team-form';
+import { teamSchema, TeamFormValues } from '@app/schemas';
 import { TEAM_STATUS_OPTIONS, PRIORITY_OPTIONS, DEFAULT_TEAM_FORM } from '@app/constants/team-form';
 import { TeamFormProps } from '@app/types/team-form';
 import { TechnologySelector } from './TechnologySelector';
@@ -30,12 +30,12 @@ import { MultiUrlInput } from './MultiUrlInput';
 
 export const TeamForm = ({ team, onSave, onRemove, onClose, mode }: TeamFormProps) => {
   const [showRemovalModal, setShowRemovalModal] = useState(false);
-  const form = useForm<TeamFormData>({
-    resolver: zodResolver(teamFormSchema),
+  const form = useForm<TeamFormValues>({
+    resolver: zodResolver(teamSchema.team),
     defaultValues: team || DEFAULT_TEAM_FORM,
   });
 
-  const onSubmit = (data: TeamFormData) => {
+  const onSubmit = (data: TeamFormValues) => {
     onSave(data);
   };
 
