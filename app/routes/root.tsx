@@ -36,50 +36,7 @@ const routesForNotAuthenticated = [
     path: '/',
     element: <UnauthenticatedRoute />,
     children: [
-      {
-        path: routeNames.root(),
-        element: <Home />,
-      },
-      {
-        path: routeNames.people(),
-        element: <People />,
-      },
-      {
-        path: routeNames.buckets(),
-        element: <Buckets />,
-      },
-      {
-        path: routeNames.bucketDefinition(),
-        element: <BucketView />,
-      },
-      {
-        path: routeNames.evaluation(),
-        element: <Evaluation />,
-      },
-      {
-        path: routeNames.teams(),
-        element: <Teams />,
-      },
-      {
-        path: routeNames.teamView(),
-        element: <TeamView />,
-      },
-      {
-        path: routeNames.teamMembers(),
-        element: <TeamMembers />,
-      },
-      {
-        path: routeNames.users(),
-        element: <Users />,
-      },
-      {
-        path: routeNames.roles(),
-        element: <Roles />,
-      },
-      {
-        path: routeNames.contact(),
-        element: <Contact />,
-      },
+      { path: routeNames.root(), element: <Home /> },
       { path: routeNames.login(), element: <Login /> },
       { path: routeNames.register(), element: <Register /> },
       { path: routeNames.googleRegister(), element: <GoogleRegister /> },

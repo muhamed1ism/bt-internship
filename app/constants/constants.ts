@@ -1,4 +1,7 @@
-import { RoleType, UserType } from '@app/types/types';
+import type { UserType } from '@app/types/types';
+
+// Re-export for backward compatibility
+export type { Role as RoleType } from '@app/types/shared';
 
 // User table columns for sorting and display
 export const USER_TABLE_COLUMNS: (keyof UserType)[] = [
@@ -10,40 +13,12 @@ export const USER_TABLE_COLUMNS: (keyof UserType)[] = [
   'status',
 ];
 
-export const allPermissions = {
-  'User Management': [
-    'user.create',
-    'user.edit',
-    'user.delete',
-    'user.view',
-    'user.assign_role',
-    'user.assign_permission',
-    'user.view_permissions',
-  ],
-  'Bucket Management': ['bucket.level.assign_user'],
-  Dashboards: ['dashboard.admin.view', 'dashboard.team_lead.view', 'dashboard.user.view'],
-  'Evaluation & Promotions': [
-    'evaluation.create',
-    'evaluation.view',
-    'evaluation.comment',
-    'evaluation.promote',
-    'evaluation.summary.view',
-    'evaluation.report.download',
-  ],
-  Reports: [
-    'report.user.view',
-    'report.user.summary',
-    'report.user.modal_view',
-    'report.user.write',
-  ],
-  'Roles & Permissions': [
-    'role.create',
-    'role.edit',
-    'role.delete',
-    'role.view',
-    'permission.view_all',
-  ],
-};
+// allPermissions has been moved to app/__mocks__/users.ts
+// Please update your imports to use the new location:
+// import { allPermissions } from '@app/__mocks__/users';
+
+// Backward compatibility re-export
+export { allPermissions } from '@app/__mocks__/users';
 
 export const TOOLS = [
   { name: 'React.js', bg: 'bg-blue-400' },
@@ -52,49 +27,16 @@ export const TOOLS = [
   { name: 'AWS', bg: 'bg-orange-500' },
 ];
 
-export const mockBuckets = [
-  { id: '1', title: 'Software Engineer', currentLevel: 2, isActive: true },
-  { id: '2', title: 'Data Engineer', currentLevel: 3, isActive: true },
-  { id: '3', title: 'AI Engineer', currentLevel: 2, isActive: true },
-  { id: '4', title: 'Software Engineer', currentLevel: 2, isActive: false },
-];
+// Mock data has been moved to app/__mocks__/buckets.ts
+// Please update your imports to use the new location:
+// import { mockBuckets } from '@app/__mocks__/buckets';
 
-export const initialRoles: RoleType[] = [
-  {
-    id: '1',
-    name: 'Admin',
-    permissions: {
-      'User Management': [
-        'user.create',
-        'user.edit',
-        'user.delete',
-        'user.view',
-        'user.assign_role',
-        'user.assign_permission',
-        'user.view_permissions',
-      ],
-      'Roles & Permissions': [
-        'role.create',
-        'role.edit',
-        'role.delete',
-        'role.view',
-        'permission.view_all',
-      ],
-      Dashboards: ['dashboard.admin.view', 'dashboard.team_lead.view', 'dashboard.user.view'],
-    },
-  },
-  {
-    id: '2',
-    name: 'CTO',
-    permissions: {
-      'User Management': ['user.view', 'user.assign_role'],
-      'Roles & Permissions': ['role.view'],
-      Dashboards: ['dashboard.admin.view'],
-      'Evaluation & Promotions': [
-        'evaluation.view',
-        'evaluation.summary.view',
-        'evaluation.report.download',
-      ],
-    },
-  },
-];
+// Backward compatibility re-export
+export { mockBuckets } from '@app/__mocks__/buckets';
+
+// initialRoles have been moved to app/__mocks__/users.ts as MOCK_ROLES
+// Please update your imports to use the new location:
+// import { MOCK_ROLES as initialRoles } from '@app/__mocks__/users';
+
+// Backward compatibility re-export
+export { MOCK_ROLES as initialRoles } from '@app/__mocks__/users';

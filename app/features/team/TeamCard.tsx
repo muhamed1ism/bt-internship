@@ -3,7 +3,7 @@ import { Button } from '../../components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '../../components/ui/avatar';
 import { Eye, Edit3, Users } from 'lucide-react';
 import { TeamCardProps } from '@app/types/team';
-import { DEFAULT_TEAM } from '@app/constants/teams';
+import { DEFAULT_TEAM } from '@mocks/teams';
 
 export const TeamCard = ({
   teamNumber,

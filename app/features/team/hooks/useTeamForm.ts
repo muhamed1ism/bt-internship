@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { TeamFormData } from '@app/schemas/team-form';
+import { TeamFormValues } from '@app/schemas';
 
 interface TeamFormState {
   isOpen: boolean;
   mode: 'create' | 'edit';
-  team?: TeamFormData & { id?: number };
+  team?: TeamFormValues & { id?: number };
 }
 
 export function useTeamForm() {
@@ -22,7 +22,7 @@ export function useTeamForm() {
     });
   };
 
-  const openEditForm = (team: TeamFormData & { id?: number }) => {
+  const openEditForm = (team: TeamFormValues & { id?: number }) => {
     setFormState({
       isOpen: true,
       mode: 'edit',
@@ -37,7 +37,7 @@ export function useTeamForm() {
     }));
   };
 
-  const handleSave = (data: TeamFormData) => {
+  const handleSave = (data: TeamFormValues) => {
     if (formState.mode === 'create') {
       console.log('Creating team:', data);
       // TODO: Implement team creation logic

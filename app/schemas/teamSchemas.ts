@@ -1,12 +1,12 @@
 import { z } from 'zod';
 
-export const technologySchema = z.object({
+const technologySchema = z.object({
   id: z.string(),
   name: z.string().min(1, 'Technology name is required'),
   color: z.string(),
 });
 
-export const teamFormSchema = z.object({
+const teamFormSchema = z.object({
   name: z
     .string()
     .min(1, 'Team name is required')
@@ -50,4 +50,10 @@ export const teamFormSchema = z.object({
   }),
 });
 
-export type TeamFormData = z.infer<typeof teamFormSchema>;
+export type TeamFormValues = z.infer<typeof teamFormSchema>;
+
+export const teamSchema = {
+  team: teamFormSchema,
+};
+
+export default teamSchema;

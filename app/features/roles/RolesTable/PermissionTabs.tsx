@@ -11,7 +11,7 @@ export function PermissionTabs({
   setActiveTab,
 }: {
   selectedPermissions: { [category: string]: string[] };
-  setSelectedPermissions: (permissions: { [category: string]: string[] }) => void;
+  setSelectedPermissions: React.Dispatch<React.SetStateAction<{ [category: string]: string[] }>>;
   activeTab: string;
   setActiveTab: (tab: string) => void;
 }) {
@@ -20,7 +20,7 @@ export function PermissionTabs({
       const updated = { ...prev };
       if (!updated[category]) updated[category] = [];
       if (updated[category].includes(permission)) {
-        updated[category] = updated[category].filter((p) => p !== permission);
+        updated[category] = updated[category].filter((p: string) => p !== permission);
         if (updated[category].length === 0) delete updated[category];
       } else {
         updated[category] = [...updated[category], permission];

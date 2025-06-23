@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_TEAMS } from '@app/constants/teams';
+import { MOCK_TEAMS, createTeamFormData } from '@mocks/teams';
 import { ViewMode } from '@app/types/team';
 import {
   useFilteredTeams,
@@ -28,32 +28,8 @@ export const Teams = () => {
   const handleEditTeam = (teamId: number) => {
     const team = MOCK_TEAMS.find((t) => t.id === teamId);
     if (team) {
-      // Convert team data to form format
-      const formData = {
-        id: team.id,
-        name: `Team ${team.teamNumber}`,
-        technologies: [
-          { id: 'react', name: 'React', color: 'bg-blue-500' },
-          { id: 'nodejs', name: 'Node.js', color: 'bg-emerald-600' },
-        ],
-        client: 'Sample Client',
-        status: 'in-progress',
-        startDate: '2025-03-19',
-        endDate: '2025-06-19',
-        projectDescription:
-          'This is a comprehensive project that involves building a modern web application using cutting-edge technologies and best practices.',
-        projectName: 'Cloud Migration Project',
-        githubUrls: [
-          'https://github.com/company/cloud-migration',
-          'https://github.com/company/migration-scripts',
-        ],
-        jiraUrls: [
-          'https://company.atlassian.net/browse/CM',
-          'https://company.atlassian.net/browse/CM-DOCS',
-        ],
-        budget: 150000,
-        priority: 'high' as const,
-      };
+      // Use clean, backend-ready form data from mocks
+      const formData = createTeamFormData(team, 'sample');
       openEditForm(formData);
     }
   };

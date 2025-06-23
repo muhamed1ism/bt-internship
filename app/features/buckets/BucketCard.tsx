@@ -2,7 +2,7 @@ import { Card, CardContent, CardFooter, CardHeader } from '../../components/ui/c
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
 import { useNavigate } from 'react-router-dom';
-import { FAKE_BUCKET } from '@app/constants/bucket';
+import { FAKE_BUCKET } from '@app/__mocks__/buckets';
 
 interface TempBucket {
   title: string;

@@ -18,7 +18,7 @@ import {
 } from '@app/components/ui/select';
 import { Badge } from '@app/components/ui/badge';
 import { Crown } from 'lucide-react';
-import { AVAILABLE_POSITIONS } from '@app/constants/member-management';
+import { AVAILABLE_POSITIONS } from '@mocks/team-members';
 import type { TeamMemberCard, MemberPosition } from '@app/types/member-management';
 
 interface PositionChangeModalProps {

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { TeamMemberCard } from '@app/types/member-management';
-import { MOCK_TEAM_MEMBERS } from '@app/constants/member-management';
+import { MOCK_TEAM_MEMBER_CARDS } from '@app/__mocks__/team-members';
 
 interface MemberManagementState {
   isOpen: boolean;
@@ -10,7 +10,7 @@ interface MemberManagementState {
 export function useMemberManagement() {
   const [state, setState] = useState<MemberManagementState>({
     isOpen: false,
-    members: MOCK_TEAM_MEMBERS,
+    members: MOCK_TEAM_MEMBER_CARDS,
   });
 
   const openMemberManagement = () => {

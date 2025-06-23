@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@app/components/ui/button';
 import { SidebarInset } from '@app/components/ui/sidebar';
-import { MOCK_TEAM_DETAILS } from '@app/constants/team-members';
+import { MOCK_TEAM_DETAILS } from '@mocks/teams';
 import type { TeamMemberCard } from '@app/types/member-management';
 import {
   MemberManagementControls,

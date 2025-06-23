@@ -20,7 +20,7 @@
     "baseUrl": "./",
     "paths": {
       "@app/*": ["app/*"],
-      "@mocks/*": ["mocks/*"],
+      "@mocks/*": ["app/__mocks__/*"],
       "@root/*": ["*"]
     }
   },
