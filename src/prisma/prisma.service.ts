@@ -19,10 +19,9 @@ export class PrismaService
     try {
       await this['$connect']();
       console.info(`Migrations Starting #${process.pid}`);
-      execSync(
-        `npx prisma migrate dev --schema ./prisma/schema.prisma --skip-generate`,
-        { stdio: 'inherit' },
-      );
+      execSync(`npx prisma migrate dev --schema=prisma/ --skip-generate`, {
+        stdio: 'inherit',
+      });
       console.info(`Migrations Finished #${process.pid}`);
 
       await runSeed();

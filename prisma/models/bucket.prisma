@@ -1,0 +1,35 @@
+model BucketCategory {
+  id           String        @id @default(uuid())
+  name         String        @unique
+  bucketLevels BucketLevel[]
+
+  @@map("bucket_categories")
+}
+
+model BucketLevel {
+  id           String         @id @default(uuid())
+  level        Int
+  expectations String[]
+  skills       String[]
+  tools        String[]
+  knowledge    String[]
+  toAdvance    String[]
+  categoryId   String
+  category     BucketCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  userBuckets UserBucket[]
+
+  @@unique([level, categoryId])
+  @@map("bucket_levels")
+}
+
+model UserBucket {
+  userId        String
+  bucketLevelId String
+
+  user   User        @relation(fields: [userId], references: [id])
+  bucket BucketLevel @relation(fields: [bucketLevelId], references: [id], onDelete: Cascade)
+
+  @@id([userId, bucketLevelId])
+  @@map("user_buckets")
+}

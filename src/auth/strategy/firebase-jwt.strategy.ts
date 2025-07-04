@@ -48,6 +48,7 @@ export class FirebaseJwtStrategy extends PassportStrategy(
         lastName: user.lastName,
         phoneNumber: user.phoneNumber,
         dateOfBirth: user.dateOfBirth,
+        status: user.status,
       };
     } catch (error) {
       console.error('Token verification failed:', error);

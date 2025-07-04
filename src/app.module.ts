@@ -8,6 +8,9 @@ import { FirebaseModule } from './firebase/firebase.module';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { CaslModule } from './casl/casl.module';
+import { BucketModule } from './bucket/bucket.module';
+import { TeamModule } from './team/team.module';
+import { ReportModule } from './report/report.module';
 
 @Module({
   imports: [
@@ -17,6 +20,9 @@ import { CaslModule } from './casl/casl.module';
     FirebaseModule,
     UserModule,
     CaslModule,
+    BucketModule,
+    TeamModule,
+    ReportModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppConfigService],

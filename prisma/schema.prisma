@@ -5,9 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider        = "prisma-client-js"
-  output          = "../node_modules/.prisma/client"
-  previewFeatures = []
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -21,51 +20,4 @@ generator nestjsDto {
   outputToNestJsResourceStructure = "true"
   reExport                        = "true"
   fileNamingStyle                 = "kebab"
-}
-
-model User {
-  id          String   @id @default(uuid())
-  firebaseUid String   @unique
-  email       String   @unique
-  firstName   String
-  lastName    String
-  phoneNumber String
-  dateOfBirth DateTime @db.Date
-
-  updatedAt DateTime @default(now())
-  createdAt DateTime @updatedAt
-
-  role   Role   @relation(fields: [roleId], references: [id])
-  roleId String
-
-  @@map("users")
-}
-
-model Role {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  description String?
-  isDefault   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  users       User[]
-  permissions Permission[] @relation("RolePermissions")
-
-  @@map("roles")
-}
-
-model Permission {
-  id         String   @id @default(uuid())
-  action     String
-  subject    String
-  conditions Json?
-  reason     String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  roles Role[] @relation("RolePermissions")
-
-  @@unique([action, subject])
-  @@map("permissions")
 }
