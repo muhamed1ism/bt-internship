@@ -32,7 +32,7 @@ export const TeamView = () => {
   };
 
   return (
-    <div className="bg-background min-h-screen p-6">
+    <div className="min-h-screen bg-gray-100 p-6 pt-16">
       <div className="mx-auto max-w-7xl">
         {/* Team Header */}
         <TeamHeader

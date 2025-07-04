@@ -35,8 +35,8 @@ export const Teams = () => {
   };
 
   return (
-    <div className="bg-background min-h-screen p-6">
-      <div className="mx-auto max-w-7xl">
+    <div className="min-h-screen bg-gray-100 p-6">
+      <div className="mx-auto mt-4 max-w-7xl">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-foreground mb-2 text-3xl font-bold">Teams</h1>

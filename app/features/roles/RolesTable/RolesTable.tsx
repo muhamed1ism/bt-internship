@@ -62,26 +62,24 @@ export default function RolesTable() {
           <Input
             type="text"
             placeholder="Search..."
-            className="pr-4 pl-10"
+            className="bg-primary-foreground pr-4 pl-10"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
 
-        <div className="flex rounded-md border">
+        <div className="flex rounded-lg border-1">
           <Button
-            variant={viewMode === 'list' ? 'secondary' : 'ghost'}
             size="icon"
             onClick={() => setViewMode('list')}
-            className="rounded-r-none"
+            className={`rounded-r-none ${viewMode === 'list' ? 'text-primary-foreground bg-primary' : 'text-primary bg-primary-foreground hover:bg-primary/10'}`}
           >
             <List className="h-4 w-4" />
           </Button>
           <Button
-            variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
             size="icon"
             onClick={() => setViewMode('grid')}
-            className="rounded-l-none"
+            className={`rounded-l-none ${viewMode === 'grid' ? 'text-primary-foreground bg-primary' : 'text-primary bg-primary-foreground hover:bg-primary/10'}`}
           >
             <LayoutGrid className="h-4 w-4" />
           </Button>

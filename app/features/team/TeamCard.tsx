@@ -24,15 +24,15 @@ export const TeamCard = ({
   if (viewMode === 'list') {
     return (
       <Card className="group border-border/50 hover:border-border transition-all duration-200 hover:shadow-md">
-        <CardContent className="p-4">
+        <CardContent className="px-6 py-0">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center">
               {/* Compact Avatar Group */}
               <div className="relative">
                 {/* Three Aligned Avatar Circles */}
                 <div className="flex items-center justify-center">
                   {/* Left Avatar */}
-                  <Avatar className="relative z-10 h-8 w-8 border-2 border-white shadow-lg">
+                  <Avatar className="relative z-10 h-10 w-10 border-1 border-white">
                     <AvatarImage
                       src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${teamNumber}-1`}
                     />
@@ -42,7 +42,7 @@ export const TeamCard = ({
                   </Avatar>
 
                   {/* Center Avatar (Team Lead) - Overlapping */}
-                  <Avatar className="relative z-20 -mx-1.5 h-10 w-10 border-2 border-white shadow-lg">
+                  <Avatar className="relative z-20 -mx-1.5 h-14 w-14 border-3 border-white">
                     <AvatarImage
                       src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${teamLead.firstName}-${teamLead.lastName}`}
                     />
@@ -52,7 +52,7 @@ export const TeamCard = ({
                   </Avatar>
 
                   {/* Right Avatar */}
-                  <Avatar className="relative z-10 h-8 w-8 border-2 border-white shadow-lg">
+                  <Avatar className="relative z-10 h-10 w-10 border-1 border-white">
                     <AvatarImage
                       src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${teamNumber}-3`}
                     />
@@ -64,11 +64,11 @@ export const TeamCard = ({
               </div>
 
               {/* Team Info */}
-              <div className="flex-1">
-                <div className="flex items-center gap-4">
+              <div className="ml-6 flex-1">
+                <div className="flex flex-col items-center gap-4">
                   <div>
-                    <h3 className="text-foreground text-lg font-bold">Team {teamNumber}</h3>
-                    <div className="text-muted-foreground flex items-center text-sm">
+                    <h3 className="text-foreground ml-2 text-2xl font-bold">Team {teamNumber}</h3>
+                    <div className="text-muted-foreground ml-3 flex items-center text-sm">
                       <Users className="mr-1 h-3 w-3" />
                       <span>
                         {memberCount} member{memberCount !== 1 ? 's' : ''}
@@ -87,22 +87,22 @@ export const TeamCard = ({
             </div>
 
             {/* Actions */}
-            <div className="flex gap-2">
+            <div className="flex h-full flex-col gap-4">
               <Button
                 onClick={onView}
                 variant="outline"
-                size="sm"
+                size="lg"
                 className="group-hover:border-primary/50 transition-colors"
               >
-                <Eye className="mr-1 h-4 w-4" />
+                <Eye className="mr-1 h-6 w-6" />
                 View
               </Button>
               <Button
                 onClick={onEdit}
-                size="sm"
+                size="lg"
                 className="border-amber-500 bg-amber-500 text-white hover:border-amber-600 hover:bg-amber-600"
               >
-                <Edit3 className="mr-1 h-4 w-4" />
+                <Edit3 className="mr-1 h-6 w-6" />
                 Edit
               </Button>
             </div>
@@ -123,14 +123,14 @@ export const TeamCard = ({
   // Grid view variant (default)
   return (
     <Card className="group border-border/50 hover:border-border relative overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-lg">
-      <CardContent className="p-6">
+      <CardContent className="px-2 py-4">
         {/* Team Avatar Circles */}
         <div className="mb-6 flex items-center justify-center">
           <div className="relative">
             {/* Three Aligned Avatar Circles */}
             <div className="flex items-center justify-center">
               {/* Left Avatar */}
-              <Avatar className="relative z-10 h-10 w-10 border-2 border-white shadow-lg">
+              <Avatar className="relative z-10 h-12 w-12 border-1 border-white">
                 <AvatarImage
                   src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${teamNumber}-1`}
                 />
@@ -140,7 +140,7 @@ export const TeamCard = ({
               </Avatar>
 
               {/* Center Avatar (Team Lead) - Overlapping */}
-              <Avatar className="relative z-20 -mx-2 h-12 w-12 border-2 border-white shadow-lg">
+              <Avatar className="relative z-20 -mx-2 h-16 w-16 border-4 border-white">
                 <AvatarImage
                   src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${teamLead.firstName}-${teamLead.lastName}`}
                 />
@@ -150,7 +150,7 @@ export const TeamCard = ({
               </Avatar>
 
               {/* Right Avatar */}
-              <Avatar className="relative z-10 h-10 w-10 border-2 border-white shadow-lg">
+              <Avatar className="relative z-10 h-12 w-12 border-1 border-white">
                 <AvatarImage
                   src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${teamNumber}-3`}
                 />
@@ -168,9 +168,9 @@ export const TeamCard = ({
         </div>
 
         {/* Team Info */}
-        <div className="space-y-3 text-center">
+        <div className="cursor-pointer space-y-6 text-center" onClick={onView}>
           <div>
-            <h3 className="text-foreground mb-1 text-xl font-bold">Team {teamNumber}</h3>
+            <h3 className="text-foreground mb-1 text-2xl font-bold">Team {teamNumber}</h3>
             <div className="text-muted-foreground flex items-center justify-center text-sm">
               <Users className="mr-1 h-3 w-3" />
               <span>
@@ -188,20 +188,20 @@ export const TeamCard = ({
         </div>
       </CardContent>
 
-      <CardFooter className="px-6 pt-0 pb-6">
+      <CardFooter className="px-5 pt-0 pb-0">
         <div className="flex w-full gap-3">
           <Button
             onClick={onView}
             variant="outline"
-            size="sm"
-            className="group-hover:border-primary/50 flex-1 transition-colors"
+            size="default"
+            className="flex-1 transition-colors"
           >
             <Eye className="mr-1 h-4 w-4" />
             View
           </Button>
           <Button
             onClick={onEdit}
-            size="sm"
+            size="default"
             className="flex-1 border-amber-500 bg-amber-500 text-white hover:border-amber-600 hover:bg-amber-600"
           >
             <Edit3 className="mr-1 h-4 w-4" />

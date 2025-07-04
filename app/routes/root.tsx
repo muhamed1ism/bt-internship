@@ -52,7 +52,7 @@ const routesForAuthenticated = [
       { path: routeNames.dashboard(), element: <Dashboard /> },
       { path: routeNames.people(), element: <People /> },
       { path: routeNames.buckets(), element: <Buckets /> },
-      { path: routeNames.bucketDefinition(), element: <BucketView /> },
+      { path: routeNames.bucketView(), element: <BucketView /> },
       { path: routeNames.evaluation(), element: <Evaluation /> },
       { path: routeNames.teams(), element: <Teams /> },
       { path: routeNames.teamView(), element: <TeamView /> },
