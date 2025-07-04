@@ -1,0 +1,22 @@
+model User {
+  id          String     @id @default(uuid())
+  firebaseUid String     @unique
+  email       String     @unique
+  firstName   String
+  lastName    String
+  phoneNumber String
+  dateOfBirth DateTime   @db.Date
+  status      UserStatus @default(PENDING)
+
+  updatedAt DateTime @default(now())
+  createdAt DateTime @updatedAt
+
+  role            Role         @relation(fields: [roleId], references: [id])
+  roleId          String
+  buckets         UserBucket[]
+  teams           TeamMember[]
+  reports         Report[]     @relation("UserReports")
+  authoredReports Report[]     @relation("AuthorReports")
+
+  @@map("users")
+}

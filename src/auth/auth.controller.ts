@@ -7,8 +7,8 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('register')
-  register(@Body() dto: RegisterDto) {
-    return this.authService.register(dto);
+  register(@Body() userData: RegisterDto) {
+    return this.authService.register(userData);
   }
 
   @Get('google-signin')
@@ -19,8 +19,8 @@ export class AuthController {
   @Post('google-register')
   googleRegister(
     @Headers('authorization') authHeader: string,
-    @Body() dto: RegisterDto,
+    @Body() userData: RegisterDto,
   ) {
-    return this.authService.googleRegister(authHeader, dto);
+    return this.authService.googleRegister(authHeader, userData);
   }
 }

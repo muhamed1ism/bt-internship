@@ -1,5 +1,9 @@
 
+import {UserStatus} from '@prisma/client'
 import {Role} from '../../role/entities/role.entity'
+import {UserBucket} from '../../user-bucket/entities/user-bucket.entity'
+import {TeamMember} from '../../team-member/entities/team-member.entity'
+import {Report} from '../../report/entities/report.entity'
 
 
 export class User {
@@ -10,8 +14,13 @@ firstName: string ;
 lastName: string ;
 phoneNumber: string ;
 dateOfBirth: Date ;
+status: UserStatus ;
 updatedAt: Date ;
 createdAt: Date ;
 role?: Role ;
 roleId: string ;
+buckets?: UserBucket[] ;
+teams?: TeamMember[] ;
+reports?: Report[] ;
+authoredReports?: Report[] ;
 }

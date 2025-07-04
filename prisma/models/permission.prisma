@@ -1,0 +1,14 @@
+model Permission {
+  id         String   @id @default(uuid())
+  action     String
+  subject    String
+  conditions Json?
+  reason     String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  roles Role[] @relation("RolePermissions")
+
+  @@unique([action, subject])
+  @@map("permissions")
+}

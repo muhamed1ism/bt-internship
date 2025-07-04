@@ -5,4 +5,5 @@ export type User = {
   lastName: string;
   phoneNumber: string;
   dateOfBirth: Date;
+  status: string;
 };

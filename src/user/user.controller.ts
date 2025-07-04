@@ -1,4 +1,11 @@
-import { Controller, Get, UseGuards, ForbiddenException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  UseGuards,
+  ForbiddenException,
+  Put,
+  Param,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '@prisma/client';
 import { AbilitiesGuard } from '../casl/abilities/guard/abilities.guard';
@@ -42,5 +49,17 @@ export class UserController {
       );
 
     return filteredUsers;
+  }
+
+  @Put(':userId/activate')
+  async activateUser(@Param('userId') userId: string) {
+    await this.userService.activateUser(userId);
+    return { msg: 'User activated successfully' };
+  }
+
+  @Put(':userId/deactivate')
+  async deactivateUser(@Param('userId') userId: string) {
+    await this.userService.deactivateUser(userId);
+    return { msg: 'User deactivated successfully' };
   }
 }

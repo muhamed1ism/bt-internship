@@ -1,0 +1,42 @@
+model Team {
+  id                 String     @id @default(uuid())
+  name               String
+  clientName         String
+  status             TeamStatus @default(IN_PROGRESS)
+  startDate          DateTime   @default(now())
+  endDate            DateTime?
+  projectDescription String
+  documentation      String
+  githubLink         String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  technologies Technology[] @relation("TeamTechnologies")
+  members      TeamMember[]
+
+  @@map("teams")
+}
+
+model Technology {
+  id   String @id @default(uuid())
+  name String @unique
+
+  teams Team[] @relation("TeamTechnologies")
+
+  @@map("technologies")
+}
+
+model TeamMember {
+  id       String   @id @default(uuid())
+  position String
+  joinedAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+  teamId String
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, teamId])
+  @@map("team_members")
+}
