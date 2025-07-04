@@ -13,7 +13,7 @@ import { ViewProps } from './RolesTable';
 export function RoleTableListView({ roles, onEdit }: ViewProps) {
   return (
     <div className="overflow-hidden rounded-md border">
-      <Table>
+      <Table className="bg-primary-foreground rounded-lg">
         <TableHeader>
           <TableRow>
             <TableHead className="w-[80%]">Role</TableHead>

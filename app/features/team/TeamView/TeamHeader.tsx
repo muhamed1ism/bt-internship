@@ -31,16 +31,16 @@ export const TeamHeader = ({ teamDetails, onManageMembers, onEdit }: TeamHeaderP
 
   return (
     <Card className="mb-8">
-      <CardContent className="p-6">
-        <div className="flex flex-col gap-6 lg:flex-row">
+      <CardContent className="px-6 py-5">
+        <div className="flex h-full flex-col lg:flex-row">
           {/* Team Info Section */}
           <div className="flex-1">
-            <div className="mb-6 flex items-center gap-6">
+            <div className="mb-6 flex w-full flex-col items-center gap-6">
               {/* Team Avatar Circles */}
               <div className="relative">
                 <div className="flex items-center justify-center">
                   {/* Left Avatar */}
-                  <Avatar className="relative z-10 h-12 w-12 border-2 border-white shadow-lg">
+                  <Avatar className="relative z-10 h-12 w-12 border-1 border-white">
                     <AvatarImage
                       src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${teamDetails.teamNumber}-1`}
                     />
@@ -50,7 +50,7 @@ export const TeamHeader = ({ teamDetails, onManageMembers, onEdit }: TeamHeaderP
                   </Avatar>
 
                   {/* Center Avatar (Team Lead) */}
-                  <Avatar className="relative z-20 -mx-3 h-16 w-16 border-2 border-white shadow-lg">
+                  <Avatar className="relative z-20 -mx-3 h-16 w-16 border-4 border-white">
                     <AvatarImage
                       src={
                         teamDetails.teamLead.avatar ||
@@ -63,7 +63,7 @@ export const TeamHeader = ({ teamDetails, onManageMembers, onEdit }: TeamHeaderP
                   </Avatar>
 
                   {/* Right Avatar */}
-                  <Avatar className="relative z-10 h-12 w-12 border-2 border-white shadow-lg">
+                  <Avatar className="relative z-10 h-12 w-12 border-1 border-white">
                     <AvatarImage
                       src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${teamDetails.teamNumber}-3`}
                     />
@@ -76,10 +76,10 @@ export const TeamHeader = ({ teamDetails, onManageMembers, onEdit }: TeamHeaderP
 
               {/* Team Title and Stats */}
               <div className="flex-1">
-                <h1 className="text-foreground mb-2 text-3xl font-bold">
+                <h1 className="text-foreground mb-2 text-center text-3xl font-bold">
                   Team {teamDetails.teamNumber}
                 </h1>
-                <div className="text-muted-foreground mb-3 flex items-center gap-4 text-sm">
+                <div className="text-muted-foreground mb-3 flex items-center justify-center gap-4 text-sm">
                   <div className="flex items-center gap-1">
                     <Users className="h-4 w-4" />
                     <span>{teamDetails.stats.totalMembers} members</span>
@@ -99,31 +99,33 @@ export const TeamHeader = ({ teamDetails, onManageMembers, onEdit }: TeamHeaderP
                   <Badge className="bg-gray-500 text-white">On Hold</Badge>
                 </div>
               </div>
-            </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-3">
-              <Button
-                onClick={onManageMembers}
-                variant="outline"
-                className="group-hover:border-primary/50 transition-colors"
-              >
-                <Settings className="mr-2 h-4 w-4" />
-                Manage Members
-              </Button>
-              <Button
-                onClick={onEdit}
-                className="border-amber-500 bg-amber-500 text-white hover:border-amber-600 hover:bg-amber-600"
-              >
-                <Edit3 className="mr-2 h-4 w-4" />
-                Edit
-              </Button>
+              {/* Action Buttons */}
+              <div className="flex justify-center gap-3">
+                <Button
+                  onClick={onManageMembers}
+                  variant="outline"
+                  size="lg"
+                  className="group-hover:border-primary/50 transition-colors"
+                >
+                  <Settings className="mr-2 h-4 w-4" />
+                  Manage Members
+                </Button>
+                <Button
+                  onClick={onEdit}
+                  size="lg"
+                  className="border-amber-500 bg-amber-400 text-black hover:border-amber-600 hover:bg-amber-500"
+                >
+                  <Edit3 className="mr-2 h-4 w-4" />
+                  Edit
+                </Button>
+              </div>
             </div>
           </div>
 
           {/* Project Info Section */}
           {teamDetails.project && (
-            <div className="lg:w-80">
+            <div className="h-full lg:w-[50%]">
               <div className="bg-muted/50 rounded-lg p-4">
                 <div className="mb-3 flex items-center justify-between">
                   <h3 className="text-foreground font-semibold">Current Project</h3>

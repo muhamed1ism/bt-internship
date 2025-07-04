@@ -1,6 +1,6 @@
 import { Input } from '@app/components/ui/input';
 import { Button } from '@app/components/ui/button';
-import { Search, Grid3x3, List, Plus } from 'lucide-react';
+import { Search, Grid3x3, List, Plus, LayoutGrid } from 'lucide-react';
 import { ViewMode } from '@app/types/team';
 
 interface TeamsControlsProps {
@@ -21,43 +21,41 @@ export const TeamsControls = ({
   return (
     <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       {/* Search Bar */}
-      <div className="relative max-w-md flex-1">
+      <div className="relative w-full flex-1">
         <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
         <Input
           placeholder="Search teams or team leads..."
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-10"
+          className="bg-primary-foreground h-[36px] pl-10"
         />
       </div>
 
       {/* Create Team Button and View Mode Toggle */}
       <div className="flex items-center gap-2">
+        <div className="mr-3 flex rounded-lg border-1">
+          <Button
+            size="icon"
+            onClick={() => onViewModeChange('list')}
+            className={`rounded-r-none ${viewMode === 'list' ? 'text-primary-foreground bg-primary' : 'text-primary bg-primary-foreground hover:bg-primary/10'}`}
+          >
+            <List className="h-4 w-4" />
+          </Button>
+          <Button
+            size="icon"
+            onClick={() => onViewModeChange('grid')}
+            className={`rounded-l-none ${viewMode === 'grid' ? 'text-primary-foreground bg-primary' : 'text-primary bg-primary-foreground hover:bg-primary/10'}`}
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </Button>
+        </div>
+
         {onCreateTeam && (
           <Button onClick={onCreateTeam} className="flex items-center gap-2">
             <Plus className="h-4 w-4" />
             Create Team
           </Button>
         )}
-
-        <div className="ml-2 flex items-center gap-2 border-l pl-2">
-          <Button
-            variant={viewMode === 'grid' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => onViewModeChange('grid')}
-          >
-            <Grid3x3 className="h-4 w-4" />
-            Grid
-          </Button>
-          <Button
-            variant={viewMode === 'list' ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => onViewModeChange('list')}
-          >
-            <List className="h-4 w-4" />
-            List
-          </Button>
-        </div>
       </div>
     </div>
   );

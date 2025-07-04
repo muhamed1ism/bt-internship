@@ -4,9 +4,11 @@ import { BASE_URL, ENDPOINTS } from './api-config';
 import { RegisterFormValues } from '@app/schemas';
 
 export const registerApi = async (formData: RegisterFormValues) => {
+  const { uri, method } = ENDPOINTS.auth.register;
+
   try {
-    const res = await fetch(BASE_URL + ENDPOINTS.auth.register.uri, {
-      method: ENDPOINTS.auth.register.method,
+    const res = await fetch(BASE_URL + uri, {
+      method,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -40,9 +42,10 @@ export const googleSignInApi = async () => {
     await signInWithPopup(auth, googleProvider);
 
     const authHeaders = await getAuthHeaders();
+    const { uri, method } = ENDPOINTS.auth.googleSignIn;
 
-    const res = await fetch(BASE_URL + ENDPOINTS.auth.googleSignIn.uri, {
-      method: ENDPOINTS.auth.googleSignIn.method,
+    const res = await fetch(BASE_URL + uri, {
+      method,
       headers: {
         ...authHeaders,
       },
@@ -63,9 +66,10 @@ export const googleSignInApi = async () => {
 export const googleRegisterApi = async (formData: RegisterFormValues) => {
   try {
     const authHeaders = await getAuthHeaders();
+    const { uri, method } = ENDPOINTS.auth.googleRegister;
 
-    const res = await fetch(BASE_URL + ENDPOINTS.auth.googleRegister.uri, {
-      method: ENDPOINTS.auth.googleRegister.method,
+    const res = await fetch(BASE_URL + uri, {
+      method,
       headers: {
         'Content-Type': 'application/json',
         ...authHeaders,

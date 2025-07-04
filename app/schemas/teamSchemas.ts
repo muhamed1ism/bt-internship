@@ -1,5 +1,41 @@
 import { z } from 'zod';
 
+const createTeamFormSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  clientName: z.string().min(1, 'Client name is required'),
+  projectDescription: z.string().min(1, 'Project description is required'),
+  documentation: z.string().min(1, 'Documentation is required'),
+  githubLink: z.string().url('Invalid GitHub link'),
+  startDate: z.coerce.date({ required_error: 'Start date is required' }),
+  technologies: z.array(z.string()).min(1, 'At least one technology is required'),
+});
+
+const updateTeamFormSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  clientName: z.string().min(1, 'Client name is required'),
+  status: z.string().min(1, 'Status is required'),
+  startDate: z.coerce.date({ required_error: 'Start date is required' }),
+  endDate: z.coerce.date({ required_error: 'End date is required' }),
+  projectDescription: z.string().min(1, 'Project description is required'),
+  documentation: z.string().min(1, 'Documentation is required'),
+  githubLink: z.string().url('Invalid GitHub link'),
+  technologies: z.array(z.string()).min(1, 'At least one technology is required'),
+});
+
+const addMemberFormSchema = z.object({
+  position: z.string().min(1, 'Position is required'),
+  userId: z.string().min(1, 'User ID is required'),
+  teamId: z.string().min(1, 'Team ID is required'),
+});
+
+const addMembersFormSchema = z.object({
+  members: z.array(addMemberFormSchema).min(1, 'At least one member is required'),
+});
+
+const updateMemberPositionFormSchema = z.object({
+  position: z.string().min(3, 'Position name is required'),
+});
+
 const technologySchema = z.object({
   id: z.string(),
   name: z.string().min(1, 'Technology name is required'),
@@ -50,9 +86,17 @@ const teamFormSchema = z.object({
   }),
 });
 
+export type CreateTeamFormValues = z.infer<typeof createTeamFormSchema>;
+export type UpdateTeamFormValues = z.infer<typeof updateTeamFormSchema>;
+export type AddMembersFormValues = z.infer<typeof addMembersFormSchema>;
+export type UpdateMemberPositionFormValues = z.infer<typeof updateMemberPositionFormSchema>;
 export type TeamFormValues = z.infer<typeof teamFormSchema>;
 
 export const teamSchema = {
+  create: createTeamFormSchema,
+  update: updateTeamFormSchema,
+  addMembers: addMembersFormSchema,
+  updatePosition: updateMemberPositionFormSchema,
   team: teamFormSchema,
 };
 
