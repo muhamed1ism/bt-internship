@@ -22,6 +22,9 @@ import { Register } from '@app/pages/Register.tsx';
 import { GoogleRegister } from '@app/pages/GoogleRegister.tsx';
 import { Buckets } from '@app/pages/Buckets.tsx';
 import { BucketView } from '@app/pages/BucketView.tsx';
+// Test pages - will be role-based later
+import { CtoTicketTest } from '@app/pages/cto-ticket-test.tsx';
+import { EmployeeTicketTest } from '@app/pages/employee-ticket-test.tsx';
 
 const routesForPublic = [
   {
@@ -59,6 +62,9 @@ const routesForAuthenticated = [
       { path: routeNames.teamMembers(), element: <TeamMembers /> },
       { path: routeNames.users(), element: <Users /> },
       { path: routeNames.roles(), element: <Roles /> },
+      // Test pages - will be role-based later
+      { path: routeNames.ctoTicketTest(), element: <CtoTicketTest /> },
+      { path: routeNames.employeeTicketTest(), element: <EmployeeTicketTest /> },
     ],
   },
 ];
