@@ -40,6 +40,17 @@ declare global {
     chatMemory: Record<string, Array<{ sender: string; message: string; timestamp?: Date }>>;
     ticketStatuses: Record<string, TicketStatus>;
     statusNotifications: Record<string, Notification[]>;
+    unreadMessages: Record<
+      string,
+      Array<{
+        ticketId: string;
+        messageId: string;
+        timestamp: Date;
+        sender: string;
+        preview: string;
+      }>
+    >;
+    lastReadMessages: Record<string, string>; // ticketId -> lastReadMessageId
   }
 }
 
@@ -52,6 +63,9 @@ export const EmployeeTicketTest = () => {
   const [currentMessage, setCurrentMessage] = useState('');
   const [ticketStatuses, setTicketStatuses] = useState<Record<string, TicketStatus>>({});
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<'date' | 'status' | 'title'>('date');
 
   useEffect(() => {
     // Initialize global storage
@@ -61,6 +75,12 @@ export const EmployeeTicketTest = () => {
       }
       if (!window.statusNotifications) {
         window.statusNotifications = {};
+      }
+      if (!window.unreadMessages) {
+        window.unreadMessages = {};
+      }
+      if (!window.lastReadMessages) {
+        window.lastReadMessages = {};
       }
     }
 
@@ -191,6 +211,34 @@ export const EmployeeTicketTest = () => {
     }
   }, [selectedTicket]);
 
+  // Listen for new messages from CTO for the selected ticket
+  useEffect(() => {
+    const handleNewMessage = (event: CustomEvent) => {
+      const { ticketId, message } = event.detail || {};
+      if (ticketId && message) {
+        // If this is a CTO message and we're not currently viewing this ticket, don't mark as read
+        if (message.sender === 'CTO' && (!selectedTicket || ticketId !== selectedTicket.id)) {
+          // The message will remain unread until the user clicks on the ticket
+          console.log(`📩 New CTO message for ticket ${ticketId} - keeping as unread`);
+        }
+
+        // Always reload chat history for the selected ticket
+        if (selectedTicket && ticketId === selectedTicket.id) {
+          loadChatHistory(ticketId);
+        }
+
+        // Force a re-render to update notification badges
+        setAvailableTickets((prev) => [...prev]);
+      }
+    };
+
+    window.addEventListener('newChatMessage', handleNewMessage as EventListener);
+
+    return () => {
+      window.removeEventListener('newChatMessage', handleNewMessage as EventListener);
+    };
+  }, [selectedTicket, setAvailableTickets]);
+
   // Load tickets without auto-selection (for periodic refresh)
   const loadAvailableTickets = () => {
     if (typeof window !== 'undefined' && window.mockTickets && window.mockTickets.length > 0) {
@@ -233,13 +281,44 @@ export const EmployeeTicketTest = () => {
     }
   };
 
+  // Function to get unread CTO messages count for a ticket
+  const getUnreadCtoMessagesCount = (ticketId: string) => {
+    if (typeof window === 'undefined') return 0;
+
+    const messages = window.chatHistory[ticketId] || [];
+    const ctoMessages = messages.filter((msg) => msg.sender === 'CTO');
+
+    // Get the last read message ID for this ticket
+    const lastReadMessageId = window.lastReadMessages?.[ticketId];
+
+    if (!lastReadMessageId) {
+      // If no messages have been read, all CTO messages are unread
+      return ctoMessages.length;
+    }
+
+    // Find the index of the last read message
+    const lastReadIndex = messages.findIndex((msg) => msg.id === lastReadMessageId);
+
+    if (lastReadIndex === -1) {
+      // If last read message not found, consider all CTO messages as unread
+      return ctoMessages.length;
+    }
+
+    // Count CTO messages that came after the last read message
+    const unreadCtoMessages = messages
+      .slice(lastReadIndex + 1)
+      .filter((msg) => msg.sender === 'CTO');
+
+    return unreadCtoMessages.length;
+  };
+
   const sendMessage = () => {
     if (!currentMessage.trim() || !selectedTicket) return;
 
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
       ticketId: selectedTicket.id,
-      sender: 'Employee',
+      sender: selectedTicket.employeeName, // Use the actual employee name
       message: currentMessage.trim(),
       timestamp: new Date(),
       type: 'employee',
@@ -262,13 +341,17 @@ export const EmployeeTicketTest = () => {
         window.chatMemory[selectedTicket.id] = [];
       }
       window.chatMemory[selectedTicket.id].push({
-        sender: 'Employee',
+        sender: selectedTicket.employeeName, // Use the actual employee name
         message: currentMessage.trim(),
         timestamp: new Date(),
       });
 
       // Trigger real-time update
-      window.dispatchEvent(new CustomEvent('newChatMessage'));
+      window.dispatchEvent(
+        new CustomEvent('newChatMessage', {
+          detail: { ticketId: selectedTicket.id, message: newMessage },
+        }),
+      );
     }
 
     setCurrentMessage('');
@@ -368,6 +451,67 @@ export const EmployeeTicketTest = () => {
     }
   };
 
+  // Filter and sort tickets
+  const filteredAndSortedTickets = availableTickets
+    .filter(
+      (ticket) =>
+        ticket.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        ticket.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        ticket.employeeName.toLowerCase().includes(searchTerm.toLowerCase()),
+    )
+    .sort((a, b) => {
+      // Priority 1: Tickets with unread CTO messages first
+      const aUnreadCount = getUnreadCtoMessagesCount(a.id);
+      const bUnreadCount = getUnreadCtoMessagesCount(b.id);
+
+      if (aUnreadCount !== bUnreadCount) {
+        return bUnreadCount - aUnreadCount; // More unread first
+      }
+
+      // Priority 2: Apply regular sorting for tickets with same unread status
+      switch (sortBy) {
+        case 'date':
+          return new Date(b.assignedAt).getTime() - new Date(a.assignedAt).getTime();
+        case 'status': {
+          const statusA = ticketStatuses[a.id] || 'assigned';
+          const statusB = ticketStatuses[b.id] || 'assigned';
+          return statusA.localeCompare(statusB);
+        }
+        case 'title':
+          return a.title.localeCompare(b.title);
+        default:
+          return 0;
+      }
+    });
+
+  const getStatusIcon = (status: TicketStatus) => {
+    switch (status) {
+      case 'assigned':
+        return '📋';
+      case 'in_progress':
+        return '⚡';
+      case 'finished':
+        return '✅';
+      case 'reviewed':
+        return '🎉';
+      default:
+        return '📋';
+    }
+  };
+
+  const getTimeAgo = (date: Date) => {
+    const now = new Date();
+    const diff = now.getTime() - new Date(date).getTime();
+    const minutes = Math.floor(diff / (1000 * 60));
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) return `${days}d ago`;
+    if (hours > 0) return `${hours}h ago`;
+    if (minutes > 0) return `${minutes}m ago`;
+    return 'Just now';
+  };
+
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -376,6 +520,30 @@ export const EmployeeTicketTest = () => {
       hour: '2-digit',
       minute: '2-digit',
     });
+  };
+
+  // Function to mark ticket as read and clear notifications
+  const markTicketAsRead = (ticketId: string) => {
+    if (typeof window !== 'undefined') {
+      // Clear any unread indicators for this ticket in global state
+      if (window.unreadMessages && window.unreadMessages[ticketId]) {
+        delete window.unreadMessages[ticketId];
+      }
+
+      // Mark last read message - this is crucial for proper read state tracking
+      const messages = window.chatHistory[ticketId] || [];
+      if (messages.length > 0) {
+        window.lastReadMessages = window.lastReadMessages || {};
+        window.lastReadMessages[ticketId] = messages[messages.length - 1].id;
+      }
+
+      // Trigger a custom event to notify other parts of the app about the read state change
+      window.dispatchEvent(
+        new CustomEvent('ticketMarkedAsRead', {
+          detail: { ticketId },
+        }),
+      );
+    }
   };
 
   return (
@@ -428,24 +596,125 @@ export const EmployeeTicketTest = () => {
               <p className="text-gray-600">Select a ticket to view details</p>
             </div>
 
-            <div className="max-h-96 space-y-2 overflow-y-auto">
-              {availableTickets.length === 0 ? (
-                <p className="py-8 text-center text-gray-500">No tickets assigned yet</p>
+            {/* Search and Controls */}
+            <div className="mb-4 space-y-3">
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <input
+                    type="text"
+                    placeholder="Search tickets... (Press / to focus)"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 pr-10 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  />
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                    <kbd className="inline-flex items-center rounded border border-gray-200 px-1 font-sans text-xs text-gray-400">
+                      /
+                    </kbd>
+                  </div>
+                </div>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as 'date' | 'status' | 'title')}
+                  className="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                >
+                  <option value="date">Sort by Date</option>
+                  <option value="status">Sort by Status</option>
+                  <option value="title">Sort by Title</option>
+                </select>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-500">
+                    {filteredAndSortedTickets.length} of {availableTickets.length} tickets
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`rounded-md p-2 transition-colors ${
+                      viewMode === 'list'
+                        ? 'bg-blue-100 text-blue-600'
+                        : 'text-gray-400 hover:text-gray-600'
+                    }`}
+                  >
+                    <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`rounded-md p-2 transition-colors ${
+                      viewMode === 'grid'
+                        ? 'bg-blue-100 text-blue-600'
+                        : 'text-gray-400 hover:text-gray-600'
+                    }`}
+                  >
+                    <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 6.707 6.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              className={`max-h-96 overflow-y-auto ${viewMode === 'grid' ? 'grid grid-cols-1 gap-3' : 'space-y-2'}`}
+            >
+              {filteredAndSortedTickets.length === 0 ? (
+                <p className="py-8 text-center text-gray-500">
+                  {searchTerm ? 'No tickets match your search' : 'No tickets assigned yet'}
+                </p>
               ) : (
-                availableTickets.map((ticket) => {
+                filteredAndSortedTickets.map((ticket) => {
                   const status = ticketStatuses[ticket.id] || 'assigned';
+                  const unreadCtoMessages = getUnreadCtoMessagesCount(ticket.id);
+                  const hasUnreadMessages = unreadCtoMessages > 0;
+
                   return (
                     <button
                       key={ticket.id}
-                      onClick={() => setSelectedTicket(ticket)}
-                      className={`w-full rounded-lg border p-4 text-left transition-colors ${
+                      onClick={() => {
+                        setSelectedTicket(ticket);
+                        markTicketAsRead(ticket.id);
+                      }}
+                      className={`relative w-full rounded-lg border p-4 text-left transition-all duration-200 ${
                         selectedTicket?.id === ticket.id
-                          ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
-                          : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                          ? 'border-blue-500 bg-blue-50 shadow-md ring-2 ring-blue-200'
+                          : hasUnreadMessages
+                            ? 'border-l-4 border-orange-500 bg-gradient-to-r from-orange-50 to-amber-50 shadow-lg ring-1 ring-orange-200 hover:from-orange-100 hover:to-amber-100'
+                            : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50 hover:shadow-sm'
                       }`}
                     >
+                      {/* Notification badge overlay */}
+                      {hasUnreadMessages && (
+                        <div className="absolute -top-2 -right-2 z-10">
+                          <div className="flex h-7 w-7 animate-bounce items-center justify-center rounded-full bg-gradient-to-r from-orange-500 to-red-500 text-xs font-bold text-white shadow-lg">
+                            {unreadCtoMessages}
+                          </div>
+                        </div>
+                      )}
+
                       <div className="mb-2 flex items-start justify-between">
                         <div className="flex items-center gap-2">
+                          {/* Enhanced notification indicator */}
+                          {hasUnreadMessages && (
+                            <div className="relative flex h-5 w-5 items-center justify-center">
+                              <div className="absolute h-5 w-5 animate-ping rounded-full bg-orange-400 opacity-75"></div>
+                              <div className="relative h-3 w-3 rounded-full bg-orange-500"></div>
+                            </div>
+                          )}
+
+                          <span className="text-lg">{getStatusIcon(status)}</span>
                           <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
                             {ticket.assignedBy}
                           </span>
@@ -454,6 +723,14 @@ export const EmployeeTicketTest = () => {
                           >
                             {getStatusText(status)}
                           </span>
+
+                          {/* Enhanced unread message count badge */}
+                          {hasUnreadMessages && (
+                            <span className="inline-flex animate-pulse items-center rounded-full bg-gradient-to-r from-orange-500 to-red-600 px-3 py-1 text-xs font-bold text-white shadow-md">
+                              🔔 {unreadCtoMessages} from CTO
+                            </span>
+                          )}
+
                           {selectedTicket?.id === ticket.id && (
                             <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
                               Selected
@@ -461,14 +738,24 @@ export const EmployeeTicketTest = () => {
                           )}
                         </div>
                         <span className="text-xs text-gray-500">
+                          {getTimeAgo(ticket.assignedAt)}
+                        </span>
+                      </div>
+                      <h3
+                        className={`mb-1 font-medium ${
+                          hasUnreadMessages ? 'font-bold text-gray-900' : 'text-gray-900'
+                        }`}
+                      >
+                        {hasUnreadMessages && '🔔 '}
+                        {ticket.title}
+                      </h3>
+                      <p className="line-clamp-2 text-sm text-gray-600">{ticket.description}</p>
+                      <div className="mt-2 flex items-center justify-between">
+                        <p className="text-xs text-gray-500">Assigned to: {ticket.employeeName}</p>
+                        <span className="text-xs text-gray-400">
                           {new Date(ticket.assignedAt).toLocaleDateString()}
                         </span>
                       </div>
-                      <h3 className="mb-1 font-medium text-gray-900">{ticket.title}</h3>
-                      <p className="line-clamp-2 text-sm text-gray-600">{ticket.description}</p>
-                      <p className="mt-2 text-xs text-gray-500">
-                        Assigned to: {ticket.employeeName}
-                      </p>
                     </button>
                   );
                 })
