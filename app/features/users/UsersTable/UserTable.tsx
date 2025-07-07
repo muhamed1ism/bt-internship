@@ -1,8 +1,4 @@
-import { useState } from 'react';
-
-import { MOCK_USERS as fake_users } from '@mocks/users';
-
-import { SortDirection, UserModalType, UserType } from '../../../types/types';
+import { SortDirection, UserType } from '../../../types/types';
 
 import {
   Table,
@@ -22,26 +18,26 @@ import {
 import { Badge } from '../../../components/ui/badge';
 import { Input } from '../../../components/ui/input';
 
-import { Search, X } from 'lucide-react';
+import { MoreVertical, Search, X } from 'lucide-react';
 
 import { getStatusColor } from '@app/utils/getStatusColor';
 
 import { useFilteredUsers } from '../hooks/useFilteredUsers';
 
-import { UserActionsDropdown } from './UserActionsDropdown ';
 import { SortableHeader } from './SortableHeader';
 import { PaginationControls } from './PaginationControls';
 import { USER_TABLE_COLUMNS } from '@app/constants/constants';
-import { SkillsModal } from '../SkillsModal/SkillsModal';
-import { UserPermissionsModal } from '../UserPermissionsModal/UserPermissionsModal';
-import { PersonalInfoModal } from '../PersonalInfoModal/PersonalInfoModal';
-
-const users = fake_users;
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@app/components/ui/dropdown-menu';
+import { Button } from '@app/components/ui/button';
+import { useGetAllUsers } from '@app/hooks/user/useGetAllUsers';
 
 export default function UserTable() {
-  const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
-  const [activeModal, setActiveModal] = useState<null | UserModalType>(null);
-  const [dropdownOpenUserId, setDropdownOpenUserId] = useState<string | number | null>(null);
+  const { data } = useGetAllUsers();
+  const users = data || [];
 
   const {
     filteredUsers,
@@ -71,21 +67,6 @@ export default function UserTable() {
           ? SortDirection.Descending
           : SortDirection.Ascending,
     }));
-  };
-
-  const handleSavePermissions = (updatedUser: UserType) => {
-    console.log(updatedUser);
-    // setFilteredUsers(users.map((user) => (user.id === updatedUser.id ? updatedUser : user)));
-  };
-
-  const openModal = (type: UserModalType, user: UserType) => {
-    setSelectedUser(user);
-    setActiveModal(type);
-  };
-
-  const handleOpenModal = (modalType: UserModalType, user: UserType) => {
-    openModal(modalType, user);
-    setDropdownOpenUserId(null);
   };
 
   return (
@@ -153,20 +134,21 @@ export default function UserTable() {
                   <TableCell>{user.firstName}</TableCell>
                   <TableCell>{user.lastName}</TableCell>
                   <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.role}</TableCell>
+                  <TableCell>{user.role.name}</TableCell>
                   <TableCell>
                     <Badge className={getStatusColor(user.status)} variant="outline">
                       {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <UserActionsDropdown
-                      open={dropdownOpenUserId === user.id}
-                      onOpenChange={(open) => setDropdownOpenUserId(open ? user.id : null)}
-                      onOpenPersonal={() => handleOpenModal('personal', user)}
-                      onOpenSkills={() => handleOpenModal('skills', user)}
-                      onOpenRoles={() => handleOpenModal('roles', user)}
-                    />
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end"></DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))
@@ -196,24 +178,6 @@ export default function UserTable() {
         Showing {filteredUsers.length > 0 ? indexOfFirstItem + 1 : 0} to{' '}
         {Math.min(indexOfLastItem, filteredUsers.length)} of {filteredUsers.length} users
       </div>
-
-      {/* MODALS */}
-      <PersonalInfoModal
-        open={activeModal === 'personal'}
-        onOpenChange={() => setActiveModal(null)}
-        user={selectedUser}
-      />
-      <SkillsModal
-        open={activeModal === 'skills'}
-        onOpenChange={() => setActiveModal(null)}
-        user={selectedUser}
-      />
-      <UserPermissionsModal
-        open={activeModal === 'roles'}
-        onOpenChange={() => setActiveModal(null)}
-        user={selectedUser}
-        onSave={handleSavePermissions}
-      />
     </div>
   );
 }

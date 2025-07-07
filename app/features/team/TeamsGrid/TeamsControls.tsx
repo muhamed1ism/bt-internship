@@ -27,7 +27,7 @@ export const TeamsControls = ({
           placeholder="Search teams or team leads..."
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="bg-primary-foreground h-[36px] pl-10"
+          className="bg-primary-foreground h-9 pl-10"
         />
       </div>
 

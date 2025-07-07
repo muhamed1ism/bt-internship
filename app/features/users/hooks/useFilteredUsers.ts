@@ -42,6 +42,10 @@ export function useFilteredUsers(users: UserType[]) {
         const aValue = a[sortConfig.key as keyof UserType];
         const bValue = b[sortConfig.key as keyof UserType];
 
+        if (aValue == null && bValue == null) return 0;
+        if (aValue == null) return sortConfig.direction === SortDirection.Ascending ? 1 : -1;
+        if (bValue == null) return sortConfig.direction === SortDirection.Ascending ? -1 : 1;
+
         if (aValue < bValue) {
           return sortConfig.direction === SortDirection.Ascending ? -1 : 1;
         }

@@ -1,20 +1,25 @@
 import { Role, BaseStatus, ExperienceLevel } from './shared';
 
 // User-specific types
+
+export type UserTableRow = UserType & {
+  actions: any;
+};
+
 export interface UserType {
   id: string;
+  email: string;
   firstName: string;
   lastName: string;
-  email: string;
-  password: string;
-  role: string;
-  status: BaseStatus;
-  experienceLevel?: ExperienceLevel;
   phoneNumber?: string;
   dateOfBirth?: string;
-  linkedin?: string;
-  github?: string;
-  customRole?: Role;
+  status: string;
+  role: UserRoleType;
+}
+
+export interface UserRoleType {
+  id: string;
+  name: string;
 }
 
 export interface PersonalInfoFormType {
