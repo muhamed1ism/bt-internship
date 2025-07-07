@@ -15,7 +15,7 @@ export const Buckets = () => {
 
   return (
     <div className="flex h-full w-full flex-col items-center bg-gray-100 px-24 pt-12">
-      <Input className="bg-primary-foreground h-[36px] w-full" placeholder="Search Buckets..." />
+      <Input className="bg-primary-foreground h-9 w-full" placeholder="Search Buckets..." />
       <div className="flex w-full justify-center">
         <div className="mx-2 grid w-full grid-cols-4 gap-x-8 gap-y-10 pt-14">
           {isLoading && <p>Loading...</p>}

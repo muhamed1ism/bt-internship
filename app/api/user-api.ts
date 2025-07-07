@@ -1,5 +1,6 @@
 import { getAuthHeaders } from '@app/lib/firebase';
 import { BASE_URL, ENDPOINTS } from './api-config';
+import { UserType } from '@app/types/types';
 
 interface User {
   id: string;
@@ -32,7 +33,7 @@ export const currentUserApi = async (): Promise<User | null> => {
   }
 };
 
-export const getAllUsersApi = async (): Promise<User[] | null> => {
+export const getAllUsersApi = async (): Promise<UserType[] | null> => {
   try {
     const authHeaders = await getAuthHeaders();
     const { uri, method } = ENDPOINTS.user.allUsers;
