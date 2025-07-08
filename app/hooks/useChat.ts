@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import { chatService, type ChatMessage } from '../services/chat.service';
+import { getTicketMessages, createMessage, type TicketMessage } from '../api/ticket-api';
 
 /**
  * React hook for chat functionality
  * @param ticketId - The ticket ID to initialize chat for
  */
-export const useChat = (ticketId: string) => {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+export const useChat = (ticketId: string | null) => {
+  const [messages, setMessages] = useState<TicketMessage[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -21,12 +21,9 @@ export const useChat = (ticketId: string) => {
     setError(null);
 
     try {
-      await chatService.initChat(ticketId);
-      setIsInitialized(true);
-
-      // Load existing chat history
-      const history = await chatService.getChatHistory(ticketId);
+      const history = await getTicketMessages(ticketId);
       setMessages(history);
+      setIsInitialized(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to initialize chat');
       console.error('Chat initialization failed:', err);
@@ -39,11 +36,11 @@ export const useChat = (ticketId: string) => {
    * Send a message
    */
   const sendMessage = useCallback(
-    async (message: string, sender: string) => {
+    async (message: string) => {
       if (!ticketId || !message.trim()) return;
 
       try {
-        const newMessage = await chatService.sendMessage(ticketId, message, sender);
+        const newMessage = await createMessage(ticketId, { content: message });
         setMessages((prev) => [...prev, newMessage]);
         return newMessage;
       } catch (err) {
@@ -56,32 +53,28 @@ export const useChat = (ticketId: string) => {
   );
 
   /**
-   * Subscribe to real-time messages
+   * Reset chat state when ticket changes
    */
   useEffect(() => {
-    if (!ticketId || !isInitialized) return;
-
-    const unsubscribe = chatService.subscribeToMessages(ticketId, (message) => {
-      setMessages((prev) => {
-        // Prevent duplicate messages
-        const exists = prev.some((msg) => msg.id === message.id);
-        if (exists) return prev;
-
-        return [...prev, message];
-      });
-    });
-
-    return unsubscribe;
-  }, [ticketId, isInitialized]);
-
-  /**
-   * Auto-initialize when ticketId changes
-   */
-  useEffect(() => {
-    if (ticketId && !isInitialized) {
+    if (ticketId !== null) {
+      setMessages([]);
+      setIsInitialized(false);
+      setError(null);
       initializeChat();
     }
-  }, [ticketId, isInitialized, initializeChat]);
+  }, [ticketId, initializeChat]);
+
+  /**
+   * Clear state when no ticket is selected
+   */
+  useEffect(() => {
+    if (ticketId === null) {
+      setMessages([]);
+      setIsInitialized(false);
+      setError(null);
+      setIsLoading(false);
+    }
+  }, [ticketId]);
 
   return {
     // State

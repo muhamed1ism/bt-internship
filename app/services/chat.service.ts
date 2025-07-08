@@ -1,9 +1,7 @@
-// Chat Service - Placeholder for GetStream/Twilio Conversations Integration
-// This file will contain all chat-related functionality
-//
-// Messages are stored in two places:
-// 1. window.chatMemory[ticketId] = [{ sender, message }] - Simple temporary memory structure
-// 2. Internal service state for full ChatMessage objects with timestamps and IDs
+// Chat Service - Backend Integration for Ticket Messages
+// This file contains chat functionality connected to the backend API
+
+import { getTicketMessages, createMessage, type TicketMessage } from '../api/ticket-api';
 
 // Types for chat functionality
 export interface ChatMessage {
@@ -56,27 +54,32 @@ export class ChatService {
   public async initChat(ticketId: string): Promise<void> {
     console.log(`Initializing chat for ticket ${ticketId}`);
 
-    // Initialize chatMemory structure
+    // Initialize chatMemory structure for fallback
     this.initializeChatMemory(ticketId);
 
-    // Here goes GetStream/Twilio integration
-    // Example implementations:
-    //
-    // For GetStream:
-    // const client = StreamChat.getInstance('YOUR_API_KEY');
-    // await client.connectUser(user, token);
-    // const channel = client.channel('messaging', ticketId);
-    // await channel.create();
-    //
-    // For Twilio Conversations:
-    // const client = new Client(token);
-    // await client.initialize();
-    // const conversation = await client.createConversation({ uniqueName: ticketId });
-    // await conversation.join();
-
     try {
-      // Mock initialization logic
-      await this.mockInitialization(ticketId);
+      // Load existing messages from backend
+      const messages = await getTicketMessages(ticketId);
+
+      // Store messages in active channel
+      const channel: ChatChannel = {
+        id: ticketId,
+        ticketId,
+        participants: [],
+        messages: messages.map(this.convertTicketMessageToChatMessage),
+      };
+
+      this.activeChannels.set(ticketId, channel);
+
+      // Also store in window.chatMemory for compatibility
+      if (typeof window !== 'undefined') {
+        window.chatMemory[ticketId] = messages.map((msg) => ({
+          sender: msg.sender,
+          message: msg.content,
+          timestamp: new Date(msg.timestamp),
+        }));
+      }
+
       this.isInitialized = true;
       console.log(`Chat initialized successfully for ticket ${ticketId}`);
     } catch (error) {
@@ -101,35 +104,46 @@ export class ChatService {
     // Initialize chatMemory if not exists
     this.initializeChatMemory(ticketId);
 
-    // Here goes GetStream/Twilio message sending
-    //
-    // For GetStream:
-    // const channel = client.channel('messaging', ticketId);
-    // await channel.sendMessage({ text: message });
-    //
-    // For Twilio Conversations:
-    // const conversation = await client.getConversationByUniqueName(ticketId);
-    // await conversation.sendMessage(message);
+    try {
+      // Send message to backend
+      const ticketMessage = await createMessage(ticketId, { content: message });
 
-    const newMessage: ChatMessage = {
-      id: Date.now().toString(),
-      sender,
-      message,
-      timestamp: new Date(),
+      // Convert to ChatMessage format
+      const newMessage = this.convertTicketMessageToChatMessage(ticketMessage);
+
+      // Store in window.chatMemory for compatibility
+      if (typeof window !== 'undefined') {
+        window.chatMemory[ticketId].push({
+          sender: newMessage.sender,
+          message: newMessage.message,
+          timestamp: newMessage.timestamp,
+        });
+      }
+
+      // Store in active channel
+      const channel = this.activeChannels.get(ticketId);
+      if (channel) {
+        channel.messages.push(newMessage);
+      }
+
+      return newMessage;
+    } catch (error) {
+      console.error(`Failed to send message to ticket ${ticketId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Convert TicketMessage to ChatMessage format
+   * @param ticketMessage - The backend message format
+   */
+  private convertTicketMessageToChatMessage(ticketMessage: TicketMessage): ChatMessage {
+    return {
+      id: ticketMessage.id,
+      sender: ticketMessage.sender,
+      message: ticketMessage.content,
+      timestamp: new Date(ticketMessage.timestamp),
     };
-
-    // Store in window.chatMemory
-    if (typeof window !== 'undefined') {
-      window.chatMemory[ticketId].push({ sender, message });
-    }
-
-    // Store in mock channel
-    const channel = this.activeChannels.get(ticketId);
-    if (channel) {
-      channel.messages.push(newMessage);
-    }
-
-    return newMessage;
   }
 
   /**
@@ -142,29 +156,46 @@ export class ChatService {
     // Initialize chatMemory if not exists
     this.initializeChatMemory(ticketId);
 
-    // Here goes GetStream/Twilio message history fetching
-    //
-    // For GetStream:
-    // const channel = client.channel('messaging', ticketId);
-    // const messages = await channel.query({ messages: { limit: 50 } });
-    //
-    // For Twilio Conversations:
-    // const conversation = await client.getConversationByUniqueName(ticketId);
-    // const messages = await conversation.getMessages();
+    try {
+      // Fetch messages from backend
+      const messages = await getTicketMessages(ticketId);
 
-    // Read from window.chatMemory and convert to ChatMessage format
-    if (typeof window !== 'undefined' && window.chatMemory && window.chatMemory[ticketId]) {
-      return window.chatMemory[ticketId].map((msg, index) => ({
-        id: `${ticketId}-${index}`,
-        sender: msg.sender,
-        message: msg.message,
-        timestamp: new Date(), // In real implementation, this would be the actual timestamp
-      }));
+      // Convert to ChatMessage format
+      const chatMessages = messages.map(this.convertTicketMessageToChatMessage);
+
+      // Update window.chatMemory for compatibility
+      if (typeof window !== 'undefined') {
+        window.chatMemory[ticketId] = messages.map((msg) => ({
+          sender: msg.sender,
+          message: msg.content,
+          timestamp: new Date(msg.timestamp),
+        }));
+      }
+
+      // Update active channel
+      const channel = this.activeChannels.get(ticketId);
+      if (channel) {
+        channel.messages = chatMessages;
+      }
+
+      return chatMessages;
+    } catch (error) {
+      console.error(`Failed to fetch chat history for ticket ${ticketId}:`, error);
+
+      // Fallback to local storage if backend fails
+      if (typeof window !== 'undefined' && window.chatMemory && window.chatMemory[ticketId]) {
+        return window.chatMemory[ticketId].map((msg, index) => ({
+          id: `${ticketId}-${index}`,
+          sender: msg.sender,
+          message: msg.message,
+          timestamp: msg.timestamp || new Date(),
+        }));
+      }
+
+      // Final fallback to active channel
+      const channel = this.activeChannels.get(ticketId);
+      return channel?.messages || [];
     }
-
-    // Fallback to mock channel if chatMemory is not available
-    const channel = this.activeChannels.get(ticketId);
-    return channel?.messages || [];
   }
 
   /**
@@ -236,24 +267,6 @@ export class ChatService {
         window.chatMemory[ticketId] = [];
       }
     }
-  }
-
-  /**
-   * Mock initialization for testing
-   */
-  private async mockInitialization(ticketId: string): Promise<void> {
-    // Simulate async initialization
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // Create mock channel
-    const mockChannel: ChatChannel = {
-      id: `channel-${ticketId}`,
-      ticketId,
-      participants: ['Employee', 'CTO'],
-      messages: [],
-    };
-
-    this.activeChannels.set(ticketId, mockChannel);
   }
 
   /**
