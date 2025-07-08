@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getMyUserBucketsApi, getAllCategoriesApi } from '@app/api/bucket-api';
 import { UserBucketLevel, BucketCategory } from '@app/types/bucket';
 
+// Interface for the transformed data that BucketCard expects
 interface TransformedBucket {
   id: string;
   title: string;
@@ -32,16 +33,17 @@ export const useGetMyUserBuckets = () => {
     retry: 1,
   });
 
+  // Transform the data to match BucketCard's expected format
   const transformedBuckets: TransformedBucket[] | undefined = userBuckets?.map((userBucket) => {
     const category = categories?.find(cat => cat.id === userBucket.bucket.categoryId);
     const maxLevel = category?.bucketLevels?.length || 0;
     
     return {
-      id: userBucket.bucket.categoryId,
+      id: userBucket.bucket.categoryId, // Use categoryId as the main bucket ID
       title: userBucket.bucket.category.name,
       currentLevel: userBucket.bucket.level,
-      maxLevel,
-      isActive: true,
+      maxLevel, // This might need to be fetched from category levels in the future
+      isActive: true, // All assigned buckets are considered active
     };
   });
 

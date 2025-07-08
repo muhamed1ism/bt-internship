@@ -17,6 +17,7 @@ const BucketCard: React.FC<CardProps> = ({ title, currentLevel, isActive, id, ma
     navigate(routeNames.bucketView({ bucketId: id }));
   };
 
+  // Calculate progress percentage
   const progressPercentage = maxLevel > 0 ? (currentLevel / maxLevel) * 100 : 0;
 
   return (
@@ -28,11 +29,13 @@ const BucketCard: React.FC<CardProps> = ({ title, currentLevel, isActive, id, ma
       }`}
       onClick={handleClick}
     >
+      {/* Gradient accent for active cards */}
       {isActive && (
         <div className="from-primary via-primary/60 to-primary/40 absolute top-0 left-0 h-1 w-full bg-gradient-to-r" />
       )}
 
       <div className="flex flex-col gap-6">
+        {/* Title with improved typography */}
         <div className="space-y-1 min-h-[4.5rem] flex flex-col justify-center">
           <h1 className="group-hover:text-primary flex flex-col text-3xl leading-tight font-bold transition-colors duration-200">
             {title &&
@@ -46,6 +49,7 @@ const BucketCard: React.FC<CardProps> = ({ title, currentLevel, isActive, id, ma
 
         {isActive && (
           <>
+            {/* Progress section with visual indicator */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <p className="text-muted-foreground text-sm font-medium">Current Progress</p>
@@ -54,6 +58,7 @@ const BucketCard: React.FC<CardProps> = ({ title, currentLevel, isActive, id, ma
                 </span>
               </div>
 
+              {/* Progress bar */}
               <div className="bg-muted mb-4 h-2 w-full overflow-hidden rounded-full">
                 <div
                   className="from-primary to-primary/50 h-full rounded-full bg-gradient-to-r transition-all duration-500 ease-out"
@@ -61,6 +66,7 @@ const BucketCard: React.FC<CardProps> = ({ title, currentLevel, isActive, id, ma
                 />
               </div>
 
+              {/* Current level badge */}
               <div className="mb-6 flex items-center gap-4">
                 <div className="bg-accent text-accent-foreground flex h-11 w-11 flex-col items-center justify-center rounded-lg border-1 shadow-md shadow-black/10">
                   <p className="text-xs font-bold">LVL</p>
@@ -73,6 +79,7 @@ const BucketCard: React.FC<CardProps> = ({ title, currentLevel, isActive, id, ma
               </div>
             </div>
 
+            {/* Goals section with enhanced visual design */}
             <div className="space-y-3 flex flex-col h-32">
               <p className="text-muted-foreground text-center text-sm font-medium">
                 {currentLevel >= maxLevel ? 'Achievement Unlocked' : 'Upcoming Goals'}

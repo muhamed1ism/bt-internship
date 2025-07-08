@@ -85,7 +85,10 @@ export const useGetBucketDetails = (categoryId: string, userCurrentLevel: number
     enabled: !!categoryId,
   });
 
+  // Find the specific category
   const category = categories?.find((cat: BucketCategory) => cat.id === categoryId);
+  
+  // Transform the data
   const bucket: TransformedBucket | undefined = category 
     ? transformBucket(category, userCurrentLevel)
     : undefined;
