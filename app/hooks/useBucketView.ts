@@ -1,14 +1,23 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { Level, Bucket, BucketViewState, EditableField } from '@app/types/bucket';
-import { MOCK_BUCKETS, DEFAULT_EDITING_LEVEL } from '@app/constants/bucket';
+import { DEFAULT_EDITING_LEVEL } from '@app/constants/bucket';
+import { useGetBucketDetails } from '@app/hooks/bucket';
+import { useGetMyUserBuckets } from '@app/hooks/bucket';
 
 export const useBucketView = () => {
   const navigate = useNavigate();
   const { bucketId } = useParams();
 
-  // Mock bucket data lookup
-  const bucket: Bucket | undefined = bucketId ? MOCK_BUCKETS[bucketId] : undefined;
+  // Get user's current buckets to find the user's level for this category
+  const { buckets: userBuckets } = useGetMyUserBuckets();
+  
+  // Find the user's current level for this bucket category
+  const userBucket = userBuckets?.find(bucket => bucket.id === bucketId);
+  const userCurrentLevel = userBucket?.currentLevel || 1;
+
+  // Get real bucket data from API
+  const { bucket, isLoading, error } = useGetBucketDetails(bucketId || '', userCurrentLevel);
   const hasLevels = bucket && bucket.levels.length > 0;
 
   // State management
@@ -123,6 +132,8 @@ export const useBucketView = () => {
     // Data
     bucket,
     hasLevels,
+    isLoading,
+    error,
 
     // State
     ...state,

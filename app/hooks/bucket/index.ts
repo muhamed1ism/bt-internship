@@ -11,3 +11,4 @@ export * from './user/useAssignUserBuckets';
 export * from './user/useGetUserBucketsById';
 export * from './user/useGetMyUserBuckets';
 export * from './user/usePromoteUserBucket';
+export * from './useGetBucketDetails';

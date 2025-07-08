@@ -11,6 +11,8 @@ export const BucketViewContainer = () => {
     // Data
     bucket,
     hasLevels,
+    isLoading,
+    error,
 
     // State
     selectedLevel,
@@ -34,7 +36,38 @@ export const BucketViewContainer = () => {
     handleSaveBucket,
   } = useBucketView();
 
-  // Loading or error states could be handled here
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="bg-background min-h-screen">
+        <BucketHeader onNavigateBack={navigateBack} title="Loading..." />
+        <div className="container mx-auto px-6 py-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <h2 className="text-foreground mb-2 text-2xl font-bold">Loading Bucket</h2>
+            <p className="text-muted-foreground">Please wait while we fetch the bucket details...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="bg-background min-h-screen">
+        <BucketHeader onNavigateBack={navigateBack} title="Error" />
+        <div className="container mx-auto px-6 py-8">
+          <div className="text-center">
+            <h2 className="text-foreground mb-2 text-2xl font-bold">Failed to Load Bucket</h2>
+            <p className="text-muted-foreground">There was an error loading the bucket details. Please try again.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Bucket not found
   if (!bucket) {
     return (
       <div className="bg-background min-h-screen">

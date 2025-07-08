@@ -1,40 +1,47 @@
 import BucketCard from '../components/layout/bucketCard/BucketCard.tsx';
-import { Input } from '../components/ui/input.tsx';
-import { useGetCategories, useGetMyUserBuckets } from '@app/hooks/bucket/index.ts';
-import { BucketCategory, UserBucketLevel } from '@app/types/bucket.ts';
-
-function getMaxLevelForCategory(categories: BucketCategory[] | undefined, categoryId: string) {
-  const category = categories && categories.find((cat) => cat.id === categoryId);
-  if (!category) return 0;
-  return category.bucketLevels.length;
-}
+import { Input } from "../components/ui/input.tsx";
+import { useGetMyUserBuckets } from '@app/hooks/bucket';
+import { Spinner } from '@app/components/ui/spinner';
 
 export const Buckets = () => {
-  const { userBuckets, isLoading } = useGetMyUserBuckets();
-  const { categories } = useGetCategories();
+  const { buckets, isLoading, error } = useGetMyUserBuckets();
+
+  if (isLoading) {
+    return (
+      <div className="flex w-full h-screen items-center justify-center bg-gray-100">
+        <div className="flex flex-col items-center gap-4">
+          <Spinner size="large" />
+          <p className="text-muted-foreground">Loading your buckets...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex w-full h-screen items-center justify-center bg-gray-100">
+        <div className="flex flex-col items-center gap-4">
+          <p className="text-destructive">Failed to load buckets</p>
+          <p className="text-muted-foreground text-sm">Please try again later</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex h-full w-full flex-col items-center bg-gray-100 px-24 pt-12">
-      <Input className="bg-primary-foreground h-9 w-full" placeholder="Search Buckets..." />
-      <div className="flex w-full justify-center">
-        <div className="mx-2 grid w-full grid-cols-4 gap-x-8 gap-y-10 pt-14">
-          {isLoading && <p>Loading...</p>}
-          {userBuckets &&
-            userBuckets.map((userBucket: UserBucketLevel) => {
-              const maxLevel = getMaxLevelForCategory(categories, userBucket.bucket.categoryId);
-
-              return (
-                <BucketCard
-                  key={userBucket.bucketLevelId}
-                  id={userBucket.bucketLevelId}
-                  title={userBucket.bucket.category.name}
-                  currentLevel={userBucket.bucket.level}
-                  isActive={true}
-                  maxLevel={maxLevel}
-                />
-              );
-            })}
-        </div>
+    <div className="flex w-full h-screen flex-col flex-wrap items-center justify-start bg-gray-100 px-10 pt-10">
+      <Input className="w-full h-[4%]" placeholder="Search Buckets..."/>
+      <div className="flex w-full flex-wrap justify-between gap-y-10 px-10 pt-20">
+        {buckets?.map((bucket) => (
+          <BucketCard
+            key={bucket.id}
+            id={bucket.id}
+            title={bucket.title}
+            currentLevel={bucket.currentLevel}
+            maxLevel={bucket.maxLevel}
+            isActive={bucket.isActive}
+          />
+        ))}
       </div>
     </div>
   );
