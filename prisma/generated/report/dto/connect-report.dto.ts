@@ -1,5 +1,3 @@
-
-  export class ConnectReportDto {
-    id: string;
-  }
-  
+export class ConnectReportDto {
+  id: string;
+}

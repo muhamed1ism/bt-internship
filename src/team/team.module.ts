@@ -6,6 +6,6 @@ import { MemberModule } from './member/member.module';
 @Module({
   providers: [TeamService],
   controllers: [TeamController],
-  imports: [MemberModule]
+  imports: [MemberModule],
 })
 export class TeamModule {}

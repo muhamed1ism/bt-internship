@@ -1,9 +1,1 @@
-
-
-
-
-
-
-export class CreateUserBucketDto {
-  
-}
+export class CreateUserBucketDto {}

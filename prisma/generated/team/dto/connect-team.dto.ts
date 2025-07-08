@@ -1,5 +1,3 @@
-
-  export class ConnectTeamDto {
-    id: string;
-  }
-  
+export class ConnectTeamDto {
+  id: string;
+}

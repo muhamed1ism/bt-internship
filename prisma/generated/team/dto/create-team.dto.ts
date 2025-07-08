@@ -1,15 +1,8 @@
-
-
-
-
-
-
 export class CreateTeamDto {
   name: string;
-clientName: string;
-startDate: Date;
-endDate?: Date;
-projectDescription: string;
-documentation: string;
-githubLink: string;
+  clientName: string;
+  endDate?: Date;
+  projectDescription: string;
+  documentation: string;
+  githubLink: string;
 }

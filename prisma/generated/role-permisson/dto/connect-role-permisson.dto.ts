@@ -1,5 +1,1 @@
-
-  export class ConnectRolePermissonDto {
-    
-  }
-  
+export class ConnectRolePermissonDto {}

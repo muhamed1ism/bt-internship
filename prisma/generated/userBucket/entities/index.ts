@@ -1,2 +1,1 @@
-
 export * from './userBucket.entity';

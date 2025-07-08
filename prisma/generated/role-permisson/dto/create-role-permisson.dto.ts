@@ -1,9 +1,1 @@
-
-
-
-
-
-
-export class CreateRolePermissonDto {
-  
-}
+export class CreateRolePermissonDto {}

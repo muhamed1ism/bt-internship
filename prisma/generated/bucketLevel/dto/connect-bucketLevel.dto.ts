@@ -1,5 +1,3 @@
-
-  export class ConnectBucketLevelDto {
-    id: string;
-  }
-  
+export class ConnectBucketLevelDto {
+  id: string;
+}

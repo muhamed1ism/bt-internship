@@ -1,9 +1,7 @@
-
-import {BucketLevel} from '../../bucket-level/entities/bucket-level.entity'
-
+import { BucketLevel } from '../../bucket-level/entities/bucket-level.entity';
 
 export class BucketCategory {
-  id: string ;
-name: string ;
-bucketLevels?: BucketLevel[] ;
+  id: string;
+  name: string;
+  bucketLevels?: BucketLevel[];
 }

@@ -1,2 +1,1 @@
-
 export * from './bucketLevel.entity';

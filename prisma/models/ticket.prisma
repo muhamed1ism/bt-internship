@@ -1,0 +1,31 @@
+model Ticket {
+  id          String   @id @default(uuid())
+  title       String   @unique
+  description String
+  assignedAt  DateTime @default(now())
+  assignedBy  String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  employeeId String
+  employee   User      @relation(fields: [employeeId], references: [id])
+  messages   Message[]
+
+  @@map("tickets")
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  content   String
+  sender    String
+  timestamp DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ticketId   String
+  ticket     Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  senderId   String
+  senderUser User   @relation(fields: [senderId], references: [id])
+
+  @@map("messages")
+} 
