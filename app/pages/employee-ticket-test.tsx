@@ -1,4 +1,10 @@
 import { useState, useEffect } from 'react';
+import { ToastContainer, ToastNotification } from '../components/ui/toast-notification';
+import {
+  AnimatedBadge,
+  PulsingIndicator,
+  AnimatedTextBadge,
+} from '../components/ui/animated-badge';
 
 // Define the ticket type (matching the CTO test page)
 interface Ticket {
@@ -63,6 +69,7 @@ export const EmployeeTicketTest = () => {
   const [currentMessage, setCurrentMessage] = useState('');
   const [ticketStatuses, setTicketStatuses] = useState<Record<string, TicketStatus>>({});
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [toastNotifications, setToastNotifications] = useState<ToastNotification[]>([]);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'date' | 'status' | 'title'>('date');
@@ -216,10 +223,32 @@ export const EmployeeTicketTest = () => {
     const handleNewMessage = (event: CustomEvent) => {
       const { ticketId, message } = event.detail || {};
       if (ticketId && message) {
-        // If this is a CTO message and we're not currently viewing this ticket, don't mark as read
-        if (message.sender === 'CTO' && (!selectedTicket || ticketId !== selectedTicket.id)) {
-          // The message will remain unread until the user clicks on the ticket
-          console.log(`📩 New CTO message for ticket ${ticketId} - keeping as unread`);
+        // If this is a CTO message, show toast notification
+        if (message.sender === 'CTO') {
+          const ticket = availableTickets.find((t) => t.id === ticketId);
+          if (ticket) {
+            const toastNotification: ToastNotification = {
+              id: Date.now().toString(),
+              title: `New instruction from CTO in ticket '${ticket.title}'`,
+              sender: message.sender,
+              ticketTitle: ticket.title,
+              messagePreview:
+                message.message.slice(0, 80) + (message.message.length > 80 ? '...' : ''),
+              timestamp: new Date(),
+            };
+
+            setToastNotifications((prev) => [...prev, toastNotification]);
+
+            // Auto-remove toast after 8 seconds
+            setTimeout(() => {
+              setToastNotifications((prev) => prev.filter((n) => n.id !== toastNotification.id));
+            }, 8000);
+          }
+
+          // If we're not currently viewing this ticket, don't mark as read
+          if (!selectedTicket || ticketId !== selectedTicket.id) {
+            console.log(`📩 New CTO message for ticket ${ticketId} - keeping as unread`);
+          }
         }
 
         // Always reload chat history for the selected ticket
@@ -281,35 +310,32 @@ export const EmployeeTicketTest = () => {
     }
   };
 
-  // Function to get unread CTO messages count for a ticket
-  const getUnreadCtoMessagesCount = (ticketId: string) => {
-    if (typeof window === 'undefined') return 0;
+  // Smart logic: Check if employee needs to respond to CTO
+  const getEmployeeAwaitingResponse = (ticketId: string) => {
+    if (typeof window === 'undefined') return { isAwaiting: false, count: 0 };
 
     const messages = window.chatHistory[ticketId] || [];
-    const ctoMessages = messages.filter((msg) => msg.sender === 'CTO');
+    if (messages.length === 0) return { isAwaiting: false, count: 0 };
 
-    // Get the last read message ID for this ticket
-    const lastReadMessageId = window.lastReadMessages?.[ticketId];
+    // Get the last message
+    const lastMessage = messages[messages.length - 1];
 
-    if (!lastReadMessageId) {
-      // If no messages have been read, all CTO messages are unread
-      return ctoMessages.length;
+    // If last message is from employee, no response needed
+    if (lastMessage.sender !== 'CTO') {
+      return { isAwaiting: false, count: 0 };
     }
 
-    // Find the index of the last read message
-    const lastReadIndex = messages.findIndex((msg) => msg.id === lastReadMessageId);
-
-    if (lastReadIndex === -1) {
-      // If last read message not found, consider all CTO messages as unread
-      return ctoMessages.length;
+    // Count consecutive CTO messages at the end (awaiting employee response)
+    let count = 0;
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].sender === 'CTO') {
+        count++;
+      } else {
+        break;
+      }
     }
 
-    // Count CTO messages that came after the last read message
-    const unreadCtoMessages = messages
-      .slice(lastReadIndex + 1)
-      .filter((msg) => msg.sender === 'CTO');
-
-    return unreadCtoMessages.length;
+    return { isAwaiting: true, count };
   };
 
   const sendMessage = () => {
@@ -452,6 +478,20 @@ export const EmployeeTicketTest = () => {
   };
 
   // Filter and sort tickets
+  // Toast notification handlers
+  const handleToastDismiss = (id: string) => {
+    setToastNotifications((prev) => prev.filter((n) => n.id !== id));
+  };
+
+  const handleToastClick = (notification: ToastNotification) => {
+    // Find the ticket by title and select it
+    const ticket = availableTickets.find((t) => t.title === notification.ticketTitle);
+    if (ticket) {
+      setSelectedTicket(ticket);
+      markTicketAsRead(ticket.id);
+    }
+  };
+
   const filteredAndSortedTickets = availableTickets
     .filter(
       (ticket) =>
@@ -460,12 +500,16 @@ export const EmployeeTicketTest = () => {
         ticket.employeeName.toLowerCase().includes(searchTerm.toLowerCase()),
     )
     .sort((a, b) => {
-      // Priority 1: Tickets with unread CTO messages first
-      const aUnreadCount = getUnreadCtoMessagesCount(a.id);
-      const bUnreadCount = getUnreadCtoMessagesCount(b.id);
+      // Priority 1: Tickets awaiting employee response first
+      const aAwaiting = getEmployeeAwaitingResponse(a.id);
+      const bAwaiting = getEmployeeAwaitingResponse(b.id);
 
-      if (aUnreadCount !== bUnreadCount) {
-        return bUnreadCount - aUnreadCount; // More unread first
+      if (aAwaiting.isAwaiting !== bAwaiting.isAwaiting) {
+        return aAwaiting.isAwaiting ? -1 : 1; // Awaiting response tickets first
+      }
+
+      if (aAwaiting.isAwaiting && bAwaiting.isAwaiting) {
+        return bAwaiting.count - aAwaiting.count; // More messages awaiting response first
       }
 
       // Priority 2: Apply regular sorting for tickets with same unread status
@@ -549,6 +593,13 @@ export const EmployeeTicketTest = () => {
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
+        {/* Toast Notifications */}
+        <ToastContainer
+          notifications={toastNotifications}
+          onDismiss={handleToastDismiss}
+          onClick={handleToastClick}
+        />
+
         {/* Notifications */}
         {notifications.length > 0 && (
           <div className="fixed top-4 right-4 z-50 mb-4 space-y-2">
@@ -677,8 +728,9 @@ export const EmployeeTicketTest = () => {
               ) : (
                 filteredAndSortedTickets.map((ticket) => {
                   const status = ticketStatuses[ticket.id] || 'assigned';
-                  const unreadCtoMessages = getUnreadCtoMessagesCount(ticket.id);
-                  const hasUnreadMessages = unreadCtoMessages > 0;
+                  const awaitingResponse = getEmployeeAwaitingResponse(ticket.id);
+                  const hasUnreadMessages = awaitingResponse.isAwaiting;
+                  const awaitingCount = awaitingResponse.count;
 
                   return (
                     <button
@@ -695,24 +747,22 @@ export const EmployeeTicketTest = () => {
                             : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50 hover:shadow-sm'
                       }`}
                     >
-                      {/* Notification badge overlay */}
+                      {/* Animated notification badge overlay */}
                       {hasUnreadMessages && (
                         <div className="absolute -top-2 -right-2 z-10">
-                          <div className="flex h-7 w-7 animate-bounce items-center justify-center rounded-full bg-gradient-to-r from-orange-500 to-red-500 text-xs font-bold text-white shadow-lg">
-                            {unreadCtoMessages}
-                          </div>
+                          <AnimatedBadge
+                            count={awaitingCount}
+                            type="notification"
+                            size="md"
+                            title={`${awaitingCount} new instructions from CTO awaiting your response`}
+                          />
                         </div>
                       )}
 
                       <div className="mb-2 flex items-start justify-between">
                         <div className="flex items-center gap-2">
                           {/* Enhanced notification indicator */}
-                          {hasUnreadMessages && (
-                            <div className="relative flex h-5 w-5 items-center justify-center">
-                              <div className="absolute h-5 w-5 animate-ping rounded-full bg-orange-400 opacity-75"></div>
-                              <div className="relative h-3 w-3 rounded-full bg-orange-500"></div>
-                            </div>
-                          )}
+                          {hasUnreadMessages && <PulsingIndicator type="notification" size="md" />}
 
                           <span className="text-lg">{getStatusIcon(status)}</span>
                           <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
@@ -726,9 +776,16 @@ export const EmployeeTicketTest = () => {
 
                           {/* Enhanced unread message count badge */}
                           {hasUnreadMessages && (
-                            <span className="inline-flex animate-pulse items-center rounded-full bg-gradient-to-r from-orange-500 to-red-600 px-3 py-1 text-xs font-bold text-white shadow-md">
-                              🔔 {unreadCtoMessages} from CTO
-                            </span>
+                            <AnimatedTextBadge
+                              text={
+                                awaitingCount > 1
+                                  ? `${awaitingCount} instructions waiting`
+                                  : 'Awaiting response from you'
+                              }
+                              type="notification"
+                              icon="🔔"
+                              isNew={true}
+                            />
                           )}
 
                           {selectedTicket?.id === ticket.id && (

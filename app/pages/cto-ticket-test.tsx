@@ -1,4 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { ToastContainer, ToastNotification } from '../components/ui/toast-notification';
+import {
+  AnimatedBadge,
+  PulsingIndicator,
+  AnimatedTextBadge,
+} from '../components/ui/animated-badge';
 
 interface Ticket {
   id: string;
@@ -53,6 +59,9 @@ declare global {
     statusNotifications: Record<string, Notification[]>;
     unreadMessages: Record<string, UnreadMessage[]>;
     lastReadMessages: Record<string, string>; // ticketId -> lastReadMessageId
+    ctoLastReadMessages: Record<string, string>; // ticketId -> lastReadMessageId for CTO
+    employeeLastReadMessages: Record<string, string>; // ticketId -> lastReadMessageId for Employee
+    pendingNotifications: IncomingMessageNotification[]; // Global notification queue
   }
 }
 
@@ -79,6 +88,15 @@ if (typeof window !== 'undefined') {
   if (!window.lastReadMessages) {
     window.lastReadMessages = {};
   }
+  if (!window.ctoLastReadMessages) {
+    window.ctoLastReadMessages = {};
+  }
+  if (!window.employeeLastReadMessages) {
+    window.employeeLastReadMessages = {};
+  }
+  if (!window.pendingNotifications) {
+    window.pendingNotifications = [];
+  }
 }
 
 export const CtoTicketTest = () => {
@@ -103,10 +121,11 @@ export const CtoTicketTest = () => {
   const [employeeFilter, setEmployeeFilter] = useState('');
   const [newMessage, setNewMessage] = useState('');
   const [showChatPanel, setShowChatPanel] = useState(false);
-  const [unreadMessages, setUnreadMessages] = useState<Record<string, UnreadMessage[]>>({});
+
   const [incomingNotifications, setIncomingNotifications] = useState<IncomingMessageNotification[]>(
     [],
   );
+  const [toastNotifications, setToastNotifications] = useState<ToastNotification[]>([]);
 
   // Performance optimization refs
   const ticketListRef = useRef<HTMLDivElement>(null);
@@ -212,9 +231,7 @@ export const CtoTicketTest = () => {
     };
 
     const loadUnreadMessages = () => {
-      if (typeof window !== 'undefined') {
-        setUnreadMessages(window.unreadMessages || {});
-      }
+      // No longer needed - using specific unread tracking functions
     };
 
     const loadLastReadMessages = () => {
@@ -231,6 +248,28 @@ export const CtoTicketTest = () => {
         const ticket = window.mockTickets?.find((t) => t.id === ticketId && t.assignedBy === 'CTO');
 
         if (ticket) {
+          // Create toast notification with contextual messaging
+          const toastNotification: ToastNotification = {
+            id: Date.now().toString(),
+            title:
+              message.sender === 'CTO'
+                ? 'New Instruction from CTO'
+                : `Update from ${message.sender}`,
+            sender: message.sender,
+            ticketTitle: ticket.title,
+            messagePreview:
+              message.message.slice(0, 80) + (message.message.length > 80 ? '...' : ''),
+            timestamp: new Date(),
+          };
+
+          setToastNotifications((prev) => [...prev, toastNotification]);
+
+          // Auto-remove toast after 8 seconds
+          setTimeout(() => {
+            setToastNotifications((prev) => prev.filter((n) => n.id !== toastNotification.id));
+          }, 8000);
+
+          // Keep the old notification system for backward compatibility
           const notification: IncomingMessageNotification = {
             id: Date.now().toString(),
             ticketId,
@@ -266,7 +305,7 @@ export const CtoTicketTest = () => {
             window.unreadMessages[ticketId].push(unreadMessage);
           }
 
-          loadUnreadMessages();
+          // Removed loadUnreadMessages() as we now use specific tracking functions
         }
       }
 
@@ -444,24 +483,27 @@ export const CtoTicketTest = () => {
           [ticketId]: ticketConversation,
         }));
 
-        // Mark all messages as read for this ticket
+        // Mark all messages as read by CTO for this ticket
         const messages = ticketConversation;
         if (messages.length > 0) {
           window.lastReadMessages[ticketId] = messages[messages.length - 1].id;
+          window.ctoLastReadMessages[ticketId] = messages[messages.length - 1].id;
         }
 
         // Clear unread messages for this ticket (remove notification overlay)
         if (window.unreadMessages[ticketId]) {
           delete window.unreadMessages[ticketId];
         }
+
+        // Dispatch event to notify other parts of the app
+        window.dispatchEvent(
+          new CustomEvent('ctoReadMessages', {
+            detail: { ticketId },
+          }),
+        );
       }
 
-      // Clear local unread state immediately to remove visual indicators
-      setUnreadMessages((prev) => {
-        const updated = { ...prev };
-        delete updated[ticketId];
-        return updated;
-      });
+      // Local unread state clearing is no longer needed - using global state tracking
     },
     [activeTickets],
   );
@@ -533,8 +575,53 @@ export const CtoTicketTest = () => {
     return 'Just now';
   };
 
-  const getUnreadCount = (ticketId: string) => {
-    return unreadMessages[ticketId]?.length || 0;
+  // Smart logic: Get new employee messages that CTO hasn't seen yet
+  const getNewEmployeeMessages = (ticketId: string) => {
+    if (typeof window === 'undefined') return 0;
+
+    const messages = window.chatHistory[ticketId] || [];
+    const ctoLastReadId = window.ctoLastReadMessages?.[ticketId];
+
+    if (!ctoLastReadId) {
+      // If CTO hasn't read any messages, count all employee messages
+      return messages.filter((msg) => msg.sender !== 'CTO').length;
+    }
+
+    const lastReadIndex = messages.findIndex((msg) => msg.id === ctoLastReadId);
+    if (lastReadIndex === -1) {
+      return messages.filter((msg) => msg.sender !== 'CTO').length;
+    }
+
+    // Count employee messages that came after CTO's last read message
+    return messages.slice(lastReadIndex + 1).filter((msg) => msg.sender !== 'CTO').length;
+  };
+
+  // Smart logic: Check if CTO is awaiting response from employee
+  const getCtoAwaitingResponse = (ticketId: string) => {
+    if (typeof window === 'undefined') return { isAwaiting: false, count: 0 };
+
+    const messages = window.chatHistory[ticketId] || [];
+    if (messages.length === 0) return { isAwaiting: false, count: 0 };
+
+    // Get the last message
+    const lastMessage = messages[messages.length - 1];
+
+    // If last message is from employee, CTO is not awaiting response
+    if (lastMessage.sender !== 'CTO') {
+      return { isAwaiting: false, count: 0 };
+    }
+
+    // Count consecutive CTO messages at the end (awaiting response)
+    let count = 0;
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].sender === 'CTO') {
+        count++;
+      } else {
+        break;
+      }
+    }
+
+    return { isAwaiting: true, count };
   };
 
   // Filtered and sorted tickets
@@ -554,15 +641,38 @@ export const CtoTicketTest = () => {
   });
 
   const sortedTickets = filteredTickets.sort((a, b) => {
-    // Priority 1: Unread messages first (most important)
-    const aUnread = getUnreadCount(a.id);
-    const bUnread = getUnreadCount(b.id);
+    // Priority 1: New employee messages first (most important for CTO)
+    const aNewEmployee = getNewEmployeeMessages(a.id);
+    const bNewEmployee = getNewEmployeeMessages(b.id);
 
-    if (aUnread !== bUnread) {
-      return bUnread - aUnread; // More unread first
+    if (aNewEmployee !== bNewEmployee) {
+      return bNewEmployee - aNewEmployee; // More new employee messages first
     }
 
-    // Priority 2: If both have unread or both don't have unread, sort by last message time
+    // Priority 2: Finished tickets needing review
+    const aStatus = ticketStatuses[a.id] || 'assigned';
+    const bStatus = ticketStatuses[b.id] || 'assigned';
+
+    if (aStatus === 'finished' && bStatus !== 'finished') {
+      return -1; // Finished tickets come first
+    }
+    if (bStatus === 'finished' && aStatus !== 'finished') {
+      return 1; // Finished tickets come first
+    }
+
+    // Priority 3: Tickets where CTO is awaiting response
+    const aAwaitingResponse = getCtoAwaitingResponse(a.id);
+    const bAwaitingResponse = getCtoAwaitingResponse(b.id);
+
+    if (aAwaitingResponse.isAwaiting !== bAwaitingResponse.isAwaiting) {
+      return aAwaitingResponse.isAwaiting ? 1 : -1; // New messages have higher priority than awaiting
+    }
+
+    if (aAwaitingResponse.isAwaiting && bAwaitingResponse.isAwaiting) {
+      return bAwaitingResponse.count - aAwaitingResponse.count; // More awaiting messages first
+    }
+
+    // Priority 4: If both have same status, sort by last message time
     const aLastMessage = conversations[a.id]?.slice(-1)[0];
     const bLastMessage = conversations[b.id]?.slice(-1)[0];
 
@@ -592,8 +702,31 @@ export const CtoTicketTest = () => {
   // Get unique employees for filter
   const uniqueEmployees = [...new Set(activeTickets.map((t) => t.employeeName))];
 
+  // Toast notification handlers
+  const handleToastDismiss = useCallback((id: string) => {
+    setToastNotifications((prev) => prev.filter((n) => n.id !== id));
+  }, []);
+
+  const handleToastClick = useCallback(
+    (notification: ToastNotification) => {
+      // Find the ticket by title and navigate to it
+      const ticket = activeTickets.find((t) => t.title === notification.ticketTitle);
+      if (ticket) {
+        handleTicketClick(ticket.id);
+      }
+    },
+    [activeTickets, handleTicketClick],
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Toast Notifications */}
+      <ToastContainer
+        notifications={toastNotifications}
+        onDismiss={handleToastDismiss}
+        onClick={handleToastClick}
+      />
+
       {/* Incoming Message Notifications */}
       {incomingNotifications.length > 0 && (
         <div className="fixed top-4 right-4 z-50 space-y-2">
@@ -830,26 +963,56 @@ export const CtoTicketTest = () => {
               <div className="divide-y divide-gray-200">
                 {sortedTickets.map((ticket) => {
                   const status = ticketStatuses[ticket.id] || 'assigned';
-                  const unreadCount = getUnreadCount(ticket.id);
+                  const newEmployeeCount = getNewEmployeeMessages(ticket.id);
+                  const awaitingResponse = getCtoAwaitingResponse(ticket.id);
+                  const hasNewEmployeeMessages = newEmployeeCount > 0;
+                  const isAwaitingEmployeeResponse = awaitingResponse.isAwaiting;
+                  const awaitingCount = awaitingResponse.count;
                   const lastMessageTime = getLastMessageTime(ticket.id);
                   const hasMessages = conversations[ticket.id]?.length > 0;
+                  const needsReview = status === 'finished';
 
                   return (
                     <div
                       key={ticket.id}
                       onClick={() => handleTicketClick(ticket.id)}
                       className={`relative cursor-pointer px-6 py-4 transition-all duration-200 ${
-                        unreadCount > 0
+                        hasNewEmployeeMessages
                           ? 'border-l-4 border-red-500 bg-gradient-to-r from-red-50 to-pink-50 shadow-lg ring-1 ring-red-200 hover:from-red-100 hover:to-pink-100'
-                          : 'hover:bg-gray-50 hover:shadow-sm'
+                          : needsReview
+                            ? 'border-l-4 border-green-500 bg-gradient-to-r from-green-50 to-emerald-50 shadow-lg ring-1 ring-green-200 hover:from-green-100 hover:to-emerald-100'
+                            : isAwaitingEmployeeResponse
+                              ? 'border-l-4 border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 shadow-lg ring-1 ring-blue-200 hover:from-blue-100 hover:to-indigo-100'
+                              : 'hover:bg-gray-50 hover:shadow-sm'
                       }`}
                     >
-                      {/* Notification badge overlay */}
-                      {unreadCount > 0 && (
-                        <div className="absolute -top-2 -right-2 z-10">
-                          <div className="flex h-8 w-8 animate-bounce items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-xs font-bold text-white shadow-lg">
-                            {unreadCount}
-                          </div>
+                      {/* Animated notification badges */}
+                      {(hasNewEmployeeMessages || isAwaitingEmployeeResponse || needsReview) && (
+                        <div className="absolute -top-2 -right-2 z-10 flex space-x-1">
+                          {hasNewEmployeeMessages && (
+                            <AnimatedBadge
+                              count={newEmployeeCount}
+                              type="employee"
+                              size="lg"
+                              title={`${newEmployeeCount} new messages from ${ticket.employeeName}`}
+                            />
+                          )}
+                          {needsReview && (
+                            <AnimatedBadge
+                              count={1}
+                              type="notification"
+                              size="lg"
+                              title="Finished work needs review"
+                            />
+                          )}
+                          {isAwaitingEmployeeResponse && (
+                            <AnimatedBadge
+                              count={awaitingCount}
+                              type="cto"
+                              size="lg"
+                              title={`${awaitingCount} messages unanswered since your last reply`}
+                            />
+                          )}
                         </div>
                       )}
 
@@ -857,36 +1020,88 @@ export const CtoTicketTest = () => {
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center space-x-3">
                             {/* Enhanced notification indicator */}
-                            {unreadCount > 0 && (
-                              <div className="relative flex h-5 w-5 items-center justify-center">
-                                <div className="absolute h-5 w-5 animate-ping rounded-full bg-red-400 opacity-75"></div>
-                                <div className="relative h-3 w-3 rounded-full bg-red-500"></div>
-                              </div>
+                            {(hasNewEmployeeMessages ||
+                              isAwaitingEmployeeResponse ||
+                              needsReview) && (
+                              <PulsingIndicator
+                                type={
+                                  hasNewEmployeeMessages
+                                    ? 'employee'
+                                    : needsReview
+                                      ? 'notification'
+                                      : 'cto'
+                                }
+                                size="md"
+                              />
                             )}
 
                             <div className="flex-1">
                               <div className="flex items-center space-x-2">
                                 <h3
                                   className={`truncate text-sm font-medium ${
-                                    unreadCount > 0 ? 'font-bold text-gray-900' : 'text-gray-900'
+                                    hasNewEmployeeMessages ||
+                                    isAwaitingEmployeeResponse ||
+                                    needsReview
+                                      ? 'font-bold text-gray-900'
+                                      : 'text-gray-900'
                                   }`}
                                 >
-                                  {unreadCount > 0 && '🔔 '}
+                                  {hasNewEmployeeMessages && '🔔 '}
+                                  {needsReview && '✅ '}
+                                  {isAwaitingEmployeeResponse &&
+                                    !hasNewEmployeeMessages &&
+                                    !needsReview &&
+                                    '🔔 '}
                                   {ticket.title}
                                 </h3>
-                                {unreadCount > 0 && (
-                                  <span className="inline-flex animate-pulse items-center rounded-full bg-gradient-to-r from-red-500 to-pink-600 px-3 py-1 text-xs font-bold text-white shadow-md">
-                                    💬 {unreadCount} NEW
-                                  </span>
+                                {hasNewEmployeeMessages && (
+                                  <AnimatedTextBadge
+                                    text={`${newEmployeeCount} FROM EMPLOYEE`}
+                                    type="employee"
+                                    icon="💬"
+                                    isNew={true}
+                                  />
+                                )}
+                                {needsReview && (
+                                  <AnimatedTextBadge
+                                    text="NEEDS REVIEW"
+                                    type="notification"
+                                    icon="✅"
+                                    isNew={true}
+                                  />
+                                )}
+                                {isAwaitingEmployeeResponse && (
+                                  <AnimatedTextBadge
+                                    text={
+                                      awaitingCount > 1
+                                        ? `${awaitingCount} unanswered since your last reply`
+                                        : 'Awaiting response'
+                                    }
+                                    type="cto"
+                                    icon="⏳"
+                                    isNew={true}
+                                  />
                                 )}
                               </div>
                               <p
                                 className={`truncate text-sm ${
-                                  unreadCount > 0 ? 'font-semibold text-red-700' : 'text-gray-500'
+                                  hasNewEmployeeMessages
+                                    ? 'font-semibold text-red-700'
+                                    : needsReview
+                                      ? 'font-semibold text-green-700'
+                                      : isAwaitingEmployeeResponse
+                                        ? 'font-semibold text-blue-700'
+                                        : 'text-gray-500'
                                 }`}
                               >
                                 💬 {ticket.employeeName}{' '}
-                                {unreadCount > 0 ? '• Has new messages!' : ''}
+                                {hasNewEmployeeMessages
+                                  ? '• Has new messages!'
+                                  : needsReview
+                                    ? '• Work finished - needs review'
+                                    : isAwaitingEmployeeResponse
+                                      ? '• Awaiting response'
+                                      : ''}
                               </p>
                               <p className="mt-1 truncate text-xs text-gray-400">
                                 {ticket.description}
