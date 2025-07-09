@@ -97,7 +97,10 @@ export const MemberManagementCard = ({
             {/* Actions */}
             <div className="ml-4 flex items-center gap-2">
               <Button
-                onClick={() => onChangePosition(member.id)}
+                onClick={() => {
+                  console.log('🔍 Change position button clicked for member:', member.id, member.name);
+                  onChangePosition(member.id);
+                }}
                 variant="outline"
                 size="sm"
                 className="border-blue-500 bg-blue-500 text-white hover:bg-blue-600"
@@ -199,7 +202,10 @@ export const MemberManagementCard = ({
         {/* Change Position Button */}
         <div className="mt-4">
           <Button
-            onClick={() => onChangePosition(member.id)}
+            onClick={() => {
+              console.log('🔍 Change position button clicked for member (grid):', member.id, member.name);
+              onChangePosition(member.id);
+            }}
             variant="outline"
             size="sm"
             className="w-full border-blue-500 bg-blue-500 text-white hover:bg-blue-600"

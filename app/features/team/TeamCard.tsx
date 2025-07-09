@@ -13,6 +13,7 @@ export const TeamCard = ({
   onView,
   onEdit,
 }: TeamCardProps = DEFAULT_TEAM) => {
+
   // Generate initials for avatars
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
@@ -60,6 +61,13 @@ export const TeamCard = ({
                       M{teamNumber}
                     </AvatarFallback>
                   </Avatar>
+
+                  {/* Show remaining members count if more than 3 members */}
+                  {memberCount > 3 && (
+                    <div className="relative z-10 -ml-1.5 flex h-10 w-10 items-center justify-center rounded-full border border-white bg-gray-200 text-xs font-medium text-gray-700">
+                      +{memberCount - 3}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -158,6 +166,13 @@ export const TeamCard = ({
                   M{teamNumber}
                 </AvatarFallback>
               </Avatar>
+
+              {/* Show remaining members count if more than 3 members */}
+              {memberCount > 3 && (
+                <div className="relative z-10 -ml-2 flex h-12 w-12 items-center justify-center rounded-full border border-white bg-gray-200 text-xs font-medium text-gray-700">
+                  +{memberCount - 3}
+                </div>
+              )}
             </div>
 
             {/* Team Icon Overlay */}

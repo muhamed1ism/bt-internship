@@ -39,18 +39,29 @@ export const TeamHeader = ({ teamDetails, onManageMembers, onEdit }: TeamHeaderP
               {/* Team Avatar Circles */}
               <div className="relative">
                 <div className="flex items-center justify-center">
-                  {/* Left Avatar */}
-                  <Avatar className="relative z-10 h-12 w-12 border-1 border-white">
-                    <AvatarImage
-                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${teamDetails.teamNumber}-1`}
-                    />
-                    <AvatarFallback className="bg-gray-200 text-sm font-medium text-gray-700">
-                      T{teamDetails.teamNumber}
-                    </AvatarFallback>
-                  </Avatar>
+                  {/* Left Avatar (Other Member) */}
+                  {teamDetails.members
+                    .filter(member => member.id !== teamDetails.teamLead.id)
+                    .slice(0, 1)
+                    .map((member) => (
+                      <Avatar 
+                        key={member.id}
+                        className="relative z-10 h-12 w-12 border-1 border-white -mr-3"
+                      >
+                        <AvatarImage
+                          src={
+                            member.avatar ||
+                            `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.name}`
+                          }
+                        />
+                        <AvatarFallback className="bg-gray-200 text-sm font-medium text-gray-700">
+                          {getInitials(member.name)}
+                        </AvatarFallback>
+                      </Avatar>
+                    ))}
 
                   {/* Center Avatar (Team Lead) */}
-                  <Avatar className="relative z-20 -mx-3 h-16 w-16 border-4 border-white">
+                  <Avatar className="relative z-20 h-16 w-16 border-4 border-white">
                     <AvatarImage
                       src={
                         teamDetails.teamLead.avatar ||
@@ -62,15 +73,33 @@ export const TeamHeader = ({ teamDetails, onManageMembers, onEdit }: TeamHeaderP
                     </AvatarFallback>
                   </Avatar>
 
-                  {/* Right Avatar */}
-                  <Avatar className="relative z-10 h-12 w-12 border-1 border-white">
-                    <AvatarImage
-                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${teamDetails.teamNumber}-3`}
-                    />
-                    <AvatarFallback className="bg-gray-200 text-sm font-medium text-gray-700">
-                      M{teamDetails.teamNumber}
-                    </AvatarFallback>
-                  </Avatar>
+                  {/* Right Avatar (Other Member) */}
+                  {teamDetails.members
+                    .filter(member => member.id !== teamDetails.teamLead.id)
+                    .slice(1, 2)
+                    .map((member) => (
+                      <Avatar 
+                        key={member.id}
+                        className="relative z-10 h-12 w-12 border-1 border-white -ml-3"
+                      >
+                        <AvatarImage
+                          src={
+                            member.avatar ||
+                            `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.name}`
+                          }
+                        />
+                        <AvatarFallback className="bg-gray-200 text-sm font-medium text-gray-700">
+                          {getInitials(member.name)}
+                        </AvatarFallback>
+                      </Avatar>
+                    ))}
+                  
+                  {/* Show remaining members count if more than 3 total */}
+                  {teamDetails.members.length > 3 && (
+                    <div className="relative z-10 -ml-3 flex h-12 w-12 items-center justify-center rounded-full border border-white bg-gray-200 text-xs font-medium text-gray-700">
+                      +{teamDetails.members.length - 3}
+                    </div>
+                  )}
                 </div>
               </div>
 

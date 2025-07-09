@@ -1,14 +1,16 @@
-import { Team, ViewMode } from '@app/types/team';
+import { TransformedTeam, ViewMode } from '@app/types/team';
 import { TeamCard } from '../TeamCard';
 
 interface TeamsGridProps {
-  teams: Team[];
+  teams: TransformedTeam[];
   viewMode: ViewMode;
   onViewTeam: (teamId: number) => void;
   onEditTeam: (teamId: number) => void;
 }
 
 export const TeamsGrid = ({ teams, viewMode, onViewTeam, onEditTeam }: TeamsGridProps) => {
+
+  
   return (
     <div
       className={` ${

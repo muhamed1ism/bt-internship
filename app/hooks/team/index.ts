@@ -1,5 +1,6 @@
 export * from './useGetAllTeams';
 export * from './useGetMyTeams';
+export * from './useGetTeamDetails';
 export * from './useGetTeamMembers';
 export * from './useCreateTeam';
 export * from './useUpdateTeam';

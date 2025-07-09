@@ -18,7 +18,6 @@ import {
 } from '@app/components/ui/select';
 import { Badge } from '@app/components/ui/badge';
 import { Crown } from 'lucide-react';
-import { AVAILABLE_POSITIONS } from '@mocks/team-members';
 import type { TeamMemberCard, MemberPosition } from '@app/types/member-management';
 
 interface PositionChangeModalProps {
@@ -28,17 +27,32 @@ interface PositionChangeModalProps {
   onConfirm: (memberId: string, newPosition: MemberPosition) => void;
 }
 
+const POSITIONS = [
+  'Team Lead',
+  'Tech Lead',
+  'Frontend Developer',
+  'Backend Developer',
+  'Full Stack Developer',
+  'Project Manager',
+  'UI/UX Designer',
+  'DevOps Engineer',
+  'QA Engineer',
+  'Product Manager',
+  'Scrum Master',
+  'Business Analyst',
+];
+
 export const PositionChangeModal = ({
   isOpen,
   onClose,
   member,
   onConfirm,
 }: PositionChangeModalProps) => {
-  const [selectedPosition, setSelectedPosition] = useState<MemberPosition | null>(null);
+  const [selectedPosition, setSelectedPosition] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleClose = () => {
-    setSelectedPosition(null);
+    setSelectedPosition('');
     setIsSubmitting(false);
     onClose();
   };
@@ -48,7 +62,14 @@ export const PositionChangeModal = ({
 
     setIsSubmitting(true);
     try {
-      await onConfirm(member.id, selectedPosition);
+      const newPosition: MemberPosition = {
+        title: selectedPosition,
+        level: 'Mid', // Default level since backend doesn't provide it
+        department: 'Engineering', // Default department
+        isLead: selectedPosition.toLowerCase().includes('lead'),
+      };
+      
+      await onConfirm(member.id, newPosition);
       handleClose();
     } catch (error) {
       console.error('Failed to change position:', error);
@@ -56,10 +77,10 @@ export const PositionChangeModal = ({
     }
   };
 
-  const getPositionColor = (position: MemberPosition) => {
-    if (position.isLead) return 'bg-purple-100 text-purple-800 border-purple-200';
-    if (position.title.includes('Tech Lead')) return 'bg-blue-100 text-blue-800 border-blue-200';
-    if (position.title.includes('Manager')) return 'bg-green-100 text-green-800 border-green-200';
+  const getPositionColor = (position: string) => {
+    if (position.toLowerCase().includes('lead')) return 'bg-purple-100 text-purple-800 border-purple-200';
+    if (position.toLowerCase().includes('manager')) return 'bg-green-100 text-green-800 border-green-200';
+    if (position.toLowerCase().includes('developer')) return 'bg-blue-100 text-blue-800 border-blue-200';
     return 'bg-gray-100 text-gray-800 border-gray-200';
   };
 
@@ -80,7 +101,7 @@ export const PositionChangeModal = ({
             <div className="mt-1 flex items-center gap-2">
               <Badge
                 variant="outline"
-                className={`${getPositionColor(member.position)} flex items-center gap-1`}
+                className={`${getPositionColor(member.position.title)} flex items-center gap-1`}
               >
                 {member.position.isLead && <Crown className="h-3 w-3" />}
                 {member.position.title}
@@ -97,24 +118,18 @@ export const PositionChangeModal = ({
               New Position
             </Label>
             <Select
-              value={selectedPosition?.title || ''}
-              onValueChange={(value) => {
-                const position = AVAILABLE_POSITIONS.find((p) => p.title === value);
-                setSelectedPosition(position || null);
-              }}
+              value={selectedPosition}
+              onValueChange={setSelectedPosition}
             >
               <SelectTrigger className="mt-1">
                 <SelectValue placeholder="Select a new position" />
               </SelectTrigger>
               <SelectContent>
-                {AVAILABLE_POSITIONS.map((position) => (
-                  <SelectItem key={position.title} value={position.title}>
+                {POSITIONS.map((position) => (
+                  <SelectItem key={position} value={position}>
                     <div className="flex items-center gap-2">
-                      {position.isLead && <Crown className="h-3 w-3" />}
-                      <span>{position.title}</span>
-                      <span className="text-muted-foreground text-xs">
-                        ({position.level} • {position.department})
-                      </span>
+                      {position.toLowerCase().includes('lead') && <Crown className="h-3 w-3" />}
+                      <span>{position}</span>
                     </div>
                   </SelectItem>
                 ))}
@@ -131,11 +146,11 @@ export const PositionChangeModal = ({
                   variant="outline"
                   className={`${getPositionColor(selectedPosition)} flex items-center gap-1`}
                 >
-                  {selectedPosition.isLead && <Crown className="h-3 w-3" />}
-                  {selectedPosition.title}
+                  {selectedPosition.toLowerCase().includes('lead') && <Crown className="h-3 w-3" />}
+                  {selectedPosition}
                 </Badge>
                 <span className="text-muted-foreground text-sm">
-                  {selectedPosition.level} • {selectedPosition.department}
+                  Mid • Engineering
                 </span>
               </div>
             </div>
