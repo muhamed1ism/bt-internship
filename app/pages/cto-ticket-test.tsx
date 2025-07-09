@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getAllTickets, createTicket, Ticket } from '../api/ticket-api';
+import { getAllTickets, createTicket, Ticket, confirmTicketFinished } from '../api/ticket-api';
 import { getAllUsersApi } from '../api/user-api';
 import { useChat } from '../hooks/useChat';
 import { useAuth } from '../context/AuthContext';
@@ -26,6 +26,7 @@ export const CtoTicketTest = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [createForm, setCreateForm] = useState<CreateTicketForm>({
@@ -89,8 +90,33 @@ export const CtoTicketTest = () => {
     try {
       await sendMessage(newMessage);
       setNewMessage('');
+
+      // Refresh tickets to reflect status changes
+      loadTickets();
     } catch (error) {
       console.error('Failed to send message:', error);
+    }
+  };
+
+  const handleConfirmFinished = async () => {
+    if (!selectedTicket) return;
+
+    try {
+      setIsConfirming(true);
+      await confirmTicketFinished(selectedTicket.id);
+
+      // Update the ticket in the local state
+      const updatedTickets = tickets.map((ticket) =>
+        ticket.id === selectedTicket.id ? { ...ticket, status: 'FINISHED' as const } : ticket,
+      );
+      setTickets(updatedTickets);
+
+      // Update the selected ticket
+      setSelectedTicket({ ...selectedTicket, status: 'FINISHED' });
+    } catch (error) {
+      console.error('Failed to confirm ticket finished:', error);
+    } finally {
+      setIsConfirming(false);
     }
   };
 
@@ -111,6 +137,36 @@ export const CtoTicketTest = () => {
       .map((n) => n[0])
       .join('')
       .toUpperCase();
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'PENDING':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'ONGOING':
+        return 'bg-blue-100 text-blue-800';
+      case 'AWAITING_CONFIRMATION':
+        return 'bg-purple-100 text-purple-800';
+      case 'FINISHED':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'PENDING':
+        return 'Pending';
+      case 'ONGOING':
+        return 'In Progress';
+      case 'AWAITING_CONFIRMATION':
+        return 'Awaiting Confirmation';
+      case 'FINISHED':
+        return 'Finished';
+      default:
+        return status;
+    }
   };
 
   // Fix message ownership detection
@@ -221,7 +277,14 @@ export const CtoTicketTest = () => {
                   onClick={() => setSelectedTicket(ticket)}
                 >
                   <div className="mb-2 flex items-start justify-between">
-                    <h3 className="font-semibold text-gray-800">{ticket.title}</h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold text-gray-800">{ticket.title}</h3>
+                      <span
+                        className={`rounded-full px-2 py-1 text-xs font-medium ${getStatusColor(ticket.status)}`}
+                      >
+                        {getStatusText(ticket.status)}
+                      </span>
+                    </div>
                     <span className="text-xs text-gray-500">
                       {formatDateTime(ticket.createdAt)}
                     </span>
@@ -264,6 +327,34 @@ export const CtoTicketTest = () => {
 
           {selectedTicket ? (
             <div className="flex h-96 flex-col">
+              {/* Ticket Details */}
+              <div className="border-b bg-blue-50 p-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-gray-800">{selectedTicket.title}</h3>
+                  <span
+                    className={`rounded-full px-2 py-1 text-xs font-medium ${getStatusColor(selectedTicket.status)}`}
+                  >
+                    {getStatusText(selectedTicket.status)}
+                  </span>
+                </div>
+                <p className="mt-1 text-xs text-gray-600">{selectedTicket.description}</p>
+                <div className="mt-2 flex items-center justify-between">
+                  <p className="text-xs text-gray-500">
+                    Assigned to: {selectedTicket.employee.firstName}{' '}
+                    {selectedTicket.employee.lastName} on {formatDateTime(selectedTicket.createdAt)}
+                  </p>
+                  {selectedTicket.status === 'AWAITING_CONFIRMATION' && (
+                    <button
+                      onClick={handleConfirmFinished}
+                      disabled={isConfirming}
+                      className="rounded-lg bg-green-500 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {isConfirming ? 'Confirming...' : 'Confirm Finished'}
+                    </button>
+                  )}
+                </div>
+              </div>
+
               {/* Messages Area */}
               <div className="flex-1 space-y-4 overflow-y-auto bg-gray-50 p-4">
                 {chatLoading ? (

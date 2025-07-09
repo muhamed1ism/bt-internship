@@ -188,5 +188,13 @@ export const ENDPOINTS = {
       uri: `/tickets/${ticketId}/messages`,
       method: 'POST',
     }),
+    markFinished: (ticketId: string) => ({
+      uri: `/tickets/${ticketId}/mark-finished`,
+      method: 'POST',
+    }),
+    confirmFinished: (ticketId: string) => ({
+      uri: `/tickets/${ticketId}/confirm-finished`,
+      method: 'POST',
+    }),
   },
 };
