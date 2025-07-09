@@ -1,3 +1,5 @@
-export class ConnectTeamMemberDto {
-  id: string;
-}
+
+  export class ConnectTeamMemberDto {
+    id: string;
+  }
+  

@@ -1,4 +1,10 @@
+
+
+
+
+
+
 export class CreateMessageDto {
   content: string;
-  sender: string;
+sender: string;
 }

@@ -48,4 +48,28 @@ export class TicketController {
       createMessageDto,
     );
   }
+
+  @Post(':ticketId/mark-finished')
+  async markAsFinished(
+    @Param('ticketId') ticketId: string,
+    @GetUser() user: User,
+  ) {
+    return this.ticketService.markAsFinished(ticketId, user.id);
+  }
+
+  @Post(':ticketId/confirm-finished')
+  async confirmFinished(
+    @Param('ticketId') ticketId: string,
+    @GetUser() user: User,
+  ) {
+    return this.ticketService.confirmFinished(ticketId, user.id);
+  }
+
+  @Post(':ticketId/mark-finished-by-cto')
+  async markAsFinishedByCTO(
+    @Param('ticketId') ticketId: string,
+    @GetUser() user: User,
+  ) {
+    return this.ticketService.markAsFinishedByCTO(ticketId, user.id);
+  }
 }

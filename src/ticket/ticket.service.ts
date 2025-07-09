@@ -187,6 +187,11 @@ export class TicketService {
       throw new NotFoundException('Ticket not found');
     }
 
+    // Prevent actions on finished tickets
+    if (ticket.status === 'FINISHED') {
+      throw new ForbiddenException('Cannot add messages to finished tickets');
+    }
+
     // Check if user is either the assigned employee or has CTO privileges
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -202,6 +207,14 @@ export class TicketService {
 
     if (!isAssignedEmployee && !isCTO) {
       throw new ForbiddenException('You do not have access to this ticket');
+    }
+
+    // If CTO sends a message and ticket is in AWAITING_CONFIRMATION, reset to ONGOING
+    if (isCTO && ticket.status === 'AWAITING_CONFIRMATION') {
+      await this.prisma.ticket.update({
+        where: { id: ticketId },
+        data: { status: 'ONGOING' },
+      });
     }
 
     // Create the message
@@ -225,5 +238,169 @@ export class TicketService {
     });
 
     return message;
+  }
+
+  async markAsFinished(ticketId: string, userId: string) {
+    // First, verify that the user has access to this ticket
+    const ticket = await this.prisma.ticket.findUnique({
+      where: { id: ticketId },
+      include: { employee: true },
+    });
+
+    if (!ticket) {
+      throw new NotFoundException('Ticket not found');
+    }
+
+    // Prevent actions on finished tickets
+    if (ticket.status === 'FINISHED') {
+      throw new ForbiddenException('Cannot modify finished tickets');
+    }
+
+    // Check if user is the assigned employee
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { role: true },
+    });
+
+    if (!user) {
+      throw new ForbiddenException('User not found');
+    }
+
+    const isAssignedEmployee = ticket.employeeId === userId;
+
+    if (!isAssignedEmployee) {
+      throw new ForbiddenException(
+        'Only the assigned employee can mark a ticket as finished',
+      );
+    }
+
+    // Update ticket status to AWAITING_CONFIRMATION
+    const updatedTicket = await this.prisma.ticket.update({
+      where: { id: ticketId },
+      data: { status: 'AWAITING_CONFIRMATION' },
+      include: {
+        employee: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    return updatedTicket;
+  }
+
+  async confirmFinished(ticketId: string, userId: string) {
+    // First, verify that the user has access to this ticket
+    const ticket = await this.prisma.ticket.findUnique({
+      where: { id: ticketId },
+      include: { employee: true },
+    });
+
+    if (!ticket) {
+      throw new NotFoundException('Ticket not found');
+    }
+
+    // Prevent actions on finished tickets
+    if (ticket.status === 'FINISHED') {
+      throw new ForbiddenException('Ticket is already finished');
+    }
+
+    // Check if user is CTO/admin
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { role: true },
+    });
+
+    if (!user) {
+      throw new ForbiddenException('User not found');
+    }
+
+    const isCTO = user.role.name === 'admin' || user.role.name === 'team_lead';
+    if (!isCTO) {
+      throw new ForbiddenException(
+        'Only CTO/admin can confirm finished tickets',
+      );
+    }
+
+    // Check if ticket is in AWAITING_CONFIRMATION status
+    if (ticket.status !== 'AWAITING_CONFIRMATION') {
+      throw new ForbiddenException(
+        'Ticket must be in AWAITING_CONFIRMATION status to be confirmed',
+      );
+    }
+
+    // Update ticket status to FINISHED
+    const updatedTicket = await this.prisma.ticket.update({
+      where: { id: ticketId },
+      data: { status: 'FINISHED' },
+      include: {
+        employee: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    return updatedTicket;
+  }
+
+  async markAsFinishedByCTO(ticketId: string, userId: string) {
+    // First, verify that the user has access to this ticket
+    const ticket = await this.prisma.ticket.findUnique({
+      where: { id: ticketId },
+      include: { employee: true },
+    });
+
+    if (!ticket) {
+      throw new NotFoundException('Ticket not found');
+    }
+
+    // Prevent actions on finished tickets
+    if (ticket.status === 'FINISHED') {
+      throw new ForbiddenException('Ticket is already finished');
+    }
+
+    // Check if user is CTO/admin
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { role: true },
+    });
+
+    if (!user) {
+      throw new ForbiddenException('User not found');
+    }
+
+    const isCTO = user.role.name === 'admin' || user.role.name === 'team_lead';
+    if (!isCTO) {
+      throw new ForbiddenException(
+        'Only CTO/admin can directly mark tickets as finished',
+      );
+    }
+
+    // Update ticket status directly to FINISHED
+    const updatedTicket = await this.prisma.ticket.update({
+      where: { id: ticketId },
+      data: { status: 'FINISHED' },
+      include: {
+        employee: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    return updatedTicket;
   }
 }

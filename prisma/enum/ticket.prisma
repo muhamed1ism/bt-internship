@@ -1,0 +1,6 @@
+enum TicketStatus {
+  PENDING
+  ONGOING
+  AWAITING_CONFIRMATION
+  FINISHED
+} 

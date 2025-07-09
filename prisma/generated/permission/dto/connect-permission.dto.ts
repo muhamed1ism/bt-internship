@@ -1,3 +1,5 @@
-export class ConnectPermissionDto {
-  id: string;
-}
+
+  export class ConnectPermissionDto {
+    id: string;
+  }
+  

@@ -1,3 +1,6 @@
-export class ConnectTicketDto {
-  id: string;
-}
+
+  export class ConnectTicketDto {
+    id?: string;
+title?: string;
+  }
+  
