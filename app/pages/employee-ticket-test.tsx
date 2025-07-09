@@ -1,7 +1,10 @@
 import { useState } from 'react';
-import { Ticket } from '../api/ticket-api';
-import { useRealtimeChat } from '../hooks/useRealtimeChat';
-import { useRealtimeMyTickets, useRealtimeTicket } from '../hooks/useRealtimeTickets';
+import {
+  useRealtimeChat,
+  useRealtimeMyTickets,
+  useRealtimeTicket,
+  type Ticket,
+} from '@app/features/tickets';
 import { useAuth } from '../context/AuthContext';
 
 export const EmployeeTicketTest = () => {

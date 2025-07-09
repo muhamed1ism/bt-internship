@@ -5,7 +5,8 @@ import {
   createMessage,
   type TicketMessage,
   type CreateMessageRequest,
-} from '../api/ticket-api';
+} from '@app/api/ticket-api';
+import { POLLING_INTERVALS, CACHE_CONFIG } from '@app/constants/ticket';
 
 /**
  * React Query keys for chat functionality
@@ -26,7 +27,7 @@ export const useRealtimeChat = (
     enabled?: boolean;
   } = {},
 ) => {
-  const { pollingInterval = 4000, enabled = true } = options; // Default: 4 seconds
+  const { pollingInterval = POLLING_INTERVALS.CHAT_MESSAGES, enabled = true } = options;
   const queryClient = useQueryClient();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -45,8 +46,8 @@ export const useRealtimeChat = (
     enabled: enabled && !!ticketId,
     refetchInterval: pollingInterval,
     refetchIntervalInBackground: true,
-    staleTime: 1000, // Consider data stale after 1 second
-    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
+    staleTime: CACHE_CONFIG.STALE_TIME.CHAT_MESSAGES,
+    gcTime: CACHE_CONFIG.GC_TIME.DEFAULT,
   });
 
   /**

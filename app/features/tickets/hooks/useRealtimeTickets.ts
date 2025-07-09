@@ -6,9 +6,9 @@ import {
   markTicketAsFinished,
   confirmTicketFinished,
   markTicketFinishedByCTO,
-  type CreateTicketRequest,
-  type Ticket,
-} from '../api/ticket-api';
+} from '@app/api/ticket-api';
+import { POLLING_INTERVALS, CACHE_CONFIG } from '@app/constants/ticket';
+import type { CreateTicketRequest, Ticket } from '@app/types/ticket';
 
 /**
  * React Query keys for ticket functionality
@@ -29,7 +29,7 @@ export const useRealtimeAllTickets = (
     enabled?: boolean;
   } = {},
 ) => {
-  const { pollingInterval = 5000, enabled = true } = options; // Default: 5 seconds
+  const { pollingInterval = POLLING_INTERVALS.TICKET_LIST, enabled = true } = options;
   const queryClient = useQueryClient();
 
   const {
@@ -43,8 +43,8 @@ export const useRealtimeAllTickets = (
     enabled,
     refetchInterval: pollingInterval,
     refetchIntervalInBackground: true,
-    staleTime: 2000, // Consider data stale after 2 seconds
-    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
+    staleTime: CACHE_CONFIG.STALE_TIME.TICKET_LIST,
+    gcTime: CACHE_CONFIG.GC_TIME.DEFAULT,
   });
 
   // Sort tickets to prioritize AWAITING_CONFIRMATION first
@@ -150,7 +150,7 @@ export const useRealtimeMyTickets = (
     enabled?: boolean;
   } = {},
 ) => {
-  const { pollingInterval = 5000, enabled = true } = options;
+  const { pollingInterval = POLLING_INTERVALS.TICKET_LIST, enabled = true } = options;
   const queryClient = useQueryClient();
 
   const {
@@ -164,8 +164,8 @@ export const useRealtimeMyTickets = (
     enabled,
     refetchInterval: pollingInterval,
     refetchIntervalInBackground: true,
-    staleTime: 2000,
-    gcTime: 5 * 60 * 1000,
+    staleTime: CACHE_CONFIG.STALE_TIME.TICKET_LIST,
+    gcTime: CACHE_CONFIG.GC_TIME.DEFAULT,
   });
 
   // Sort tickets by status and date
@@ -233,7 +233,7 @@ export const useRealtimeTicket = (
     enabled?: boolean;
   } = {},
 ) => {
-  const { pollingInterval = 3000, enabled = true } = options; // Faster polling for individual ticket
+  const { pollingInterval = POLLING_INTERVALS.TICKET_DETAIL, enabled = true } = options;
   const queryClient = useQueryClient();
 
   const {
@@ -268,8 +268,8 @@ export const useRealtimeTicket = (
     enabled: enabled && !!ticketId,
     refetchInterval: pollingInterval,
     refetchIntervalInBackground: true,
-    staleTime: 1000, // Very fresh data for individual ticket
-    gcTime: 2 * 60 * 1000, // Keep in cache for 2 minutes
+    staleTime: CACHE_CONFIG.STALE_TIME.TICKET_DETAIL,
+    gcTime: CACHE_CONFIG.GC_TIME.SHORT,
   });
 
   // Mutations with optimistic updates
@@ -292,7 +292,7 @@ export const useRealtimeTicket = (
 
       return { previousTicket };
     },
-    onError: (err, ticketId, context) => {
+    onError: (_err, ticketId, context) => {
       // Rollback on error
       if (context?.previousTicket) {
         queryClient.setQueryData(TICKET_QUERY_KEYS.ticket(ticketId), context.previousTicket);
@@ -320,7 +320,7 @@ export const useRealtimeTicket = (
 
       return { previousTicket };
     },
-    onError: (err, ticketId, context) => {
+    onError: (_err, ticketId, context) => {
       if (context?.previousTicket) {
         queryClient.setQueryData(TICKET_QUERY_KEYS.ticket(ticketId), context.previousTicket);
       }
@@ -346,7 +346,7 @@ export const useRealtimeTicket = (
 
       return { previousTicket };
     },
-    onError: (err, ticketId, context) => {
+    onError: (_err, ticketId, context) => {
       if (context?.previousTicket) {
         queryClient.setQueryData(TICKET_QUERY_KEYS.ticket(ticketId), context.previousTicket);
       }

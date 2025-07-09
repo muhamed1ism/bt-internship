@@ -1,25 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Ticket } from '../api/ticket-api';
-import { getAllUsersApi } from '../api/user-api';
-import { useRealtimeChat } from '../hooks/useRealtimeChat';
-import { useRealtimeAllTickets, useRealtimeTicket } from '../hooks/useRealtimeTickets';
-import { useAuth } from '../context/AuthContext';
+import { getAllUsersApi } from '@app/api/user-api';
+import { useAuth } from '@app/context/AuthContext';
+import { useRealtimeAllTickets, useRealtimeTicket, useRealtimeChat } from '@app/features/tickets';
+import type { Ticket, CreateTicketForm, User } from '@app/features/tickets';
 
-interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  dateOfBirth: Date;
-  roleId: string;
-}
-
-interface CreateTicketForm {
-  title: string;
-  description: string;
-  employeeId: string;
-}
+// Interfaces now imported from @app/features/tickets
 
 export const CtoTicketTest = () => {
   const { user: currentUser } = useAuth();
