@@ -196,5 +196,9 @@ export const ENDPOINTS = {
       uri: `/tickets/${ticketId}/confirm-finished`,
       method: 'POST',
     }),
+    markFinishedByCTO: (ticketId: string) => ({
+      uri: `/tickets/${ticketId}/mark-finished-by-cto`,
+      method: 'POST',
+    }),
   },
 };

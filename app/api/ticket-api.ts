@@ -214,12 +214,36 @@ export const confirmTicketFinished = async (ticketId: string): Promise<Ticket> =
 
     if (!res.ok) {
       const error = await res.json();
-      throw new Error(error.message || 'Failed to confirm ticket finished');
+      throw new Error(error.message || 'Failed to confirm ticket as finished');
     }
 
     return res.json();
   } catch (error) {
-    console.error('Failed to confirm ticket finished: ', error);
+    console.error('Failed to confirm ticket as finished: ', error);
+    throw error;
+  }
+};
+
+export const markTicketFinishedByCTO = async (ticketId: string): Promise<Ticket> => {
+  try {
+    const authHeaders = await getAuthHeaders();
+    const { uri, method } = ENDPOINTS.ticket.markFinishedByCTO(ticketId);
+
+    const res = await fetch(BASE_URL + uri, {
+      method,
+      headers: {
+        ...authHeaders,
+      },
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message || 'Failed to mark ticket as finished by CTO');
+    }
+
+    return res.json();
+  } catch (error) {
+    console.error('Failed to mark ticket as finished by CTO: ', error);
     throw error;
   }
 };
