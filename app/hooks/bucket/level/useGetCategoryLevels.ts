@@ -7,6 +7,7 @@ export const useGetCategoryLevels = (categoryId: string, options = {}) => {
     data: levels,
     isLoading,
     isSuccess,
+    isError,
   } = useQuery<BucketLevel[]>({
     queryKey: ['category-levels', categoryId],
     queryFn: () => getAllCategoryLevelsApi(categoryId),
@@ -14,5 +15,5 @@ export const useGetCategoryLevels = (categoryId: string, options = {}) => {
     ...options,
   });
 
-  return { levels, isLoading, isSuccess };
+  return { levels, isLoading, isSuccess, isError };
 };

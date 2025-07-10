@@ -41,6 +41,10 @@ export const ENDPOINTS = {
         uri: '/bucket/category/all',
         method: 'GET',
       },
+      getById: (categoryId: string) => ({
+        uri: `/bucket/category/${categoryId}`,
+        method: 'GET',
+      }),
       create: {
         uri: '/bucket/category/create',
         method: 'POST',
@@ -60,14 +64,14 @@ export const ENDPOINTS = {
         uri: `/bucket/level/all/${categoryId}`,
         method: 'GET',
       }),
-      getMyLevel: (categoryId: string) => ({
-        uri: `/bucket/level/my/${categoryId}`,
+      getUserLevel: (categoryId: string) => ({
+        uri: `/bucket/level/user/${categoryId}`,
         method: 'GET',
       }),
-      create: {
-        uri: '/bucket/level/create',
+      create: (categoryId: string) => ({
+        uri: `/bucket/level/create/${categoryId}`,
         method: 'POST',
-      },
+      }),
       update: (levelId: string) => ({
         uri: `/bucket/level/update/${levelId}`,
         method: 'PUT',
@@ -142,8 +146,8 @@ export const ENDPOINTS = {
       uri: '/team/all',
       method: 'GET',
     },
-    getMyTeams: {
-      uri: '/team/my',
+    getUserTeams: {
+      uri: '/team/user',
       method: 'GET',
     },
 

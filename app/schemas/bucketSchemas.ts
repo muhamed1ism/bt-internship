@@ -18,8 +18,6 @@ const createLevelFormSchema = z.object({
 });
 
 const updateLevelFormSchema = z.object({
-  categoryId: z.string(),
-  level: z.number().int().min(1),
   expectations: z.array(z.string()),
   skills: z.array(z.string()),
   tools: z.array(z.string()),

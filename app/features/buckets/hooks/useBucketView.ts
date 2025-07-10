@@ -1,30 +1,55 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import type { Level, Bucket, BucketViewState, EditableField } from '@app/types/bucket';
+import type { Level, Bucket, BucketViewState, EditableField, BucketLevel } from '@app/types/bucket';
 import { MOCK_BUCKETS, DEFAULT_EDITING_LEVEL } from '@app/constants/bucket';
+import {
+  useCreateLevel,
+  useGetCategoryById,
+  useGetUserCategoryLevel,
+  useUpdateLevel,
+} from '../../../hooks/bucket';
+import { CreateLevelFormValues, UpdateLevelFormValues } from '@app/schemas';
 
 export const useBucketView = () => {
   const navigate = useNavigate();
   const { bucketId } = useParams();
 
   // Mock bucket data lookup
-  const bucket: Bucket | undefined = bucketId ? MOCK_BUCKETS[bucketId] : undefined;
-  const hasLevels = bucket && bucket.levels.length > 0;
+  const { category: bucket, isLoading, isSuccess } = useGetCategoryById(bucketId || '');
+  // const bucket: Bucket | undefined = bucketId ? MOCK_BUCKETS[bucketId] : undefined;
+  const hasLevels = bucket && bucket.bucketLevels.length > 0;
+  const { level } = useGetUserCategoryLevel(bucketId || '');
+
+  const currentLevel =
+    bucket?.bucketLevels.find((bucketLevel) => bucketLevel.id === level?.bucketLevelId) || null;
 
   // State management
   const [state, setState] = useState<BucketViewState>({
-    selectedLevel: hasLevels ? bucket.levels[0] : null,
+    selectedLevel: currentLevel,
     isEditingLevel: false,
     isCreatingLevel: false,
-    bucketTitle: bucket?.title || '',
+    bucketTitle: bucket?.name || '',
     editingLevel: DEFAULT_EDITING_LEVEL,
   });
+
+  useEffect(() => {
+    if (bucket && level) {
+      const currentLevel =
+        bucket.bucketLevels.find((bucketLevel) => bucketLevel.id === level.bucketLevelId) || null;
+
+      setState((prev) => ({
+        ...prev,
+        selectedLevel: currentLevel,
+        bucketTitle: bucket.name,
+      }));
+    }
+  }, [bucket, level]);
 
   // Navigation actions
   const navigateBack = () => navigate('/buckets');
 
   // Level selection
-  const handleLevelSelect = (level: Level) => {
+  const handleLevelSelect = (level: BucketLevel) => {
     setState((prev) => ({
       ...prev,
       selectedLevel: level,
@@ -34,7 +59,7 @@ export const useBucketView = () => {
   };
 
   // Level editing
-  const handleEditLevel = (level: Level) => {
+  const handleEditLevel = (level: BucketLevel) => {
     setState((prev) => ({
       ...prev,
       editingLevel: {
@@ -107,13 +132,6 @@ export const useBucketView = () => {
     }
   };
 
-  // Save handlers (placeholder for actual API calls)
-  const handleSaveLevel = () => {
-    // TODO: Implement API call to save level
-    console.log('Saving level:', state.editingLevel);
-    handleCancelEdit();
-  };
-
   const handleSaveBucket = () => {
     // TODO: Implement API call to save bucket
     console.log('Saving bucket:', state.bucketTitle);
@@ -123,6 +141,7 @@ export const useBucketView = () => {
     // Data
     bucket,
     hasLevels,
+    currentLevel,
 
     // State
     ...state,
@@ -134,11 +153,9 @@ export const useBucketView = () => {
     handleCreateLevel,
     handleCancelEdit,
     updateBucketTitle,
-    updateEditingField,
     addListItem,
     updateListItem,
     removeListItem,
-    handleSaveLevel,
     handleSaveBucket,
   };
 };

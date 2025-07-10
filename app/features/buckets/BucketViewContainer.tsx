@@ -1,5 +1,6 @@
-import { useBucketView } from '@app/hooks/useBucketView';
+import { useBucketView } from '@app/features/buckets/hooks/useBucketView';
 import { BucketHeader, LevelSidebar, LevelDetails, LevelForm, BucketCreation } from './components';
+import { useGetUserCategoryLevel } from '@app/hooks/bucket';
 
 /**
  * BucketViewContainer is the main container component that manages
@@ -11,6 +12,7 @@ export const BucketViewContainer = () => {
     // Data
     bucket,
     hasLevels,
+    currentLevel,
 
     // State
     selectedLevel,
@@ -26,11 +28,9 @@ export const BucketViewContainer = () => {
     handleCreateLevel,
     handleCancelEdit,
     updateBucketTitle,
-    updateEditingField,
     addListItem,
     updateListItem,
     removeListItem,
-    handleSaveLevel,
     handleSaveBucket,
   } = useBucketView();
 
@@ -52,8 +52,13 @@ export const BucketViewContainer = () => {
   // Render bucket creation view when no levels exist
   if (!hasLevels) {
     return (
-      <div className="bg-background min-h-screen">
-        <BucketHeader bucket={bucket} onNavigateBack={navigateBack} showBucketInfo={false} />
+      <div className="min-h-screen bg-gray-100">
+        <BucketHeader
+          title={bucket.name}
+          description={bucket.description}
+          totalLevels={bucket.bucketLevels.length}
+          onNavigateBack={navigateBack}
+        />
         <div className="container mx-auto px-6 py-8">
           <BucketCreation
             bucketTitle={bucketTitle}
@@ -69,23 +74,31 @@ export const BucketViewContainer = () => {
   // Render editing/creating form view
   if (isEditingLevel || isCreatingLevel) {
     return (
-      <div className="bg-background min-h-screen">
-        <BucketHeader bucket={bucket} onNavigateBack={navigateBack} breadcrumb="Buckets" />
+      <div className="min-h-screen bg-gray-100">
+        <BucketHeader
+          title={bucket.name}
+          description={bucket.description}
+          totalLevels={bucket.bucketLevels.length}
+          onNavigateBack={navigateBack}
+          breadcrumb="Buckets"
+        />
         <div className="container mx-auto px-6 py-8">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
             <LevelSidebar
-              levels={bucket.levels}
+              name={bucket.name}
+              currentLevel={currentLevel}
+              levels={bucket.bucketLevels}
               selectedLevel={selectedLevel}
               onLevelSelect={handleLevelSelect}
               onCreateLevel={handleCreateLevel}
               showCreateButton={!isCreatingLevel}
             />
             <LevelForm
+              bucketId={bucket.id}
+              levelId={selectedLevel?.id}
               editingLevel={editingLevel}
               isCreating={isCreatingLevel}
               onCancel={handleCancelEdit}
-              onSave={handleSaveLevel}
-              onUpdateField={updateEditingField}
               onAddListItem={addListItem}
               onUpdateListItem={updateListItem}
               onRemoveListItem={removeListItem}
@@ -98,17 +111,31 @@ export const BucketViewContainer = () => {
 
   // Render main bucket view with levels
   return (
-    <div className="bg-background min-h-screen">
-      <BucketHeader bucket={bucket} onNavigateBack={navigateBack} showBucketInfo={true} />
+    <div className="min-h-screen bg-gray-100">
+      <BucketHeader
+        title={bucket.name}
+        description={bucket.description}
+        totalLevels={bucket.bucketLevels.length}
+        onNavigateBack={navigateBack}
+      />
       <div className="container mx-auto px-6 py-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
           <LevelSidebar
-            levels={bucket.levels}
+            name={bucket.name}
+            levels={bucket.bucketLevels}
+            currentLevel={currentLevel}
             selectedLevel={selectedLevel}
             onLevelSelect={handleLevelSelect}
             onCreateLevel={handleCreateLevel}
           />
-          {selectedLevel && <LevelDetails level={selectedLevel} onEditLevel={handleEditLevel} />}
+          {selectedLevel && (
+            <LevelDetails
+              name={bucket.name}
+              currentLevel={currentLevel}
+              level={selectedLevel}
+              onEditLevel={handleEditLevel}
+            />
+          )}
         </div>
       </div>
     </div>

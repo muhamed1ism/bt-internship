@@ -1,15 +1,17 @@
-import { Edit2, TrendingUp, Clock, ChevronRight, Sparkles } from 'lucide-react';
+import { Edit2, TrendingUp, Clock, ChevronRight, Sparkles, CheckCircle2, Star } from 'lucide-react';
 import { Button } from '@app/components/ui/button';
 import { Badge } from '@app/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@app/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@app/components/ui/card';
 import { Separator } from '@app/components/ui/separator';
-import type { Level } from '@app/types/bucket';
+import type { BucketLevel, Level } from '@app/types/bucket';
 import { STATUS_ICONS, SECTION_ICONS, DIFFICULTY_COLORS } from '@app/constants/bucket';
 import { getStatusClasses, getSectionBackground, capitalize } from '@app/utils/bucket';
 
 interface LevelDetailsProps {
-  level: Level;
-  onEditLevel: (level: Level) => void;
+  name: string;
+  level: BucketLevel;
+  currentLevel: BucketLevel | null;
+  onEditLevel: (level: BucketLevel) => void;
 }
 
 interface SectionProps {
@@ -29,20 +31,22 @@ const Section = ({ title, items, sectionType, className = '' }: SectionProps) =>
         {IconComponent && <IconComponent className="h-5 w-5" />}
         <h3 className="text-lg font-semibold">{title}</h3>
       </div>
-      <Card className={backgroundClass}>
+      <Card className={`${backgroundClass} shadow-primary/5 shadow-lg`}>
         <CardContent className="p-4">
           <ul className="space-y-3">
             {items.map((item, index) => (
               <li key={index} className="flex items-start gap-3 text-sm">
                 <div
                   className={`mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full ${
-                    sectionType === 'skills'
-                      ? 'bg-blue-500'
-                      : sectionType === 'knowledge'
-                        ? 'bg-orange-500'
-                        : sectionType === 'toAdvance'
-                          ? 'bg-green-500'
-                          : 'bg-primary'
+                    sectionType === 'expectations'
+                      ? 'bg-purple-500'
+                      : sectionType === 'skills'
+                        ? 'bg-blue-500'
+                        : sectionType === 'knowledge'
+                          ? 'bg-orange-500'
+                          : sectionType === 'toAdvance'
+                            ? 'bg-green-500'
+                            : 'bg-primary'
                   }`}
                 ></div>
                 <span className={sectionType === 'toAdvance' ? 'text-green-800' : ''}>{item}</span>
@@ -55,45 +59,61 @@ const Section = ({ title, items, sectionType, className = '' }: SectionProps) =>
   );
 };
 
-export const LevelDetails = ({ level, onEditLevel }: LevelDetailsProps) => {
-  const renderStatusIcon = () => {
-    const IconComponent = STATUS_ICONS[level.status];
-    return <IconComponent className="h-4 w-4" />;
-  };
-
+export const LevelDetails = ({ name, level, currentLevel, onEditLevel }: LevelDetailsProps) => {
   return (
     <div className="lg:col-span-3">
       <Card className="shadow-lg">
-        <CardHeader className="from-accent/20 to-secondary/20 border-b bg-gradient-to-r">
+        <CardHeader className="border-b">
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-3 text-2xl">
-                <div className={`rounded-lg p-2 ${getStatusClasses(level.status)}`}>
-                  {renderStatusIcon()}
-                </div>
-                {level.title}
+                {currentLevel &&
+                  (() => {
+                    const diff = currentLevel.level - level.level;
+
+                    const config =
+                      diff > 0
+                        ? {
+                            icon: <CheckCircle2 className="h-4 w-4" />,
+                            className: 'bg-green-100 text-green-600',
+                          }
+                        : diff === 0
+                          ? {
+                              icon: <Clock className="h-4 w-4" />,
+                              className: 'bg-blue-100 text-blue-600',
+                            }
+                          : {
+                              icon: <Star className="h-4 w-4" />,
+                              className: 'bg-gray-100 text-gray-600',
+                            };
+
+                    return (
+                      <div className={`rounded-lg p-2 ${config.className}`}>{config.icon}</div>
+                    );
+                  })()}
+                {name} {level.level}
               </CardTitle>
-              <div className="mt-3 flex items-center gap-4">
-                <Badge variant="outline" className={DIFFICULTY_COLORS[level.difficulty]}>
-                  {capitalize(level.difficulty)}
-                </Badge>
-                <div className="text-muted-foreground flex items-center gap-1 text-sm">
-                  <Clock className="h-4 w-4" />
-                  {level.estimatedTime}
-                </div>
-                {level.prerequisites && level.prerequisites.length > 0 && (
-                  <div className="text-muted-foreground flex items-center gap-1 text-sm">
-                    <ChevronRight className="h-4 w-4" />
-                    Requires: {level.prerequisites.join(', ')}
-                  </div>
-                )}
-              </div>
+              {/* <div className="mt-3 flex items-center gap-4"> */}
+              {/* <Badge variant="outline" className={DIFFICULTY_COLORS[level.difficulty]}> */}
+              {/*   {capitalize(level.difficulty)} */}
+              {/* </Badge> */}
+              {/* <div className="text-muted-foreground flex items-center gap-1 text-sm"> */}
+              {/*   <Clock className="h-4 w-4" /> */}
+              {/*   {level.estimatedTime} */}
+              {/* </div> */}
+              {/* {level.prerequisites && level.prerequisites.length > 0 && ( */}
+              {/*   <div className="text-muted-foreground flex items-center gap-1 text-sm"> */}
+              {/*     <ChevronRight className="h-4 w-4" /> */}
+              {/*     Requires: {level.prerequisites.join(', ')} */}
+              {/*   </div> */}
+              {/* )} */}
+              {/* </div> */}
             </div>
           </div>
         </CardHeader>
 
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
+        <CardContent>
+          <div className="grid grid-cols-1 gap-8 px-6 pt-1 xl:grid-cols-2">
             {/* Left Column */}
             <div className="space-y-8">
               <Section title="Expectations" items={level.expectations} sectionType="expectations" />
@@ -108,11 +128,7 @@ export const LevelDetails = ({ level, onEditLevel }: LevelDetailsProps) => {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {level.tools.map((tool, index) => (
-                    <Badge
-                      key={index}
-                      variant="secondary"
-                      className="from-secondary to-secondary/80 hover:from-secondary/90 hover:to-secondary/70 bg-gradient-to-r transition-all"
-                    >
+                    <Badge key={index} className="text-primary bg-gray-200">
                       {tool}
                     </Badge>
                   ))}
@@ -132,7 +148,7 @@ export const LevelDetails = ({ level, onEditLevel }: LevelDetailsProps) => {
                 {SECTION_ICONS.toAdvance && <SECTION_ICONS.toAdvance className="h-5 w-5" />}
                 <h3 className="text-lg font-semibold">Path to Advancement</h3>
               </div>
-              <Card className="border-green-200 bg-gradient-to-br from-green-50 to-emerald-50">
+              <Card className="shadow-primary/5 border-green-100 bg-gradient-to-br from-green-50 to-emerald-50 shadow-lg">
                 <CardContent className="p-6">
                   <div className="mb-4 flex items-center gap-2">
                     <Sparkles className="h-5 w-5 text-green-600" />
@@ -150,20 +166,22 @@ export const LevelDetails = ({ level, onEditLevel }: LevelDetailsProps) => {
               </Card>
             </div>
           </div>
+        </CardContent>
 
-          <Separator className="my-8" />
+        <Separator className="mt-4" />
 
-          <div className="flex gap-3">
+        <CardFooter className="py-1">
+          <div className="flex w-full gap-4">
             <Button onClick={() => onEditLevel(level)} className="flex-1">
               <Edit2 className="mr-2 h-4 w-4" />
               Edit Level
             </Button>
-            <Button variant="outline" className="px-6">
+            <Button variant="outline" className="flex-1">
               <TrendingUp className="mr-2 h-4 w-4" />
               Track Progress
             </Button>
           </div>
-        </CardContent>
+        </CardFooter>
       </Card>
     </div>
   );
