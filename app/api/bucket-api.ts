@@ -32,6 +32,30 @@ export const getAllCategoriesApi = async () => {
   }
 };
 
+export const getCategoryByIdApi = async (categoryId: string) => {
+  const { uri, method } = ENDPOINTS.bucket.category.getById(categoryId);
+  const authHeaders = await getAuthHeaders();
+
+  try {
+    const res = await fetch(BASE_URL + uri, {
+      method,
+      headers: {
+        ...authHeaders,
+      },
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message || 'Failed to fetch bucket categories');
+    }
+
+    return res.json();
+  } catch (error) {
+    console.error('Failed to fetch bucket categories: ', error);
+    throw error;
+  }
+};
+
 export const createCategoryApi = async (formData: CreateCategoryFormValues) => {
   const { uri, method } = ENDPOINTS.bucket.category.create;
   const authHeaders = await getAuthHeaders();
@@ -132,8 +156,8 @@ export const getAllCategoryLevelsApi = async (categoryId: string) => {
   }
 };
 
-export const getMyCategoryLevelApi = async (categoryId: string) => {
-  const { uri, method } = ENDPOINTS.bucket.level.getMyLevel(categoryId);
+export const getUserCategoryLevelApi = async (categoryId: string) => {
+  const { uri, method } = ENDPOINTS.bucket.level.getUserLevel(categoryId);
   const authHeaders = await getAuthHeaders();
 
   try {
@@ -156,8 +180,8 @@ export const getMyCategoryLevelApi = async (categoryId: string) => {
   }
 };
 
-export const createLevelApi = async (formData: CreateLevelFormValues) => {
-  const { uri, method } = ENDPOINTS.bucket.level.create;
+export const createLevelApi = async (formData: CreateLevelFormValues, categoryId: string) => {
+  const { uri, method } = ENDPOINTS.bucket.level.create(categoryId);
   const authHeaders = await getAuthHeaders();
 
   try {

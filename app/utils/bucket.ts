@@ -3,7 +3,7 @@ import type { Level, LevelStatus, LevelDifficulty } from '@app/types/bucket';
 /**
  * Gets the appropriate CSS classes for a level's status
  */
-export const getStatusClasses = (status: LevelStatus): string => {
+export const getStatusClasses = (status: any): string => {
   switch (status) {
     case 'current':
       return 'bg-blue-100 text-blue-600';
@@ -61,15 +61,11 @@ export const isLevelSelectable = (level: Level): boolean => {
 export const getSectionBackground = (sectionType: string): string => {
   switch (sectionType) {
     case 'expectations':
-      return 'bg-accent/5';
+      return 'bg-purple-50 border-purple-100';
     case 'skills':
-      return 'bg-blue-50/50';
-    case 'tools':
-      return 'bg-secondary/10';
+      return 'bg-blue-50 border-blue-100';
     case 'knowledge':
-      return 'bg-orange-50/50';
-    case 'toAdvance':
-      return 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200';
+      return 'bg-orange-50 border-orange-100';
     default:
       return 'bg-accent/5';
   }

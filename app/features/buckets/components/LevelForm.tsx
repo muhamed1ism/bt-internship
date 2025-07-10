@@ -2,17 +2,19 @@ import { Plus, Minus, Save, X } from 'lucide-react';
 import { Button } from '@app/components/ui/button';
 import { Input } from '@app/components/ui/input';
 import { Textarea } from '@app/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@app/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@app/components/ui/card';
 import { Separator } from '@app/components/ui/separator';
-import type { Level, EditableField } from '@app/types/bucket';
+import type { Level, EditableField, BucketCategory } from '@app/types/bucket';
 import { SECTION_ICONS } from '@app/constants/bucket';
+import { CreateLevelFormValues, UpdateLevelFormValues } from '@app/schemas';
+import { useCreateLevel, useDeleteLevel, useUpdateLevel } from '@app/hooks/bucket';
 
 interface LevelFormProps {
+  bucketId: string;
+  levelId?: string;
   editingLevel: Partial<Level>;
   isCreating: boolean;
   onCancel: () => void;
-  onSave: () => void;
-  onUpdateField: (field: keyof Level, value: string | string[]) => void;
   onAddListItem: (field: EditableField) => void;
   onUpdateListItem: (field: EditableField, index: number, value: string) => void;
   onRemoveListItem: (field: EditableField, index: number) => void;
@@ -55,18 +57,17 @@ const EditableSection = ({
             />
             <Button
               type="button"
-              variant="outline"
               size="icon"
               onClick={() => onRemove(index)}
               disabled={items.length === 1}
-              className="shrink-0"
+              className="disabled:bg-primary shrink-0 bg-red-500 hover:bg-red-400"
             >
               <Minus className="h-4 w-4" />
             </Button>
           </div>
         ))}
 
-        <Button type="button" variant="outline" onClick={onAdd} className="w-full">
+        <Button type="button" onClick={onAdd} className="w-full bg-green-600 hover:bg-green-500">
           <Plus className="mr-2 h-4 w-4" />
           Add {title.substring(0, title.length - 1)}
         </Button>
@@ -76,15 +77,19 @@ const EditableSection = ({
 };
 
 export const LevelForm = ({
+  bucketId,
+  levelId,
   editingLevel,
   isCreating,
   onCancel,
-  onSave,
-  onUpdateField,
   onAddListItem,
   onUpdateListItem,
   onRemoveListItem,
 }: LevelFormProps) => {
+  const { mutate: createLevel } = useCreateLevel();
+  const { mutate: updateLevel } = useUpdateLevel();
+  const { mutate: deleteLevel } = useDeleteLevel();
+
   const handleAddItem = (field: EditableField) => {
     onAddListItem(field);
   };
@@ -97,6 +102,37 @@ export const LevelForm = ({
     onRemoveListItem(field, index);
   };
 
+  const handleCreateLevel = () => {
+    const formData: CreateLevelFormValues = {
+      level: editingLevel.levelNumber || 999,
+      expectations: editingLevel.expectations || [],
+      knowledge: editingLevel.knowledge || [],
+      skills: editingLevel.skills || [],
+      tools: editingLevel.tools || [],
+      toAdvance: editingLevel.toAdvance || [],
+    };
+
+    console.log('Creating level: ', { formData, categoryId: bucketId ?? '' });
+    createLevel({ formData, categoryId: bucketId ?? '' });
+  };
+
+  const handleUpdateLevel = () => {
+    const formData: UpdateLevelFormValues = {
+      expectations: editingLevel.expectations || [],
+      knowledge: editingLevel.knowledge || [],
+      skills: editingLevel.skills || [],
+      tools: editingLevel.tools || [],
+      toAdvance: editingLevel.toAdvance || [],
+    };
+
+    console.log('Updating level: ', { formData, levelId: levelId ?? '' });
+    updateLevel({ formData, levelId: levelId ?? '' });
+  };
+
+  const handleDeleteLevel = () => {
+    deleteLevel(levelId ?? '');
+  };
+
   return (
     <div className="lg:col-span-3">
       <Card className="shadow-lg">
@@ -106,23 +142,10 @@ export const LevelForm = ({
           </CardTitle>
         </CardHeader>
 
-        <CardContent className="p-6">
+        <CardContent className="px-0">
           <div className="space-y-8">
-            {/* Level Title */}
-            <div>
-              <label className="mb-2 block text-sm font-medium">Level Title</label>
-              <Input
-                value={editingLevel.title || ''}
-                onChange={(e) => onUpdateField('title', e.target.value)}
-                placeholder="Enter level title..."
-                className="w-full"
-              />
-            </div>
-
-            <Separator />
-
             {/* Editable Sections */}
-            <div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
+            <div className="grid grid-cols-1 gap-8 px-6 pt-1 xl:grid-cols-2">
               <div className="space-y-8">
                 <EditableSection
                   title="Expectations"
@@ -172,22 +195,31 @@ export const LevelForm = ({
                 />
               </div>
             </div>
-
-            <Separator />
-
-            {/* Action Buttons */}
-            <div className="flex gap-4">
-              <Button onClick={onSave} className="flex-1">
-                <Save className="mr-2 h-4 w-4" />
-                {isCreating ? 'Create Level' : 'Save Changes'}
-              </Button>
-              <Button variant="outline" onClick={onCancel} className="px-8">
-                <X className="mr-2 h-4 w-4" />
-                Cancel
-              </Button>
-            </div>
           </div>
         </CardContent>
+
+        <Separator className="mt-4" />
+
+        <CardFooter className="py-1">
+          <div className="flex w-full gap-4">
+            {isCreating ? (
+              <Button onClick={handleCreateLevel} className="flex-1">
+                <Save className="mr-2 h-4 w-4" />
+                Create Level
+              </Button>
+            ) : (
+              <Button onClick={handleUpdateLevel} className="flex-1">
+                <Save className="mr-2 h-4 w-4" />
+                Save Changes
+              </Button>
+            )}
+
+            <Button variant="outline" onClick={onCancel} className="flex-1">
+              <X className="mr-2 h-4 w-4" />
+              Cancel
+            </Button>
+          </div>
+        </CardFooter>
       </Card>
     </div>
   );

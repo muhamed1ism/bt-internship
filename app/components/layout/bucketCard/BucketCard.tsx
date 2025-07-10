@@ -17,8 +17,8 @@ const BucketCard: React.FC<CardProps> = ({ title, currentLevel, isActive, id, ma
     navigate(routeNames.bucketView({ bucketId: id }));
   };
 
-  // Calculate progress percentage
-  const progressPercentage = maxLevel > 0 ? (currentLevel / maxLevel) * 100 : 0;
+  // Calculate progress percentage (assuming max level is currentLevel + 3)
+  const progressPercentage = (currentLevel / maxLevel) * 100;
 
   return (
     <div
@@ -36,7 +36,7 @@ const BucketCard: React.FC<CardProps> = ({ title, currentLevel, isActive, id, ma
 
       <div className="flex flex-col gap-6">
         {/* Title with improved typography */}
-        <div className="space-y-1 min-h-[4.5rem] flex flex-col justify-center">
+        <div className="space-y-1">
           <h1 className="group-hover:text-primary flex flex-col text-3xl leading-tight font-bold transition-colors duration-200">
             {title &&
               title.split(' ').map((word, index) => (
@@ -80,49 +80,39 @@ const BucketCard: React.FC<CardProps> = ({ title, currentLevel, isActive, id, ma
             </div>
 
             {/* Goals section with enhanced visual design */}
-            <div className="space-y-3 flex flex-col h-32">
+            <div className="space-y-3">
               <p className="text-muted-foreground text-center text-sm font-medium">
-                {currentLevel >= maxLevel ? 'Achievement Unlocked' : 'Upcoming Goals'}
+                Upcoming Goals
               </p>
-              {currentLevel < maxLevel ? (
-                <>
-                  <div className="flex w-full flex-row items-center justify-center gap-4 flex-1">
-                    {Array.from({ length: Math.min(4, maxLevel - currentLevel) }, (_, index) => {
-                      const level = currentLevel + index + 1;
-                      const isNext = index === 0;
-                      return (
-                        <div key={level} className="flex flex-col items-center gap-1">
-                          <div
-                            className={`flex h-9 w-9 flex-col items-center justify-center rounded-md border transition-all duration-200 ${
-                              isNext
-                                ? 'bg-primary text-primary-foreground border-primary scale-105 shadow-sm'
-                                : 'bg-primary/10 text-secondary-foreground border-secondary/30'
-                            }`}
-                          >
-                            <p className="text-sm font-semibold">{level}</p>
-                          </div>
-                          {isNext && <div className="bg-primary h-1 w-1 animate-pulse rounded-full" />}
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <div className="flex justify-center mt-auto">
-                    <span className="text-muted-foreground bg-muted/50 rounded-full px-2 py-1 text-xs">
-                      {maxLevel - currentLevel === 1 ? (
-                        <p>Final milestone at Level {maxLevel}</p>
-                      ) : (
-                        <p>Next milestone at Level {currentLevel + 1}</p>
-                      )}
-                    </span>
-                  </div>
-                </>
-              ) : (
-                <div className="flex justify-center flex-1 items-center">
-                  <span className="text-muted-foreground bg-muted/50 rounded-full px-2 py-1 text-xs">
-                    <p>🏆 You have reached the top level!</p>
-                  </span>
-                </div>
-              )}
+              <div className="flex w-full flex-row items-center justify-center gap-4">
+                {[1, 2, 3, 4].map((offset, index) => {
+                  const level = currentLevel + offset;
+                  const isNext = offset === 1;
+                  return (
+                    <div key={level} className="flex flex-col items-center gap-1">
+                      <div
+                        className={`flex h-9 w-9 flex-col items-center justify-center rounded-md border transition-all duration-200 ${
+                          isNext
+                            ? 'bg-primary text-primary-foreground border-primary scale-105 shadow-sm'
+                            : 'bg-primary/10 text-secondary-foreground border-secondary/30'
+                        }`}
+                      >
+                        <p className="text-sm font-semibold">{level}</p>
+                      </div>
+                      {isNext && <div className="bg-primary h-1 w-1 animate-pulse rounded-full" />}
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="flex justify-center">
+                <span className="text-muted-foreground bg-muted/50 rounded-full px-2 py-1 text-xs">
+                  {currentLevel < maxLevel ? (
+                    <p>Next milestone at Level {currentLevel + 1}</p>
+                  ) : (
+                    <p>You have reached the highest level.</p>
+                  )}
+                </span>
+              </div>
             </div>
           </>
         )}

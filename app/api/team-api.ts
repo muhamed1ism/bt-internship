@@ -31,8 +31,8 @@ export const getAllTeamsApi = async () => {
   }
 };
 
-export const getMyTeamsApi = async () => {
-  const { uri, method } = ENDPOINTS.team.getMyTeams;
+export const getUserTeamsApi = async () => {
+  const { uri, method } = ENDPOINTS.team.getUserTeams;
   const authHeaders = await getAuthHeaders();
 
   try {
@@ -181,7 +181,7 @@ export const addMembersApi = async (formData: AddMembersFormValues) => {
   }
 };
 
-export const updateMemberPostitionApi = async (
+export const updateMemberPositionApi = async (
   formData: UpdateMemberPositionFormValues,
   teamId: string,
   memberId: string,
