@@ -20,6 +20,7 @@ export interface UserType {
 export interface UserRoleType {
   id: string;
   name: string;
+  description?: string;
 }
 
 export interface PersonalInfoFormType {

@@ -5,13 +5,9 @@ export const useDeleteMember = () => {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, error } = useMutation({
-    mutationFn: ({ teamId, userId }: { teamId: string; userId: string }) =>
-      deleteMemberApi(teamId, userId),
-    onSuccess: (_, { teamId }) => {
-      // Invalidate team members query
-      queryClient.invalidateQueries({ queryKey: ['get-team-members', teamId] });
-      // Also invalidate all teams to refresh team counts
-      queryClient.invalidateQueries({ queryKey: ['get-all-teams'] });
+    mutationFn: (memberId: string) => deleteMemberApi(memberId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['get-team-by-id'] });
     },
   });
 

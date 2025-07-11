@@ -1,58 +1,43 @@
-export interface TeamLead {
-  firstName: string;
-  lastName: string;
-}
+import { UserType } from './types';
 
 export interface Team {
-  id: number;
-  teamNumber: number;
-  teamLead: TeamLead;
-  memberCount?: number;
-}
-
-// Backend response types based on API documentation
-export interface BackendTeam {
   id: string;
   name: string;
   clientName: string;
-  status: 'IN_PROGRESS' | 'COMPLETED' | 'ON_HOLD';
-  startDate: string;
-  endDate?: string;
+  status: string;
+  startDate: Date;
+  endDate?: Date;
   projectDescription: string;
   documentation: string;
   githubLink: string;
-  createdAt: string;
-  updatedAt: string;
-  technologies: Array<{
-    id: string;
-    name: string;
-  }>;
-  members: BackendTeamMember[];
+  createdAt: Date;
+  updatedAt: Date;
+  _count: TeamCount;
+  members?: TeamMember[] | [];
+  technologies?: TeamTechnology[] | [];
 }
 
-export interface BackendTeamMember {
+export interface TeamCount {
+  technologies: number;
+  members: number;
+}
+
+export interface TeamMember {
   id: string;
   position: string;
-  joinedAt: string;
-  userId: string;
+  joinedAt: Date;
   teamId: string;
-  // Note: user object is not included in the response - it's in a separate table
+  user: UserType;
 }
 
-export interface TransformedTeam {
-  id: number;
-  teamNumber: number;
-  teamLead: TeamLead;
-  memberCount: number;
+export interface TeamTechnology {
+  id: string;
   name: string;
-  status: string;
-  clientName: string;
-  technologies: string[];
 }
 
 export interface TeamCardProps {
-  teamNumber: number;
-  teamLead: TeamLead;
+  teamName: string;
+  teamLeaders: TeamMember[] | [];
   viewMode?: 'grid' | 'list';
   memberCount?: number;
   onView?: () => void;
@@ -60,3 +45,9 @@ export interface TeamCardProps {
 }
 
 export type ViewMode = 'grid' | 'list';
+
+export interface MemberCardProps {
+  member: TeamMember;
+  onSubmitReport?: (memberId: string) => void;
+  onChangePosition?: (memberId: string) => void;
+}

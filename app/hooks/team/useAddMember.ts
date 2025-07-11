@@ -1,18 +1,15 @@
 import { addMembersApi } from '@app/api/team-api';
 import { AddMembersFormValues } from '@app/schemas';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 
-export const useAddMember = () => {
-  const queryClient = useQueryClient();
+export const useAddMembers = (teamId: string) => {
+  const navigate = useNavigate();
 
   const { mutate, isPending, error } = useMutation({
-    mutationFn: ({ formData, teamId }: { formData: AddMembersFormValues; teamId: string }) =>
-      addMembersApi(formData, teamId),
-    onSuccess: (_, { teamId }) => {
-      // Invalidate team members query
-      queryClient.invalidateQueries({ queryKey: ['get-team-members', teamId] });
-      // Also invalidate all teams to refresh team counts
-      queryClient.invalidateQueries({ queryKey: ['get-all-teams'] });
+    mutationFn: (formData: AddMembersFormValues) => addMembersApi(formData, teamId),
+    onSuccess: () => {
+      navigate(`/teams/${teamId}/members`);
     },
   });
 

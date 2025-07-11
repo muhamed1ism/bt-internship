@@ -8,18 +8,13 @@ export const useUpdateMemberPosition = () => {
   const { mutate, isPending, error } = useMutation({
     mutationFn: ({
       formData,
-      teamId,
-      userId,
+      memberId,
     }: {
       formData: UpdateMemberPositionFormValues;
-      teamId: string;
-      userId: string;
-    }) => updateMemberPositionApi(formData, teamId, userId),
-    onSuccess: (_, { teamId }) => {
-      // Invalidate team members query
-      queryClient.invalidateQueries({ queryKey: ['get-team-members', teamId] });
-      // Also invalidate all teams to refresh team data
-      queryClient.invalidateQueries({ queryKey: ['get-all-teams'] });
+      memberId: string;
+    }) => updateMemberPositionApi(formData, memberId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['get-team-by-id'] });
     },
   });
 

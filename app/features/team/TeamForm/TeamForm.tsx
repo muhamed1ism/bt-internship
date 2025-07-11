@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Avatar, AvatarImage, AvatarFallback } from '@app/components/ui/avatar';
 import { Button } from '@app/components/ui/button';
 import { Input } from '@app/components/ui/input';
 import { Textarea } from '@app/components/ui/textarea';
@@ -20,23 +19,44 @@ import {
   FormLabel,
   FormMessage,
 } from '@app/components/ui/form';
-import { Trash2, Users, DollarSign } from 'lucide-react';
+import { Trash2, Users } from 'lucide-react';
 import { teamSchema, TeamFormValues } from '@app/schemas';
-import { TEAM_STATUS_OPTIONS, PRIORITY_OPTIONS, DEFAULT_TEAM_FORM } from '@app/constants/team-form';
-import { TeamFormProps } from '@app/types/team-form';
-import { TechnologySelector } from './TechnologySelector';
+import { TEAM_STATUS_OPTIONS } from '@app/constants/team-form';
 import { TeamRemovalModal } from './TeamRemovalModal';
-import { MultiUrlInput } from './MultiUrlInput';
+import { useCreateTeam, useDeleteTeam, useUpdateTeam } from '@app/hooks/team';
+import { TeamFormProps } from './TeamFormModal';
+import { TechnologySelector } from './TechnologySelector';
+import { FormDatePicker } from '@app/components/forms/FormDatePicker';
 
-export const TeamForm = ({ team, onSave, onRemove, onClose, mode }: TeamFormProps) => {
+export const TeamForm = ({ team, onClose, mode }: TeamFormProps) => {
+  const { mutate: createTeam } = useCreateTeam();
+  const { mutate: updateTeam } = useUpdateTeam();
+  const { mutate: deleteTeam } = useDeleteTeam();
+
   const [showRemovalModal, setShowRemovalModal] = useState(false);
+
   const form = useForm<TeamFormValues>({
-    resolver: zodResolver(teamSchema.team),
-    defaultValues: team || DEFAULT_TEAM_FORM,
+    resolver: zodResolver(teamSchema.form),
+    defaultValues: (team as TeamFormValues) || {
+      name: '',
+      clientName: '',
+      status: '',
+      startDate: new Date(),
+      endDate: undefined,
+      projectDescription: '',
+      documentation: '',
+      githubLink: '',
+      technologies: [],
+    },
   });
 
-  const onSubmit = (data: TeamFormValues) => {
-    onSave(data);
+  const onSubmit = (formData: TeamFormValues) => {
+    if (mode === 'create') {
+      createTeam(formData);
+    } else if (mode === 'edit') {
+      if (!team?.id) return;
+      updateTeam({ formData, teamId: team.id });
+    }
   };
 
   const handleRemove = () => {
@@ -44,60 +64,16 @@ export const TeamForm = ({ team, onSave, onRemove, onClose, mode }: TeamFormProp
   };
 
   const confirmRemoval = () => {
-    if (team?.id && onRemove) {
-      onRemove(team.id);
-    }
+    if (!team?.id) return;
+    deleteTeam(team.id);
     setShowRemovalModal(false);
   };
-
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map((word) => word.charAt(0))
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
-  const teamName = form.watch('name');
 
   return (
     <div className="space-y-6">
       {/* Team Avatar Header */}
       <div className="mb-8 flex items-center justify-center">
         <div className="relative">
-          <div className="flex items-center justify-center">
-            {/* Left Avatar */}
-            <Avatar className="relative z-10 h-12 w-12 border-2 border-white shadow-lg">
-              <AvatarImage
-                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${teamName || 'team'}-1`}
-              />
-              <AvatarFallback className="bg-gray-200 text-sm font-medium text-gray-700">
-                T1
-              </AvatarFallback>
-            </Avatar>
-
-            {/* Center Avatar */}
-            <Avatar className="relative z-20 -mx-3 h-16 w-16 border-2 border-white shadow-lg">
-              <AvatarImage
-                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${teamName || 'team'}-lead`}
-              />
-              <AvatarFallback className="bg-gray-800 text-lg font-semibold text-white">
-                {teamName ? getInitials(teamName) : 'TM'}
-              </AvatarFallback>
-            </Avatar>
-
-            {/* Right Avatar */}
-            <Avatar className="relative z-10 h-12 w-12 border-2 border-white shadow-lg">
-              <AvatarImage
-                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${teamName || 'team'}-3`}
-              />
-              <AvatarFallback className="bg-gray-200 text-sm font-medium text-gray-700">
-                T3
-              </AvatarFallback>
-            </Avatar>
-          </div>
-
           {/* Team Icon Overlay */}
           <div className="bg-primary border-background absolute -right-1 -bottom-1 rounded-full border-2 p-1.5 shadow-sm">
             <Users className="text-primary-foreground h-3 w-3" />
@@ -140,7 +116,7 @@ export const TeamForm = ({ team, onSave, onRemove, onClose, mode }: TeamFormProp
           {/* Client */}
           <FormField
             control={form.control}
-            name="client"
+            name="clientName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Client *</FormLabel>
@@ -179,34 +155,22 @@ export const TeamForm = ({ team, onSave, onRemove, onClose, mode }: TeamFormProp
           />
 
           {/* Start Date */}
-          <FormField
-            control={form.control}
-            name="startDate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Start Date *</FormLabel>
-                <FormControl>
-                  <Input type="date" {...field} min={new Date().toISOString().split('T')[0]} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <FormItem>
+            <FormLabel>Start Date *</FormLabel>
+            <FormControl>
+              <FormDatePicker control={form.control} name="startDate" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
 
-          {/* Project Name */}
-          <FormField
-            control={form.control}
-            name="projectName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Project Name *</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter project name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {/* End Date */}
+          <FormItem>
+            <FormLabel>End Date (Optional)</FormLabel>
+            <FormControl>
+              <FormDatePicker control={form.control} name="endDate" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
 
           {/* Project Description */}
           <FormField
@@ -227,74 +191,15 @@ export const TeamForm = ({ team, onSave, onRemove, onClose, mode }: TeamFormProp
             )}
           />
 
-          {/* End Date */}
+          {/* GitHub URL */}
           <FormField
             control={form.control}
-            name="endDate"
+            name="githubLink"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>End Date (Optional)</FormLabel>
+                <FormLabel>GitHub URL</FormLabel>
                 <FormControl>
-                  <Input
-                    type="date"
-                    {...field}
-                    min={form.watch('startDate') || new Date().toISOString().split('T')[0]}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Priority */}
-          <FormField
-            control={form.control}
-            name="priority"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Priority *</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select priority" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {PRIORITY_OPTIONS.map((priority) => (
-                      <SelectItem key={priority.value} value={priority.value}>
-                        <div className="flex items-center gap-2">
-                          <div className={`h-3 w-3 rounded-full ${priority.color}`} />
-                          {priority.label}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Budget */}
-          <FormField
-            control={form.control}
-            name="budget"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Budget (Optional)</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <DollarSign className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-                    <Input
-                      type="number"
-                      placeholder="Enter budget amount"
-                      className="pl-10"
-                      {...field}
-                      onChange={(e) =>
-                        field.onChange(e.target.value ? Number(e.target.value) : undefined)
-                      }
-                    />
-                  </div>
+                  <Input placeholder="Enter GitHub URL" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -302,40 +207,40 @@ export const TeamForm = ({ team, onSave, onRemove, onClose, mode }: TeamFormProp
           />
 
           {/* GitHub URLs */}
-          <FormField
-            control={form.control}
-            name="githubUrls"
-            render={({ field }) => (
-              <FormItem>
-                <MultiUrlInput
-                  label="GitHub Repositories"
-                  urls={field.value || ['']}
-                  onChange={field.onChange}
-                  placeholder="https://github.com/organization/repository"
-                  type="github"
-                  error={form.formState.errors.githubUrls?.message}
-                />
-              </FormItem>
-            )}
-          />
+          {/* <FormField */}
+          {/*   control={form.control} */}
+          {/*   name="githubUrls" */}
+          {/*   render={({ field }) => ( */}
+          {/*     <FormItem> */}
+          {/*       <MultiUrlInput */}
+          {/*         label="GitHub Repositories" */}
+          {/*         urls={field.value || ['']} */}
+          {/*         onChange={field.onChange} */}
+          {/*         placeholder="https://github.com/organization/repository" */}
+          {/*         type="github" */}
+          {/*         error={form.formState.errors.githubUrls?.message} */}
+          {/*       /> */}
+          {/*     </FormItem> */}
+          {/*   )} */}
+          {/* /> */}
 
           {/* JIRA URLs */}
-          <FormField
-            control={form.control}
-            name="jiraUrls"
-            render={({ field }) => (
-              <FormItem>
-                <MultiUrlInput
-                  label="JIRA Projects"
-                  urls={field.value || ['']}
-                  onChange={field.onChange}
-                  placeholder="https://organization.atlassian.net/browse/PROJECT"
-                  type="jira"
-                  error={form.formState.errors.jiraUrls?.message}
-                />
-              </FormItem>
-            )}
-          />
+          {/* <FormField */}
+          {/*   control={form.control} */}
+          {/*   name="jiraUrls" */}
+          {/*   render={({ field }) => ( */}
+          {/*     <FormItem> */}
+          {/*       <MultiUrlInput */}
+          {/*         label="JIRA Projects" */}
+          {/*         urls={field.value || ['']} */}
+          {/*         onChange={field.onChange} */}
+          {/*         placeholder="https://organization.atlassian.net/browse/PROJECT" */}
+          {/*         type="jira" */}
+          {/*         error={form.formState.errors.jiraUrls?.message} */}
+          {/*       /> */}
+          {/*     </FormItem> */}
+          {/*   )} */}
+          {/* /> */}
 
           {/* Action Buttons */}
           <div className="border-border flex items-center justify-between border-t pt-6">

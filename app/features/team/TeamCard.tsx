@@ -1,30 +1,27 @@
 import { Card, CardContent, CardFooter } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '../../components/ui/avatar';
-import { Eye, Edit3, Users } from 'lucide-react';
+import { Eye, Edit3, Users, UserRound } from 'lucide-react';
 import { TeamCardProps } from '@app/types/team';
-import { DEFAULT_TEAM } from '@mocks/teams';
 
 export const TeamCard = ({
-  teamNumber,
-  teamLead,
+  teamName,
+  teamLeaders,
   viewMode = 'grid',
-  memberCount = 5,
+  memberCount = 0,
   onView,
   onEdit,
-}: TeamCardProps = DEFAULT_TEAM) => {
-
+}: TeamCardProps) => {
   // Generate initials for avatars
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   };
 
-  const leadInitials = getInitials(teamLead.firstName, teamLead.lastName);
-
   // List view variant
   if (viewMode === 'list') {
     return (
       <Card className="group border-border/50 hover:border-border transition-all duration-200 hover:shadow-md">
+        {/* TODO: Fix view of cards on <500px screens  */}
         <CardContent className="px-6 py-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
@@ -34,60 +31,63 @@ export const TeamCard = ({
                 <div className="flex items-center justify-center">
                   {/* Left Avatar */}
                   <Avatar className="relative z-10 h-10 w-10 border-1 border-white">
-                    <AvatarImage
-                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${teamNumber}-1`}
-                    />
+                    <AvatarImage src={''} />
                     <AvatarFallback className="bg-gray-200 text-xs font-medium text-gray-700">
-                      T{teamNumber}
+                      {teamLeaders[1] ? (
+                        getInitials(teamLeaders[1].user.firstName, teamLeaders[1].user.lastName)
+                      ) : (
+                        <UserRound />
+                      )}
                     </AvatarFallback>
                   </Avatar>
 
                   {/* Center Avatar (Team Lead) - Overlapping */}
                   <Avatar className="relative z-20 -mx-1.5 h-14 w-14 border-3 border-white">
-                    <AvatarImage
-                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${teamLead.firstName}-${teamLead.lastName}`}
-                    />
+                    <AvatarImage src={``} />
                     <AvatarFallback className="bg-gray-800 text-sm font-semibold text-white">
-                      {leadInitials}
+                      {teamLeaders[0] ? (
+                        getInitials(teamLeaders[0].user.firstName, teamLeaders[0].user.lastName)
+                      ) : (
+                        <UserRound />
+                      )}
                     </AvatarFallback>
                   </Avatar>
 
                   {/* Right Avatar */}
                   <Avatar className="relative z-10 h-10 w-10 border-1 border-white">
-                    <AvatarImage
-                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${teamNumber}-3`}
-                    />
+                    <AvatarImage src={``} />
                     <AvatarFallback className="bg-gray-200 text-xs font-medium text-gray-700">
-                      M{teamNumber}
+                      {teamLeaders[2] ? (
+                        getInitials(teamLeaders[2].user.firstName, teamLeaders[2].user.lastName)
+                      ) : (
+                        <UserRound />
+                      )}
                     </AvatarFallback>
                   </Avatar>
-
-                  {/* Show remaining members count if more than 3 members */}
-                  {memberCount > 3 && (
-                    <div className="relative z-10 -ml-1.5 flex h-10 w-10 items-center justify-center rounded-full border border-white bg-gray-200 text-xs font-medium text-gray-700">
-                      +{memberCount - 3}
-                    </div>
-                  )}
                 </div>
               </div>
 
               {/* Team Info */}
-              <div className="ml-6 flex-1">
-                <div className="flex flex-col items-center gap-4">
-                  <div>
-                    <h3 className="text-foreground ml-2 text-2xl font-bold">Team {teamNumber}</h3>
-                    <div className="text-muted-foreground ml-3 flex items-center text-sm">
+              <div className="ml-6">
+                <div className="flex flex-col items-center justify-start gap-4">
+                  <div className="w-full">
+                    <h3 className="text-foreground text-2xl font-bold">{teamName}</h3>
+                    <div className="text-muted-foreground flex items-center text-sm">
                       <Users className="mr-1 h-3 w-3" />
-                      <span>
-                        {memberCount} member{memberCount !== 1 ? 's' : ''}
-                      </span>
+                      <span>{memberCount} members</span>
                     </div>
                   </div>
 
-                  <div className="hidden sm:block">
+                  <div className="hidden md:block">
                     <p className="text-muted-foreground text-sm font-medium">Team Lead</p>
-                    <p className="text-foreground font-semibold">
-                      {teamLead.firstName} {teamLead.lastName}
+                    <p className="text-foreground line-clamp-2 max-w-1/2 font-semibold sm:max-w-3/4 md:max-w-2/3">
+                      {teamLeaders
+                        .map((lead) => {
+                          return `${lead.user.firstName} ${lead.user.lastName}`;
+                        })
+                        .join(', ')}
+                      , Some User, Some User 2, Some User 3 , Some User, Some User 2, Some User 3 ,
+                      Some User, Some User 2, Some User 3 , Some User, Some User 2, Some User 3
                     </p>
                   </div>
                 </div>
@@ -117,12 +117,18 @@ export const TeamCard = ({
           </div>
 
           {/* Mobile Team Lead Info */}
-          <div className="border-border/50 mt-3 border-t pt-3 sm:hidden">
-            <p className="text-muted-foreground text-sm font-medium">Team Lead</p>
-            <p className="text-foreground font-semibold">
-              {teamLead.firstName} {teamLead.lastName}
-            </p>
-          </div>
+          {teamLeaders && teamLeaders.length > 0 && (
+            <div className="border-border/50 mt-3 border-t pt-3 md:hidden">
+              <p className="text-muted-foreground text-sm font-medium">Team Lead</p>
+              <p className="text-foreground font-semibold">
+                {teamLeaders
+                  .map((lead) => {
+                    return `${lead.user.firstName} ${lead.user.lastName}`;
+                  })
+                  .join(', ')}
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
     );
@@ -131,48 +137,47 @@ export const TeamCard = ({
   // Grid view variant (default)
   return (
     <Card className="group border-border/50 hover:border-border relative overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-lg">
-      <CardContent className="px-2 py-4">
+      <CardContent className="h-full w-full px-2 py-4">
         {/* Team Avatar Circles */}
-        <div className="mb-6 flex items-center justify-center">
+        <div className="mb-6 flex w-full items-center justify-center">
           <div className="relative">
             {/* Three Aligned Avatar Circles */}
             <div className="flex items-center justify-center">
               {/* Left Avatar */}
               <Avatar className="relative z-10 h-12 w-12 border-1 border-white">
-                <AvatarImage
-                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${teamNumber}-1`}
-                />
+                <AvatarImage src={``} />
                 <AvatarFallback className="bg-gray-200 text-xs font-medium text-gray-700">
-                  T{teamNumber}
+                  {teamLeaders[1] ? (
+                    getInitials(teamLeaders[1].user.firstName, teamLeaders[1].user.lastName)
+                  ) : (
+                    <UserRound />
+                  )}
                 </AvatarFallback>
               </Avatar>
 
               {/* Center Avatar (Team Lead) - Overlapping */}
               <Avatar className="relative z-20 -mx-2 h-16 w-16 border-4 border-white">
-                <AvatarImage
-                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${teamLead.firstName}-${teamLead.lastName}`}
-                />
+                <AvatarImage src={``} />
                 <AvatarFallback className="bg-gray-800 text-sm font-semibold text-white">
-                  {leadInitials}
+                  {teamLeaders[0] ? (
+                    getInitials(teamLeaders[0].user.firstName, teamLeaders[0].user.lastName)
+                  ) : (
+                    <UserRound />
+                  )}
                 </AvatarFallback>
               </Avatar>
 
               {/* Right Avatar */}
               <Avatar className="relative z-10 h-12 w-12 border-1 border-white">
-                <AvatarImage
-                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${teamNumber}-3`}
-                />
+                <AvatarImage src={``} />
                 <AvatarFallback className="bg-gray-200 text-xs font-medium text-gray-700">
-                  M{teamNumber}
+                  {teamLeaders[2] ? (
+                    getInitials(teamLeaders[2].user.firstName, teamLeaders[2].user.lastName)
+                  ) : (
+                    <UserRound />
+                  )}
                 </AvatarFallback>
               </Avatar>
-
-              {/* Show remaining members count if more than 3 members */}
-              {memberCount > 3 && (
-                <div className="relative z-10 -ml-2 flex h-12 w-12 items-center justify-center rounded-full border border-white bg-gray-200 text-xs font-medium text-gray-700">
-                  +{memberCount - 3}
-                </div>
-              )}
             </div>
 
             {/* Team Icon Overlay */}
@@ -183,9 +188,11 @@ export const TeamCard = ({
         </div>
 
         {/* Team Info */}
-        <div className="cursor-pointer space-y-6 text-center" onClick={onView}>
+        <div className="w-full cursor-pointer space-y-6 text-center" onClick={onView}>
           <div>
-            <h3 className="text-foreground mb-1 text-2xl font-bold">Team {teamNumber}</h3>
+            <h3 className="text-foreground mb-1 line-clamp-2 px-2 text-2xl font-bold">
+              {teamName}
+            </h3>
             <div className="text-muted-foreground flex items-center justify-center text-sm">
               <Users className="mr-1 h-3 w-3" />
               <span>
@@ -195,9 +202,15 @@ export const TeamCard = ({
           </div>
 
           <div className="space-y-1">
-            <p className="text-muted-foreground text-sm font-medium">Team Lead</p>
-            <p className="text-foreground font-semibold">
-              {teamLead.firstName} {teamLead.lastName}
+            {teamLeaders && teamLeaders.length > 0 && (
+              <p className="text-muted-foreground text-sm font-medium">Team Lead</p>
+            )}
+            <p className="text-foreground line-clamp-2 px-4 font-semibold">
+              {teamLeaders
+                .map((lead) => {
+                  return `${lead.user.firstName} ${lead.user.lastName}`;
+                })
+                .join(', ')}
             </p>
           </div>
         </div>

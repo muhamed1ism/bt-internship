@@ -8,19 +8,18 @@ interface AddMemberCardProps {
 }
 
 export const AddMemberCard = ({ onAddMember, viewMode = 'grid' }: AddMemberCardProps) => {
+  // List view
   if (viewMode === 'list') {
     return (
-      <Card className="border-muted-foreground/30 hover:border-primary/50 border-2 border-dashed transition-colors">
-        <CardContent className="p-4">
+      <Card className="bg-primary/10 hover:border-primary/50 inset-shadow-primary/20 border-primary/10 h-36 p-0 shadow-none inset-shadow-xs transition-colors hover:border-2 hover:inset-shadow-2xs">
+        <CardContent className="h-full w-full p-0">
           <Button
             onClick={onAddMember}
             variant="ghost"
-            className="text-muted-foreground hover:text-primary flex h-full w-full items-center gap-3"
+            className="text-muted-foreground hover:bg-secondary/20 hover:text-primary flex h-full w-full flex-col items-center justify-center gap-4"
           >
-            <div className="bg-muted flex h-12 w-12 items-center justify-center rounded-full">
-              <Plus className="h-6 w-6" />
-            </div>
-            <span className="text-lg font-medium">Add Member</span>
+            <Plus className="size-10" />
+            <span className="text-xl font-medium">Add Member</span>
           </Button>
         </CardContent>
       </Card>
@@ -29,17 +28,15 @@ export const AddMemberCard = ({ onAddMember, viewMode = 'grid' }: AddMemberCardP
 
   // Grid view
   return (
-    <Card className="border-muted-foreground/30 hover:border-primary/50 border-2 border-dashed transition-colors">
-      <CardContent className="p-6">
+    <Card className="bg-primary/10 hover:border-primary/50 inset-shadow-primary/20 border-primary/10 h-92 p-0 shadow-none inset-shadow-xs transition-colors hover:border-2 hover:inset-shadow-xs">
+      <CardContent className="h-full w-full p-0">
         <Button
           onClick={onAddMember}
           variant="ghost"
-          className="text-muted-foreground hover:text-primary flex h-full min-h-[280px] w-full flex-col items-center justify-center gap-4"
+          className="text-muted-foreground hover:bg-secondary/20 hover:text-primary flex h-full w-full flex-col items-center justify-center gap-4"
         >
-          <div className="bg-muted flex h-20 w-20 items-center justify-center rounded-full">
-            <Plus className="h-10 w-10" />
-          </div>
-          <span className="text-lg font-medium">Add Member</span>
+          <Plus className="size-10" />
+          <span className="text-xl font-medium">Add Member</span>
         </Button>
       </CardContent>
     </Card>

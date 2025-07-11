@@ -32,7 +32,7 @@ export const TeamsControls = ({
       </div>
 
       {/* Create Team Button and View Mode Toggle */}
-      <div className="flex items-center gap-2">
+      <div className="ml-auto flex items-center justify-end gap-2">
         <div className="mr-3 flex rounded-lg border-1">
           <Button
             size="icon"

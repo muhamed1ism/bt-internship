@@ -26,7 +26,7 @@ export const Buckets = () => {
               return (
                 <BucketCard
                   key={userBucket.bucketLevelId}
-                  id={userBucket.bucketLevelId}
+                  id={userBucket.bucket.categoryId}
                   title={userBucket.bucket.category.name}
                   currentLevel={userBucket.bucket.level}
                   isActive={true}

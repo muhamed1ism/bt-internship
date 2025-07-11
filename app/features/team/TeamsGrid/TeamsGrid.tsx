@@ -1,16 +1,14 @@
-import { TransformedTeam, ViewMode } from '@app/types/team';
+import { Team, ViewMode } from '@app/types/team';
 import { TeamCard } from '../TeamCard';
 
 interface TeamsGridProps {
-  teams: TransformedTeam[];
+  teams: Team[];
   viewMode: ViewMode;
-  onViewTeam: (teamId: number) => void;
-  onEditTeam: (teamId: number) => void;
+  onViewTeam: (teamId: string) => void;
+  onEditTeam: (teamId: string) => void;
 }
 
 export const TeamsGrid = ({ teams, viewMode, onViewTeam, onEditTeam }: TeamsGridProps) => {
-
-  
   return (
     <div
       className={` ${
@@ -19,17 +17,22 @@ export const TeamsGrid = ({ teams, viewMode, onViewTeam, onEditTeam }: TeamsGrid
           : 'flex flex-col gap-4'
       } `}
     >
-      {teams.map((team) => (
-        <TeamCard
-          key={team.id}
-          teamNumber={team.teamNumber}
-          teamLead={team.teamLead}
-          viewMode={viewMode}
-          memberCount={team.memberCount}
-          onView={() => onViewTeam(team.id)}
-          onEdit={() => onEditTeam(team.id)}
-        />
-      ))}
+      {teams.map((team) => {
+        const teamLeads = team.members ?? [];
+        console.log(teamLeads);
+
+        return (
+          <TeamCard
+            key={team.id}
+            teamName={team.name}
+            teamLeaders={teamLeads}
+            viewMode={viewMode}
+            memberCount={team._count.members}
+            onView={() => onViewTeam(team.id)}
+            onEdit={() => onEditTeam(team.id)}
+          />
+        );
+      })}
     </div>
   );
 };

@@ -2,22 +2,21 @@ import { ArrowLeft, Edit2, Users, ChevronRight, Award, Target, Clock } from 'luc
 import { Button } from '@app/components/ui/button';
 import { Badge } from '@app/components/ui/badge';
 import { Separator } from '@app/components/ui/separator';
-import type { Bucket } from '@app/types/bucket';
 
 interface BucketHeaderProps {
-  bucket?: Bucket;
+  title: string;
+  description?: string;
+  totalLevels?: number;
   onNavigateBack: () => void;
   breadcrumb?: string;
-  title?: string;
-  showBucketInfo?: boolean;
 }
 
 export const BucketHeader = ({
-  bucket,
+  title,
+  description,
+  totalLevels,
   onNavigateBack,
   breadcrumb = 'Buckets',
-  title,
-  showBucketInfo = false,
 }: BucketHeaderProps) => {
   return (
     <div className="bg-card border-b shadow-sm">
@@ -28,10 +27,10 @@ export const BucketHeader = ({
           </Button>
           <div className="text-muted-foreground flex items-center gap-2 text-sm">
             <span>{breadcrumb}</span>
-            {(bucket?.title || title) && (
+            {title && (
               <>
                 <ChevronRight className="h-4 w-4" />
-                <span className="text-foreground font-medium">{bucket?.title || title}</span>
+                <span className="text-foreground font-medium">{title}</span>
               </>
             )}
           </div>
@@ -42,7 +41,7 @@ export const BucketHeader = ({
         </Badge>
       </div>
 
-      {showBucketInfo && bucket && (
+      {title && (
         <div className="px-6 pb-6">
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -50,8 +49,8 @@ export const BucketHeader = ({
                 <Award className="text-primary h-6 w-6" />
               </div>
               <div>
-                <h1 className="text-foreground text-3xl font-bold">{bucket.title}</h1>
-                <p className="text-muted-foreground mt-1">{bucket.description}</p>
+                <h1 className="text-foreground text-3xl font-bold">{title}</h1>
+                <p className="text-muted-foreground mt-1">{description}</p>
               </div>
             </div>
             <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -62,7 +61,7 @@ export const BucketHeader = ({
           <div className="text-muted-foreground flex items-center gap-4 text-sm">
             <div className="flex items-center gap-1">
               <Target className="h-4 w-4" />
-              <span>{bucket.totalLevels} Levels</span>
+              <span>{totalLevels} Levels</span>
             </div>
             <Separator orientation="vertical" className="h-4" />
             <div className="flex items-center gap-1">

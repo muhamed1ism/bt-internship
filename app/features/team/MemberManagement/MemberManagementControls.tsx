@@ -8,7 +8,6 @@ interface MemberManagementControlsProps {
   onSearchChange: (query: string) => void;
   viewMode: ViewMode;
   onViewModeChange: (mode: ViewMode) => void;
-  onAddMember: () => void;
   memberCount: number;
 }
 
@@ -17,7 +16,6 @@ export const MemberManagementControls = ({
   onSearchChange,
   viewMode,
   onViewModeChange,
-  onAddMember,
   memberCount,
 }: MemberManagementControlsProps) => {
   return (
@@ -35,39 +33,29 @@ export const MemberManagementControls = ({
           />
         </div>
 
-        {/* Add Member Button */}
-        <Button
-          onClick={onAddMember}
-          className="border-yellow-500 bg-yellow-500 text-black hover:border-yellow-600 hover:bg-yellow-600"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Add Member
-        </Button>
-      </div>
-
-      {/* View Mode Toggle and Member Count */}
-      <div className="flex items-center justify-between">
-        <p className="text-muted-foreground text-sm">
-          {memberCount} member{memberCount !== 1 ? 's' : ''}
-        </p>
-
-        <div className="flex rounded-lg border-1">
-          <Button
-            size="icon"
-            onClick={() => onViewModeChange('list')}
-            className={`rounded-r-none ${viewMode === 'list' ? 'text-primary-foreground bg-primary' : 'text-primary bg-primary-foreground hover:bg-primary/10'}`}
-          >
-            <List className="h-4 w-4" />
-          </Button>
-          <Button
-            size="icon"
-            onClick={() => onViewModeChange('grid')}
-            className={`rounded-l-none ${viewMode === 'grid' ? 'text-primary-foreground bg-primary' : 'text-primary bg-primary-foreground hover:bg-primary/10'}`}
-          >
-            <LayoutGrid className="h-4 w-4" />
-          </Button>
+        {/* View Mode Toggle and Member Count */}
+        <div className="flex items-center justify-between">
+          <div className="flex rounded-lg border-1">
+            <Button
+              size="icon"
+              onClick={() => onViewModeChange('list')}
+              className={`rounded-r-none ${viewMode === 'list' ? 'text-primary-foreground bg-primary' : 'text-primary bg-primary-foreground hover:bg-primary/10'}`}
+            >
+              <List className="h-4 w-4" />
+            </Button>
+            <Button
+              size="icon"
+              onClick={() => onViewModeChange('grid')}
+              className={`rounded-l-none ${viewMode === 'grid' ? 'text-primary-foreground bg-primary' : 'text-primary bg-primary-foreground hover:bg-primary/10'}`}
+            >
+              <LayoutGrid className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
+      <p className="text-muted-foreground text-sm">
+        {memberCount} member{memberCount !== 1 ? 's' : ''}
+      </p>
     </div>
   );
 };

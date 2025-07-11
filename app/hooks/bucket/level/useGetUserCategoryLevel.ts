@@ -1,5 +1,6 @@
+import { getUserCategoryLevelApi } from '@app/api/bucket-api';
+import { BucketLevel } from '@app/types/bucket';
 import { useQuery } from '@tanstack/react-query';
-import { getMyCategoryLevelApi } from '@app/api/bucket-api';
 
 export interface UserBucketLevelType {
   userId: string;
@@ -17,16 +18,17 @@ interface BucketType {
 interface CategoryType {
   id: string;
   name: string;
+  description: string;
 }
 
-export const useGetMyCategoryLevel = (categoryId: string, options = {}) => {
+export const useGetUserCategoryLevel = (categoryId: string, options = {}) => {
   const {
     data: level,
     isLoading,
     isSuccess,
   } = useQuery<UserBucketLevelType>({
     queryKey: ['my-category-level', categoryId],
-    queryFn: () => getMyCategoryLevelApi(categoryId),
+    queryFn: () => getUserCategoryLevelApi(categoryId),
     enabled: !!categoryId,
     ...options,
   });
