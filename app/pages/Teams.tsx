@@ -11,27 +11,33 @@ import {
   useTeamForm,
 } from '@app/features/team';
 import routeNames from '@app/routes/route-names';
+import { useGetAllTeams, useGetAllTeamsWithLeaders } from '@app/hooks/team';
+import { useGetTeamLeaders } from '@app/hooks/team/useGetTeamLeaders';
 
 export const Teams = () => {
   const navigate = useNavigate();
+  const { teams, isSuccess } = useGetAllTeamsWithLeaders();
+
+  console.log({ teams });
+
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const { filteredTeams } = useFilteredTeams(teams, searchQuery);
 
-  const { filteredTeams } = useFilteredTeams(MOCK_TEAMS, searchQuery);
   const { formState, openCreateForm, openEditForm, closeForm, handleSave, handleRemove } =
     useTeamForm();
 
-  const handleViewTeam = (teamId: number) => {
-    navigate(routeNames.teamView({ teamId: teamId.toString() }));
+  const handleViewTeam = (teamId: string) => {
+    navigate(routeNames.teamView({ teamId }));
   };
 
-  const handleEditTeam = (teamId: number) => {
-    const team = MOCK_TEAMS.find((t) => t.id === teamId);
-    if (team) {
-      // Use clean, backend-ready form data from mocks
-      const formData = createTeamFormData(team, 'sample');
-      openEditForm(formData);
-    }
+  const handleEditTeam = (teamId: string) => {
+    // const team = teams?.find((team) => team.id === teamId);
+    // if (team) {
+    // // Use clean, backend-ready form data from mocks
+    // const formData = createTeamFormData(team, 'sample');
+    // openEditForm(formData);
+    // }
   };
 
   return (
@@ -55,12 +61,12 @@ export const Teams = () => {
         {/* Results Count */}
         <div className="mb-6">
           <p className="text-muted-foreground text-sm">
-            Found {filteredTeams.length} team{filteredTeams.length !== 1 ? 's' : ''}
+            Found {filteredTeams?.length} team{filteredTeams?.length !== 1 ? 's' : ''}
           </p>
         </div>
 
         {/* Teams Grid or Empty State */}
-        {filteredTeams.length > 0 ? (
+        {filteredTeams && filteredTeams.length > 0 ? (
           <TeamsGrid
             teams={filteredTeams}
             viewMode={viewMode}

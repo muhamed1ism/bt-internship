@@ -1,24 +1,20 @@
 import { updateMemberPositionApi } from '@app/api/team-api';
-import routeNames from '@app/routes/route-names';
 import { UpdateMemberPositionFormValues } from '@app/schemas';
-import { useMutation } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const useUpdateMemberPosition = () => {
-  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { mutate, isPending, error } = useMutation({
     mutationFn: ({
       formData,
-      teamId,
-      userId,
+      memberId,
     }: {
       formData: UpdateMemberPositionFormValues;
-      teamId: string;
-      userId: string;
-    }) => updateMemberPositionApi(formData, teamId, userId),
+      memberId: string;
+    }) => updateMemberPositionApi(formData, memberId),
     onSuccess: () => {
-      navigate(routeNames.buckets());
+      queryClient.invalidateQueries({ queryKey: ['get-team-by-id'] });
     },
   });
 

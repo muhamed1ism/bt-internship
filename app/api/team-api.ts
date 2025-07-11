@@ -1,11 +1,6 @@
 import { getAuthHeaders } from '@app/lib/firebase';
 import { BASE_URL, ENDPOINTS } from './api-config';
-import {
-  AddMembersFormValues,
-  CreateTeamFormValues,
-  UpdateMemberPositionFormValues,
-  UpdateTeamFormValues,
-} from '@app/schemas';
+import { AddMembersFormValues, TeamFormValues, UpdateMemberPositionFormValues } from '@app/schemas';
 
 export const getAllTeamsApi = async () => {
   const { uri, method } = ENDPOINTS.team.getAll;
@@ -27,6 +22,54 @@ export const getAllTeamsApi = async () => {
     return res.json();
   } catch (error) {
     console.error('Failed to fetch teams: ', error);
+    throw error;
+  }
+};
+
+export const getAllTeamsWithLeadersApi = async () => {
+  const { uri, method } = ENDPOINTS.team.getAllWithLeaders;
+  const authHeaders = await getAuthHeaders();
+
+  try {
+    const res = await fetch(BASE_URL + uri, {
+      method,
+      headers: {
+        ...authHeaders,
+      },
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message || 'Failed to fetch teams and team leaders');
+    }
+
+    return res.json();
+  } catch (error) {
+    console.error('Failed to fetch teams and team leaders: ', error);
+    throw error;
+  }
+};
+
+export const getTeamByIdApi = async (teamId: string) => {
+  const { uri, method } = ENDPOINTS.team.getTeamById(teamId);
+  const authHeaders = await getAuthHeaders();
+
+  try {
+    const res = await fetch(BASE_URL + uri, {
+      method,
+      headers: {
+        ...authHeaders,
+      },
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message || 'Failed to fetch team');
+    }
+
+    return res.json();
+  } catch (error) {
+    console.error('Failed to fetch team: ', error);
     throw error;
   }
 };
@@ -55,7 +98,7 @@ export const getUserTeamsApi = async () => {
   }
 };
 
-export const createTeamApi = async (formData: CreateTeamFormValues) => {
+export const createTeamApi = async (formData: TeamFormValues) => {
   const { uri, method } = ENDPOINTS.team.add;
   const authHeaders = await getAuthHeaders();
 
@@ -81,7 +124,7 @@ export const createTeamApi = async (formData: CreateTeamFormValues) => {
   }
 };
 
-export const updateTeamApi = async (formData: UpdateTeamFormValues, teamId: string) => {
+export const updateTeamApi = async (formData: TeamFormValues, teamId: string) => {
   const { uri, method } = ENDPOINTS.team.update(teamId);
   const authHeaders = await getAuthHeaders();
 
@@ -155,8 +198,56 @@ export const getTeamMembersApi = async (teamId: string) => {
   }
 };
 
-export const addMembersApi = async (formData: AddMembersFormValues) => {
-  const { uri, method } = ENDPOINTS.team.add;
+export const getTeamLeadersApi = async (teamId: string) => {
+  const { uri, method } = ENDPOINTS.team.member.getTeamLeaders(teamId);
+  const authHeaders = await getAuthHeaders();
+
+  try {
+    const res = await fetch(BASE_URL + uri, {
+      method,
+      headers: {
+        ...authHeaders,
+      },
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message || 'Failed to fetch team leaders');
+    }
+
+    return res.json();
+  } catch (error) {
+    console.error('Failed to fetch team leaders: ', error);
+    throw error;
+  }
+};
+
+export const getAvailableUsersApi = async (teamId: string) => {
+  const { uri, method } = ENDPOINTS.team.member.getAvailableUsers(teamId);
+  const authHeaders = await getAuthHeaders();
+
+  try {
+    const res = await fetch(BASE_URL + uri, {
+      method,
+      headers: {
+        ...authHeaders,
+      },
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message || 'Failed to fetch available users');
+    }
+
+    return res.json();
+  } catch (error) {
+    console.error('Failed to fetch available users: ', error);
+    throw error;
+  }
+};
+
+export const addMembersApi = async (formData: AddMembersFormValues, teamId: string) => {
+  const { uri, method } = ENDPOINTS.team.member.add(teamId);
   const authHeaders = await getAuthHeaders();
 
   try {
@@ -183,10 +274,9 @@ export const addMembersApi = async (formData: AddMembersFormValues) => {
 
 export const updateMemberPositionApi = async (
   formData: UpdateMemberPositionFormValues,
-  teamId: string,
   memberId: string,
 ) => {
-  const { uri, method } = ENDPOINTS.team.member.updatePosition(teamId, memberId);
+  const { uri, method } = ENDPOINTS.team.member.updatePosition(memberId);
   const authHeaders = await getAuthHeaders();
 
   try {
@@ -211,8 +301,8 @@ export const updateMemberPositionApi = async (
   }
 };
 
-export const deleteMemberApi = async (teamId: string, userId: string) => {
-  const { uri, method } = ENDPOINTS.team.member.delete(teamId, userId);
+export const deleteMemberApi = async (memberId: string) => {
+  const { uri, method } = ENDPOINTS.team.member.delete(memberId);
   const authHeaders = await getAuthHeaders();
 
   try {

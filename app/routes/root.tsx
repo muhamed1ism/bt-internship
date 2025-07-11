@@ -22,6 +22,7 @@ import { Register } from '@app/pages/Register.tsx';
 import { GoogleRegister } from '@app/pages/GoogleRegister.tsx';
 import { Buckets } from '@app/pages/Buckets.tsx';
 import { BucketView } from '@app/pages/BucketView.tsx';
+import { TeamMembersAdd } from '@app/pages/TeamMembersAdd.tsx';
 
 const routesForPublic = [
   {
@@ -57,6 +58,7 @@ const routesForAuthenticated = [
       { path: routeNames.teams(), element: <Teams /> },
       { path: routeNames.teamView(), element: <TeamView /> },
       { path: routeNames.teamMembers(), element: <TeamMembers /> },
+      { path: routeNames.teamMembersAdd(), element: <TeamMembersAdd /> },
       { path: routeNames.users(), element: <Users /> },
       { path: routeNames.roles(), element: <Roles /> },
     ],

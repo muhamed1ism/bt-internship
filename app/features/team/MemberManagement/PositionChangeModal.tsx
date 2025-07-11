@@ -18,15 +18,29 @@ import {
 } from '@app/components/ui/select';
 import { Badge } from '@app/components/ui/badge';
 import { Crown } from 'lucide-react';
-import { AVAILABLE_POSITIONS } from '@mocks/team-members';
-import type { TeamMemberCard, MemberPosition } from '@app/types/member-management';
+import { TeamMember } from '@app/types/team';
 
 interface PositionChangeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  member: TeamMemberCard | null;
-  onConfirm: (memberId: string, newPosition: MemberPosition) => void;
+  member: TeamMember | null;
+  onConfirm: (memberId: string, newPosition: string) => void;
 }
+
+const POSITIONS = [
+  'Team Lead',
+  'Tech Lead',
+  'Frontend Developer',
+  'Backend Developer',
+  'Full Stack Developer',
+  'Project Manager',
+  'UI/UX Designer',
+  'DevOps Engineer',
+  'QA Engineer',
+  'Product Manager',
+  'Scrum Master',
+  'Business Analyst',
+];
 
 export const PositionChangeModal = ({
   isOpen,
@@ -34,32 +48,26 @@ export const PositionChangeModal = ({
   member,
   onConfirm,
 }: PositionChangeModalProps) => {
-  const [selectedPosition, setSelectedPosition] = useState<MemberPosition | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedPosition, setSelectedPosition] = useState<string>('');
 
   const handleClose = () => {
-    setSelectedPosition(null);
-    setIsSubmitting(false);
+    setSelectedPosition('');
     onClose();
   };
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     if (!member || !selectedPosition) return;
-
-    setIsSubmitting(true);
-    try {
-      await onConfirm(member.id, selectedPosition);
-      handleClose();
-    } catch (error) {
-      console.error('Failed to change position:', error);
-      setIsSubmitting(false);
-    }
+    onConfirm(member.id, selectedPosition);
+    handleClose();
   };
 
-  const getPositionColor = (position: MemberPosition) => {
-    if (position.isLead) return 'bg-purple-100 text-purple-800 border-purple-200';
-    if (position.title.includes('Tech Lead')) return 'bg-blue-100 text-blue-800 border-blue-200';
-    if (position.title.includes('Manager')) return 'bg-green-100 text-green-800 border-green-200';
+  const getPositionColor = (position: string) => {
+    if (position.toLowerCase().includes('lead'))
+      return 'bg-purple-100 text-purple-800 border-purple-200';
+    if (position.toLowerCase().includes('manager'))
+      return 'bg-green-100 text-green-800 border-green-200';
+    if (position.toLowerCase().includes('developer'))
+      return 'bg-blue-100 text-blue-800 border-blue-200';
     return 'bg-gray-100 text-gray-800 border-gray-200';
   };
 
@@ -70,7 +78,9 @@ export const PositionChangeModal = ({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Change Position</DialogTitle>
-          <DialogDescription>Change the position for {member.name}</DialogDescription>
+          <DialogDescription>
+            Change the position for {member.user.firstName} {member.user.lastName}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -78,16 +88,9 @@ export const PositionChangeModal = ({
           <div>
             <Label className="text-sm font-medium">Current Position</Label>
             <div className="mt-1 flex items-center gap-2">
-              <Badge
-                variant="outline"
-                className={`${getPositionColor(member.position)} flex items-center gap-1`}
-              >
-                {member.position.isLead && <Crown className="h-3 w-3" />}
-                {member.position.title}
+              <Badge variant="outline" className={`flex items-center gap-1`}>
+                {member.position}
               </Badge>
-              <span className="text-muted-foreground text-sm">
-                {member.position.level} • {member.position.department}
-              </span>
             </div>
           </div>
 
@@ -96,25 +99,16 @@ export const PositionChangeModal = ({
             <Label htmlFor="position" className="text-sm font-medium">
               New Position
             </Label>
-            <Select
-              value={selectedPosition?.title || ''}
-              onValueChange={(value) => {
-                const position = AVAILABLE_POSITIONS.find((p) => p.title === value);
-                setSelectedPosition(position || null);
-              }}
-            >
+            <Select value={selectedPosition} onValueChange={setSelectedPosition}>
               <SelectTrigger className="mt-1">
                 <SelectValue placeholder="Select a new position" />
               </SelectTrigger>
               <SelectContent>
-                {AVAILABLE_POSITIONS.map((position) => (
-                  <SelectItem key={position.title} value={position.title}>
+                {POSITIONS.map((position) => (
+                  <SelectItem key={position} value={position}>
                     <div className="flex items-center gap-2">
-                      {position.isLead && <Crown className="h-3 w-3" />}
-                      <span>{position.title}</span>
-                      <span className="text-muted-foreground text-xs">
-                        ({position.level} • {position.department})
-                      </span>
+                      {position.toLowerCase().includes('lead') && <Crown className="h-3 w-3" />}
+                      <span>{position}</span>
                     </div>
                   </SelectItem>
                 ))}
@@ -131,27 +125,21 @@ export const PositionChangeModal = ({
                   variant="outline"
                   className={`${getPositionColor(selectedPosition)} flex items-center gap-1`}
                 >
-                  {selectedPosition.isLead && <Crown className="h-3 w-3" />}
-                  {selectedPosition.title}
+                  {selectedPosition.toLowerCase().includes('lead') && <Crown className="h-3 w-3" />}
+                  {selectedPosition}
                 </Badge>
-                <span className="text-muted-foreground text-sm">
-                  {selectedPosition.level} • {selectedPosition.department}
-                </span>
+                <span className="text-muted-foreground text-sm">Mid • Engineering</span>
               </div>
             </div>
           )}
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={handleClose} disabled={isSubmitting}>
+          <Button variant="outline" onClick={handleClose}>
             Cancel
           </Button>
-          <Button
-            onClick={handleConfirm}
-            disabled={!selectedPosition || isSubmitting}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            {isSubmitting ? 'Changing...' : 'Change Position'}
+          <Button onClick={handleConfirm} className="bg-blue-600 hover:bg-blue-700">
+            Change Position
           </Button>
         </DialogFooter>
       </DialogContent>

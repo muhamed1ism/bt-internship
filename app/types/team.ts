@@ -1,18 +1,43 @@
-export interface TeamLead {
-  firstName: string;
-  lastName: string;
-}
+import { UserType } from './types';
 
 export interface Team {
-  id: number;
-  teamNumber: number;
-  teamLead: TeamLead;
-  memberCount?: number;
+  id: string;
+  name: string;
+  clientName: string;
+  status: string;
+  startDate: Date;
+  endDate?: Date;
+  projectDescription: string;
+  documentation: string;
+  githubLink: string;
+  createdAt: Date;
+  updatedAt: Date;
+  _count: TeamCount;
+  members?: TeamMember[] | [];
+  technologies?: TeamTechnology[] | [];
+}
+
+export interface TeamCount {
+  technologies: number;
+  members: number;
+}
+
+export interface TeamMember {
+  id: string;
+  position: string;
+  joinedAt: Date;
+  teamId: string;
+  user: UserType;
+}
+
+export interface TeamTechnology {
+  id: string;
+  name: string;
 }
 
 export interface TeamCardProps {
-  teamNumber: number;
-  teamLead: TeamLead;
+  teamName: string;
+  teamLeaders: TeamMember[] | [];
   viewMode?: 'grid' | 'list';
   memberCount?: number;
   onView?: () => void;
@@ -20,3 +45,9 @@ export interface TeamCardProps {
 }
 
 export type ViewMode = 'grid' | 'list';
+
+export interface MemberCardProps {
+  member: TeamMember;
+  onSubmitReport?: (memberId: string) => void;
+  onChangePosition?: (memberId: string) => void;
+}

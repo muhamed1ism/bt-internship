@@ -146,6 +146,14 @@ export const ENDPOINTS = {
       uri: '/team/all',
       method: 'GET',
     },
+    getAllWithLeaders: {
+      uri: '/team/all-with-leaders',
+      method: 'GET',
+    },
+    getTeamById: (teamId: string) => ({
+      uri: `/team/${teamId}`,
+      method: 'GET',
+    }),
     getUserTeams: {
       uri: '/team/user',
       method: 'GET',
@@ -156,16 +164,24 @@ export const ENDPOINTS = {
         uri: `/team/member/${teamId}/all`,
         method: 'GET',
       }),
+      getTeamLeaders: (teamId: string) => ({
+        uri: `/team/member/${teamId}/team-leaders`,
+        method: 'GET',
+      }),
+      getAvailableUsers: (teamId: string) => ({
+        uri: `/team/member/${teamId}/available-users`,
+        method: 'GET',
+      }),
       add: (teamId: string) => ({
         uri: `/team/member/${teamId}/add`,
         method: 'POST',
       }),
-      updatePosition: (teamId: string, userId: string) => ({
-        uri: `/team/member/${teamId}/update-position/${userId}`,
+      updatePosition: (memberId: string) => ({
+        uri: `/team/member/update-position/${memberId}`,
         method: 'PUT',
       }),
-      delete: (teamId: string, userId: string) => ({
-        uri: `/team/member/${teamId}/delete/${userId}`,
+      delete: (memberId: string) => ({
+        uri: `/team/member/delete/${memberId}`,
         method: 'DELETE',
       }),
     },

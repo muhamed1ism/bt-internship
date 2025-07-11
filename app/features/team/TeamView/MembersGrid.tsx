@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Input } from '@app/components/ui/input';
-import { Search, Grid3x3, List, LayoutGrid } from 'lucide-react';
+import { Search, List, LayoutGrid } from 'lucide-react';
 import { Button } from '@app/components/ui/button';
 import { MemberCard } from '../MemberCard/MemberCard';
-import { TeamMember } from '@app/types/team-member';
+import { TeamMember } from '@app/types/team';
 
 interface MembersGridProps {
-  members: TeamMember[];
+  members: TeamMember[] | [];
   onSubmitReport: (memberId: string) => void;
   onChangePosition: (memberId: string) => void;
 }
@@ -21,11 +21,11 @@ export const MembersGrid = ({ members, onSubmitReport, onChangePosition }: Membe
 
     const query = searchQuery.toLowerCase();
     return (
-      member.name.toLowerCase().includes(query) ||
-      member.email.toLowerCase().includes(query) ||
-      member.position.title.toLowerCase().includes(query) ||
-      member.position.department.toLowerCase().includes(query) ||
-      member.skills.some((skill) => skill.toLowerCase().includes(query))
+      member.user.firstName.toLowerCase().includes(query) ||
+      member.user.lastName.toLowerCase().includes(query) ||
+      member.user.email.toLowerCase().includes(query) ||
+      member.position.toLowerCase().includes(query)
+      // || member.skills.some((skill) => skill.toLowerCase().includes(query))
     );
   });
 

@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { TeamFormValues } from '@app/schemas';
+import { Team } from '@app/types/team';
 
 interface TeamFormState {
+  team?: Team;
   isOpen: boolean;
   mode: 'create' | 'edit';
-  team?: TeamFormValues & { id?: number };
 }
 
 export function useTeamForm() {
@@ -22,7 +22,7 @@ export function useTeamForm() {
     });
   };
 
-  const openEditForm = (team: TeamFormValues & { id?: number }) => {
+  const openEditForm = (team: Team) => {
     setFormState({
       isOpen: true,
       mode: 'edit',
@@ -37,29 +37,10 @@ export function useTeamForm() {
     }));
   };
 
-  const handleSave = (data: TeamFormValues) => {
-    if (formState.mode === 'create') {
-      console.log('Creating team:', data);
-      // TODO: Implement team creation logic
-    } else {
-      console.log('Updating team:', { ...data, id: formState.team?.id });
-      // TODO: Implement team update logic
-    }
-    closeForm();
-  };
-
-  const handleRemove = (teamId: number) => {
-    console.log('Removing team:', teamId);
-    // TODO: Implement team removal logic
-    closeForm();
-  };
-
   return {
     formState,
     openCreateForm,
     openEditForm,
     closeForm,
-    handleSave,
-    handleRemove,
   };
 }

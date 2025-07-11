@@ -5,7 +5,7 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '../ui/
 interface FormDatePickerProps {
   control: Control<any>;
   name: string;
-  label: string;
+  label?: string;
 }
 
 export const FormDatePicker = ({ control, name, label }: FormDatePickerProps) => {
@@ -15,7 +15,7 @@ export const FormDatePicker = ({ control, name, label }: FormDatePickerProps) =>
       name={name}
       render={({ field }) => (
         <FormItem className="w-full">
-          <FormLabel>{label}</FormLabel>
+          {label && <FormLabel>{label}</FormLabel>}
 
           <FormControl>
             <DatePicker
