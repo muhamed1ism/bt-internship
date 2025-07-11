@@ -8,8 +8,15 @@ export class CategoryService {
 
   async getAllCategories() {
     const categories = await this.prisma.bucketCategory.findMany({
-      include: {
-        bucketLevels: true,
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        bucketLevels: {
+          orderBy: {
+            level: 'desc',
+          },
+        },
       },
     });
 
@@ -20,11 +27,32 @@ export class CategoryService {
     return categories;
   }
 
+  async getCategoryById(categoryId: string) {
+    const category = await this.prisma.bucketCategory.findUnique({
+      where: { id: categoryId },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        bucketLevels: {
+          orderBy: {
+            level: 'desc',
+          },
+        },
+      },
+    });
+
+    if (!category) throw new NotFoundException('Category not found');
+
+    return category;
+  }
+
   async createCategory(dto: CreateCategoryDto) {
     try {
       await this.prisma.bucketCategory.create({
         data: {
           name: dto.name,
+          description: dto.description,
         },
       });
     } catch (error) {
@@ -39,6 +67,7 @@ export class CategoryService {
         where: { id: categoryId },
         data: {
           name: dto.name,
+          description: dto.description,
         },
       });
     } catch (error) {

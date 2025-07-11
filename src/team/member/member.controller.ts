@@ -20,6 +20,16 @@ export class MemberController {
     return this.memberService.getAllMembers(teamId);
   }
 
+  @Get(':teamId/team-leaders')
+  async getTeamLeaders(@Param('teamId') teamId: string) {
+    return this.memberService.getTeamLeaders(teamId);
+  }
+
+  @Get(':teamId/available-users')
+  async getAvailableUsers(@Param('teamId') teamId: string) {
+    return this.memberService.getAvailableUsers(teamId);
+  }
+
   @Post(':teamId/add')
   async addMembers(
     @Param('teamId') teamId: string,
@@ -28,20 +38,16 @@ export class MemberController {
     return this.memberService.addMembers(teamId, membersData);
   }
 
-  @Put(':teamId/update-position/:userId')
-  async updateMemberPosition(
-    @Param('teamId') teamId: string,
-    @Param('userId') userId: string,
-    @Body() memberData: UpdateMemberPositionDto,
-  ) {
-    return this.memberService.updateMemberPosition(teamId, userId, memberData);
+  @Delete('delete/:memberId')
+  async deleteMember(@Param('memberId') memberId: string) {
+    return this.memberService.deleteMember(memberId);
   }
 
-  @Delete(':teamId/delete/:userId')
-  async deleteMember(
-    @Param('teamId') teamId: string,
-    @Param('userId') userId: string,
+  @Put('/update-position/:memberId')
+  async updateMemberPosition(
+    @Param('memberId') memberId: string,
+    @Body() memberData: UpdateMemberPositionDto,
   ) {
-    return this.memberService.deleteMember(teamId, userId);
+    return this.memberService.updateMemberPosition(memberId, memberData);
   }
 }

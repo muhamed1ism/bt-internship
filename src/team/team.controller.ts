@@ -23,10 +23,20 @@ export class TeamController {
     return this.teamService.getAllTeams();
   }
 
-  @Get('my')
+  @Get('all-with-leaders')
+  getAllTeamsWithLeaders() {
+    return this.teamService.getAllTeamsWithLeaders();
+  }
+
+  @Get('user')
   @UseGuards(FirebaseJwtGuard)
-  getMyTeams(@GetUser() user: User) {
-    return this.teamService.getMyTeams(user.id);
+  getUserTeams(@GetUser() user: User) {
+    return this.teamService.getUserTeams(user.id);
+  }
+
+  @Get(':teamId')
+  getTeamById(@Param('teamId') teamId: string) {
+    return this.teamService.getTeamById(teamId);
   }
 
   @Post('add')

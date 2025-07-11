@@ -19,6 +19,11 @@ export class CategoryController {
     return this.categoryService.getAllCategories();
   }
 
+  @Get(':categoryId')
+  getCategoryById(@Param('categoryId') categoryId: string) {
+    return this.categoryService.getCategoryById(categoryId);
+  }
+
   @Post('create')
   createCategory(@Body() categoryData: CreateCategoryDto) {
     return this.categoryService.createCategory(categoryData);

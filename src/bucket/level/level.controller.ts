@@ -19,9 +19,9 @@ export class LevelController {
     return this.levelService.getAllCategoryLevels(categoryId);
   }
 
-  @Get('my/:categoryId')
-  getMyCategoryLevel(@Param('categoryId') categoryId: string) {
-    return this.levelService.getMyCategoryLevel(categoryId);
+  @Get('user/:categoryId')
+  getUserCategoryLevel(@Param('categoryId') categoryId: string) {
+    return this.levelService.getUserCategoryLevel(categoryId);
   }
 
   @Post('create/:categoryId')

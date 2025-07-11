@@ -7,16 +7,22 @@ export class LevelService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getAllCategoryLevels(categoryId: string) {
+    const category = await this.prisma.bucketCategory.findUnique({
+      where: { id: categoryId },
+    });
+
+    if (!category) throw new NotFoundException('Bucket category not found');
+
     const levels = await this.prisma.bucketLevel.findMany({
       where: { categoryId },
       include: { category: true },
-      orderBy: { level: 'asc' },
+      orderBy: { level: 'desc' },
     });
 
     return levels;
   }
 
-  async getMyCategoryLevel(categoryId: string) {
+  async getUserCategoryLevel(categoryId: string) {
     const level = await this.prisma.userBucket.findFirst({
       where: {
         bucket: {
@@ -99,10 +105,9 @@ export class LevelService {
 
   async updateLevel(levelId: string, dto: UpdateLevelDto) {
     try {
-      await this.prisma.bucketLevel.update({
+      return this.prisma.bucketLevel.update({
         where: { id: levelId },
         data: {
-          level: dto.level,
           expectations: dto.expectations,
           knowledge: dto.knowledge,
           tools: dto.tools,
