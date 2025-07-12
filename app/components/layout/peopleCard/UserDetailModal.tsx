@@ -119,14 +119,14 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <div className="flex items-center gap-3">
                   <div className="bg-primary/10 p-2 rounded-lg">
                     <Mail className="h-4 w-4 text-primary" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Email</p>
-                    <p className="text-foreground">{user.email}</p>
+                    <p className="text-foreground break-all">{user.email}</p>
                   </div>
                 </div>
 
@@ -137,7 +137,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                     </div>
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Phone</p>
-                      <p className="text-foreground">{user.phoneNumber}</p>
+                      <p className="text-foreground break-all">{user.phoneNumber}</p>
                     </div>
                   </div>
                 )}
