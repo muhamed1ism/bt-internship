@@ -6,6 +6,8 @@ import { Button } from '../../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import { Separator } from '../../ui/separator';
 import { UserType } from '@app/types/types';
+import { useGetUserBucketsById } from '@app/hooks/bucket';
+import { UserBucketLevel } from '@app/types/bucket';
 import { 
   Mail, 
   Phone, 
@@ -18,7 +20,8 @@ import {
   Linkedin,
   X,
   Edit,
-  Eye
+  Eye,
+  Target
 } from 'lucide-react';
 
 interface UserDetailModalProps {
@@ -29,6 +32,9 @@ interface UserDetailModalProps {
 
 const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose }) => {
   if (!user) return null;
+
+  // Get user buckets
+  const { buckets: userBuckets, isLoading: bucketsLoading } = useGetUserBucketsById(user.id);
 
   // Generate initials for avatar fallback
   const getInitials = (firstName: string, lastName: string) => {
@@ -169,6 +175,43 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                   )}
                 </div>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* User Buckets */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5" />
+                User Buckets
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {bucketsLoading ? (
+                <div className="flex items-center justify-center py-4">
+                  <p className="text-muted-foreground">Loading buckets...</p>
+                </div>
+              ) : userBuckets && userBuckets.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {userBuckets.map((userBucket: UserBucketLevel) => (
+                    <div key={userBucket.bucketLevelId} className="border rounded-lg p-4 bg-muted/30">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium text-foreground">{userBucket.bucket.category.name}</h4>
+                        <Badge variant="outline" className="text-xs">
+                          Level {userBucket.bucket.level}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {userBucket.bucket.category.description || 'No description available'}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex items-center justify-center py-4">
+                  <p className="text-muted-foreground">No buckets assigned to this user</p>
+                </div>
+              )}
             </CardContent>
           </Card>
 
