@@ -29,6 +29,7 @@ const routeNames = {
     generateRoute('/teams/:teamId/members/add', params),
   users: (params?: Record<string, string>): string => generateRoute('/users', params),
   people: (params?: Record<string, string>): string => generateRoute('/people', params),
+  userDetail: (params?: Record<string, string>): string => generateRoute('/people/:userId', params),
 };
 
 export default routeNames;
