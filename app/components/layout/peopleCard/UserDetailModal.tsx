@@ -196,7 +196,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
                   {userBuckets.map((userBucket: UserBucketLevel) => (
                     <div key={userBucket.bucketLevelId} className="border rounded-lg p-4 bg-muted/30">
                       <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-medium text-foreground">{userBucket.bucket.category.name}</h4>
+                        <h4 className="font-medium text-foreground h-8 flex items-center">{userBucket.bucket.category.name}</h4>
                         <Badge variant="outline" className="text-xs">
                           Level {userBucket.bucket.level}
                         </Badge>
