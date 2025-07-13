@@ -22,6 +22,7 @@ export const Buckets = () => {
           {userBuckets &&
             userBuckets.map((userBucket: UserBucketLevel) => {
               const maxLevel = getMaxLevelForCategory(categories, userBucket.bucket.categoryId);
+              const category = categories?.find((cat) => cat.id === userBucket.bucket.categoryId);
 
               return (
                 <BucketCard
@@ -31,6 +32,7 @@ export const Buckets = () => {
                   currentLevel={userBucket.bucket.level}
                   isActive={true}
                   maxLevel={maxLevel}
+                  allLevels={category?.bucketLevels}
                 />
               );
             })}
