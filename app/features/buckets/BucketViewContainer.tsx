@@ -1,6 +1,5 @@
 import { useBucketView } from '@app/features/buckets/hooks/useBucketView';
 import { BucketHeader, LevelSidebar, LevelDetails, LevelForm, BucketCreation } from './components';
-import { useGetUserCategoryLevel } from '@app/hooks/bucket';
 
 /**
  * BucketViewContainer is the main container component that manages
@@ -13,6 +12,7 @@ export const BucketViewContainer = () => {
     bucket,
     hasLevels,
     currentLevel,
+    maxLevel,
 
     // State
     selectedLevel,
@@ -89,6 +89,7 @@ export const BucketViewContainer = () => {
               currentLevel={currentLevel}
               levels={bucket.bucketLevels}
               selectedLevel={selectedLevel}
+              maxLevel={maxLevel}
               onLevelSelect={handleLevelSelect}
               onCreateLevel={handleCreateLevel}
               showCreateButton={!isCreatingLevel}
@@ -125,6 +126,7 @@ export const BucketViewContainer = () => {
             levels={bucket.bucketLevels}
             currentLevel={currentLevel}
             selectedLevel={selectedLevel}
+            maxLevel={maxLevel}
             onLevelSelect={handleLevelSelect}
             onCreateLevel={handleCreateLevel}
           />
@@ -133,6 +135,7 @@ export const BucketViewContainer = () => {
               name={bucket.name}
               currentLevel={currentLevel}
               level={selectedLevel}
+              maxLevel={maxLevel}
               onEditLevel={handleEditLevel}
             />
           )}
