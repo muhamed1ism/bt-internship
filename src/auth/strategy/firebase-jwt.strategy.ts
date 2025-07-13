@@ -35,6 +35,9 @@ export class FirebaseJwtStrategy extends PassportStrategy(
 
       const user = await this.prisma.user.findUnique({
         where: { firebaseUid },
+        include: {
+          role: true,
+        },
       });
 
       if (!user) {
@@ -49,6 +52,7 @@ export class FirebaseJwtStrategy extends PassportStrategy(
         phoneNumber: user.phoneNumber,
         dateOfBirth: user.dateOfBirth,
         status: user.status,
+        role: user.role.name,
       };
     } catch (error) {
       console.error('Token verification failed:', error);

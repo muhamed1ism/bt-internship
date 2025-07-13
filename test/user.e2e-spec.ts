@@ -69,11 +69,21 @@ describe('User (e2e)', () => {
     });
   });
 
-  it("should forbid 'user' role from accessing '/user/all'", async () => {
-    await request(app.getHttpServer())
+  it("should return only current user if 'user' role", async () => {
+    const response = await request(app.getHttpServer())
       .get('/user/all')
-      .set('Authorization', 'Bearer ' + token)
-      .expect(HttpStatus.FORBIDDEN);
+      .set('Authorization', 'Bearer ' + token);
+
+    expect(response.status).toBe(HttpStatus.OK);
+    expect(response.body).toMatchObject([
+      {
+        email: registerDto.email,
+        firstName: registerDto.firstName,
+        lastName: registerDto.lastName,
+        phoneNumber: registerDto.phoneNumber,
+        dateOfBirth: '2000-01-02T00:00:00.000Z',
+      },
+    ]);
   });
 
   it("should allow access to '/user/all' for 'admin' role", async () => {

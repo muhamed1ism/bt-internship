@@ -1,4 +1,4 @@
-import { AppAbility } from '../casl-ability.factory/casl-ability.factory';
+import { AppAbility } from '../ability-factory/casl-ability.factory';
 
 interface IAbilityHandler {
   handle(ability: AppAbility): boolean;

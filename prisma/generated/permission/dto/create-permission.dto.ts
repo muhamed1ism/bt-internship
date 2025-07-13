@@ -8,5 +8,6 @@ export class CreatePermissionDto {
   action: string;
 subject: string;
 conditions?: Prisma.InputJsonValue;
+fields: string[];
 reason?: string;
 }

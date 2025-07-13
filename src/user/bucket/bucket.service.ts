@@ -111,20 +111,25 @@ export class BucketService {
   }
 
   async unassignUserBucket(userId: string, bucketLevelId: string) {
-    try {
-      await this.prisma.userBucket.delete({
-        where: {
-          userId_bucketLevelId: {
-            userId,
-            bucketLevelId,
-          },
+    const userBucketLevel = await this.prisma.userBucket.findUnique({
+      where: {
+        userId_bucketLevelId: {
+          userId,
+          bucketLevelId,
         },
-      });
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error('Unassigning bucket from user failed: ', error);
-      }
-      throw new NotFoundException('User bucket not found');
-    }
+      },
+    });
+
+    if (!userBucketLevel)
+      throw new NotFoundException('Bucket level is not assigned to user');
+
+    return this.prisma.userBucket.delete({
+      where: {
+        userId_bucketLevelId: {
+          userId,
+          bucketLevelId,
+        },
+      },
+    });
   }
 }
