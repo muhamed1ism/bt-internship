@@ -3,6 +3,7 @@ model Permission {
   action     String
   subject    String
   conditions Json?
+  fields     String[]
   reason     String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt

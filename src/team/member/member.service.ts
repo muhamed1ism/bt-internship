@@ -12,6 +12,30 @@ export class MemberService {
       where: {
         teamId,
       },
+      select: {
+        id: true,
+        teamId: true,
+        joinedAt: true,
+        position: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+            dateOfBirth: true,
+            phoneNumber: true,
+            status: true,
+            role: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!members || members.length === 0) {
@@ -19,6 +43,69 @@ export class MemberService {
     }
 
     return members;
+  }
+
+  async getTeamLeaders(teamId: string) {
+    const teamLeaders = await this.prisma.teamMember.findMany({
+      where: {
+        id: teamId,
+        position: {
+          contains: 'lead',
+        },
+      },
+      select: {
+        joinedAt: true,
+        position: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+            dateOfBirth: true,
+            phoneNumber: true,
+            status: true,
+            role: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!teamLeaders) throw new NotFoundException('No team leader found');
+
+    return teamLeaders;
+  }
+
+  async getAvailableUsers(teamId: string) {
+    const team = await this.prisma.team.findUnique({
+      where: { id: teamId },
+    });
+
+    if (!team) {
+      throw new NotFoundException('Team not found.');
+    }
+
+    const users = await this.prisma.user.findMany({
+      where: {
+        teams: {
+          none: {
+            teamId,
+          },
+        },
+      },
+    });
+
+    if (!users) {
+      throw new NotFoundException('Available users not found.');
+    }
+
+    return users;
   }
 
   async addMember(teamId: string, dto: AddMemberDto) {
@@ -57,17 +144,10 @@ export class MemberService {
     return results;
   }
 
-  async updateMemberPosition(
-    teamId: string,
-    userId: string,
-    dto: UpdateMemberPositionDto,
-  ) {
+  async updateMemberPosition(memberId: string, dto: UpdateMemberPositionDto) {
     const member = await this.prisma.teamMember.update({
       where: {
-        userId_teamId: {
-          teamId,
-          userId,
-        },
+        id: memberId,
       },
       data: { position: dto.position },
     });
@@ -77,14 +157,11 @@ export class MemberService {
     return member;
   }
 
-  async deleteMember(teamId: string, userId: string) {
+  async deleteMember(memberId: string) {
     try {
       await this.prisma.teamMember.delete({
         where: {
-          userId_teamId: {
-            teamId,
-            userId,
-          },
+          id: memberId,
         },
       });
 

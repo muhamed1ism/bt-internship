@@ -6,4 +6,5 @@ export type User = {
   phoneNumber: string;
   dateOfBirth: Date;
   status: string;
+  role: string;
 };

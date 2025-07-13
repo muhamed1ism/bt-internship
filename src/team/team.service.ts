@@ -8,15 +8,115 @@ export class TeamService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getAllTeams() {
-    return this.prisma.team.findMany();
+    return this.prisma.team.findMany({
+      include: { _count: true },
+    });
   }
 
-  async getMyTeams(userId: string) {
+  async getAllTeamsWithLeaders() {
+    return this.prisma.team.findMany({
+      include: {
+        _count: true,
+        members: {
+          where: {
+            position: {
+              contains: 'lead',
+              mode: 'insensitive',
+            },
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                dateOfBirth: true,
+                phoneNumber: true,
+                status: true,
+                role: {
+                  select: {
+                    id: true,
+                    name: true,
+                    description: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  async getUserTeams(userId: string) {
     return this.prisma.team.findMany({
       where: {
         members: {
-          some: {
-            userId,
+          some: { userId },
+        },
+      },
+      include: {
+        _count: true,
+        technologies: true,
+        members: {
+          select: {
+            id: true,
+            joinedAt: true,
+            position: true,
+            user: {
+              select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                dateOfBirth: true,
+                phoneNumber: true,
+                status: true,
+                role: {
+                  select: {
+                    id: true,
+                    name: true,
+                    description: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  async getTeamById(teamId: string) {
+    return this.prisma.team.findUnique({
+      where: { id: teamId },
+      include: {
+        _count: true,
+        technologies: true,
+        members: {
+          select: {
+            id: true,
+            joinedAt: true,
+            position: true,
+            user: {
+              select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                dateOfBirth: true,
+                phoneNumber: true,
+                status: true,
+                role: {
+                  select: {
+                    id: true,
+                    name: true,
+                    description: true,
+                  },
+                },
+              },
+            },
           },
         },
       },

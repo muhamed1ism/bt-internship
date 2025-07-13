@@ -29,11 +29,13 @@ export const seedPermissionData = async (prisma: Prisma.TransactionClient) => {
             action: perm.action,
             subject: perm.subject,
             conditions: perm.conditions || null,
+            fields: perm.fields || [],
           },
           create: {
             action: perm.action,
             subject: perm.subject,
             conditions: perm.conditions || null,
+            fields: perm.fields || [],
           },
         });
 

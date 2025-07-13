@@ -1,31 +1,16 @@
-import { Action } from '../../casl/casl-ability.factory/casl-ability.factory';
+import { adminPermissions } from './permissions/adminPermissions';
+import { teamLeadPermissions } from './permissions/teamLeadPermissions';
+import { userPermissions } from './permissions/userPermissions';
 
 export const permissionSeedData = [
-  { admin: [{ action: Action.Manage, subject: 'all' }] },
   {
-    team_lead: [
-      { action: Action.Read, subject: 'User' },
-      {
-        action: Action.Update,
-        subject: 'User',
-        conditions: { id: { $ne: '${user.id}' } },
-      },
-      { action: Action.Read, subject: 'Role' },
-    ],
+    admin: [...adminPermissions],
   },
   {
-    user: [
-      {
-        action: Action.Read,
-        subject: 'User',
-        conditions: { id: { $eq: '${user.id}' } },
-      },
-      {
-        action: Action.Update,
-        subject: 'User',
-        conditions: { id: { $eq: '${user.id}' } },
-      },
-    ],
+    team_lead: [...teamLeadPermissions],
+  },
+  {
+    user: [...userPermissions],
   },
 ];
 

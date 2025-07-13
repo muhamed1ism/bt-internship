@@ -1,5 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { AppAbility } from '../../casl-ability.factory/casl-ability.factory';
+import { AppAbility } from '../../ability-factory/casl-ability.factory';
 
 export const RequestAbility = createParamDecorator(
   (data: unknown, ctx: ExecutionContext): AppAbility => {

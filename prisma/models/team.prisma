@@ -12,13 +12,13 @@ model Team {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  technologies Technology[] @relation("TeamTechnologies")
+  technologies TeamTechnology[] @relation("TeamTechnologies")
   members      TeamMember[]
 
   @@map("teams")
 }
 
-model Technology {
+model TeamTechnology {
   id   String @id @default(uuid())
   name String @unique
 
