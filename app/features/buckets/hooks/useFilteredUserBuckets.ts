@@ -15,7 +15,8 @@ export function useFilteredUserBuckets(
 
       return (
         userBucket.bucket.category.name.toLowerCase().includes(query) ||
-        userBucket.bucket.category.description.toLowerCase().includes(query)
+        (userBucket.bucket.category.description &&
+          userBucket.bucket.category.description.toLowerCase().includes(query))
       );
     });
   }, [buckets, searchQuery]);

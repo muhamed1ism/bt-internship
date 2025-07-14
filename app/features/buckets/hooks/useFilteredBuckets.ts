@@ -17,8 +17,7 @@ export function useFilteredBuckets(
       const matchesSearch =
         !query ||
         bucket.name.toLowerCase().includes(query) ||
-        bucket.description.toLowerCase().includes(query);
-
+        (bucket.description && bucket.description.toLowerCase().includes(query));
       const isUsed = usedCategoryIds.has(bucket.id);
 
       return matchesSearch && !isUsed;

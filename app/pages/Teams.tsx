@@ -14,14 +14,11 @@ export const Teams = () => {
   const navigate = useNavigate();
   const { teams, isSuccess } = useGetAllTeamsWithLeaders();
 
-  console.log({ teams });
-
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const { filteredTeams } = useFilteredTeams(teams, searchQuery);
 
-  const { formState, openCreateForm, openEditForm, closeForm } =
-    useTeamForm();
+  const { formState, openCreateForm, openEditForm, closeForm } = useTeamForm();
 
   const handleViewTeam = (teamId: string) => {
     navigate(routeNames.teamView({ teamId }));

@@ -4,6 +4,8 @@ import { BucketCreation } from './BucketCreation';
 import { LevelSidebar } from './LevelSidebar';
 import { LevelForm } from './LevelForm';
 import { LevelDetails } from './LevelDetails';
+import { UpdateBucketDialog } from './dialog/UpdateBucketDialog';
+import { useState } from 'react';
 
 /**
  * BucketViewContainer is the main container component that manages
@@ -37,6 +39,16 @@ export const BucketViewContainer = () => {
     removeListItem,
     handleSaveBucket,
   } = useBucketView();
+
+  const [isUpdateBucketOpen, setIsUpdateBucketOpen] = useState(false);
+
+  const handleOpenUpdateBucket = () => {
+    setIsUpdateBucketOpen(true);
+  };
+
+  const handleCloseUpdateBucket = () => {
+    setIsUpdateBucketOpen(false);
+  };
 
   // Loading or error states could be handled here
   if (!bucket) {
@@ -116,12 +128,13 @@ export const BucketViewContainer = () => {
 
   // Render main bucket view with levels
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="h-full bg-gray-100">
       <BucketHeader
         title={bucket.name}
         description={bucket.description}
         totalLevels={bucket.bucketLevels.length}
         onNavigateBack={navigateBack}
+        onOpenUpdateBucket={handleOpenUpdateBucket}
       />
       <div className="container mx-auto px-6 py-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
@@ -145,6 +158,12 @@ export const BucketViewContainer = () => {
           )}
         </div>
       </div>
+
+      <UpdateBucketDialog
+        bucket={bucket}
+        isOpen={isUpdateBucketOpen}
+        onClose={handleCloseUpdateBucket}
+      />
     </div>
   );
 };

@@ -19,7 +19,6 @@ export const TeamsGrid = ({ teams, viewMode, onViewTeam, onEditTeam }: TeamsGrid
     >
       {teams.map((team) => {
         const teamLeads = team.members ?? [];
-        console.log(teamLeads);
 
         return (
           <TeamCard

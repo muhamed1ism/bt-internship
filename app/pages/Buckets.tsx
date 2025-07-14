@@ -58,7 +58,7 @@ export const Buckets = () => {
         <div className="relative w-full flex-1">
           <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
           <Input
-            placeholder="Search teams or team leads..."
+            placeholder="Search buckets..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="bg-card h-9 pl-10"

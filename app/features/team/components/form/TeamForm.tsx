@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@app/components/ui/button';
-import { Input } from '@app/components/ui/input';
 import { Textarea } from '@app/components/ui/textarea';
 import {
   Select,
@@ -19,14 +18,30 @@ import {
   FormLabel,
   FormMessage,
 } from '@app/components/ui/form';
-import { Trash2, Users } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { teamSchema, TeamFormValues } from '@app/schemas';
 import { TEAM_STATUS_OPTIONS } from '@app/constants/team-form';
 import { TeamRemovalModal } from '../modal/TeamRemovalModal';
 import { useCreateTeam, useDeleteTeam, useUpdateTeam } from '@app/hooks/team';
 import { TeamFormProps } from '../modal/TeamFormModal';
-import { TechnologySelector } from '../TechnologySelector';
 import { FormDatePicker } from '@app/components/forms/FormDatePicker';
+import { FormInputField } from '@app/components/forms/FormInputField';
+import { FormChipsInputField } from '@app/components/forms/FormChipsInputField';
+
+const menuItems = [
+  { value: 'React' },
+  { value: 'Angular' },
+  { value: 'Vue.js' },
+  { value: 'Node.js' },
+  { value: 'Python' },
+  { value: 'Java' },
+  { value: 'C#' },
+  { value: 'PHP' },
+  { value: 'TypeScript' },
+  { value: 'Docker' },
+  { value: 'Kubernetes' },
+  { value: 'AWS' },
+];
 
 export const TeamForm = ({ team, onClose, mode }: TeamFormProps) => {
   const { mutate: createTeam, error: createError } = useCreateTeam();
@@ -51,18 +66,13 @@ export const TeamForm = ({ team, onClose, mode }: TeamFormProps) => {
   });
 
   const onSubmit = (formData: TeamFormValues) => {
-    console.log('submitting...')
-    console.log({mode})
-    console.log({formData})
     if (mode === 'create') {
-      console.log('Creating')
-      console.log({formData});
       createTeam(formData);
+      onClose();
     } else if (mode === 'edit') {
-      console.log('Editing')
-      console.log({formData})
       if (!team?.id) return;
       updateTeam({ formData, teamId: team.id });
+      onClose();
     }
   };
 
@@ -78,62 +88,21 @@ export const TeamForm = ({ team, onClose, mode }: TeamFormProps) => {
 
   return (
     <div className="space-y-6">
-      {/* Team Avatar Header */}
-      <div className="mb-8 flex items-center justify-center">
-        <div className="relative">
-          {/* Team Icon Overlay */}
-          <div className="bg-primary border-background absolute -right-1 -bottom-1 rounded-full border-2 p-1.5 shadow-sm">
-            <Users className="text-primary-foreground h-3 w-3" />
-          </div>
-        </div>
-      </div>
-
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Team Name */}
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name *</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter team name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <FormInputField control={form.control} name="name" label="Name" />
 
           {/* Technologies */}
-          <FormField
+          <FormChipsInputField
             control={form.control}
             name="technologies"
-            render={({ field }) => (
-              <FormItem>
-                <TechnologySelector
-                  technologies={field.value || []}
-                  onChange={field.onChange}
-                  error={form.formState.errors.technologies?.message}
-                />
-              </FormItem>
-            )}
+            label="Technologies"
+            menuItems={menuItems}
           />
 
           {/* Client */}
-          <FormField
-            control={form.control}
-            name="clientName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Client *</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter client name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <FormInputField control={form.control} name="clientName" label="Client Name" />
 
           {/* Status */}
           <FormField
@@ -144,7 +113,7 @@ export const TeamForm = ({ team, onClose, mode }: TeamFormProps) => {
                 <FormLabel>Status *</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="border-primary/30 bg-card w-1/2">
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                   </FormControl>
@@ -162,22 +131,10 @@ export const TeamForm = ({ team, onClose, mode }: TeamFormProps) => {
           />
 
           {/* Start Date */}
-          <FormItem>
-            <FormLabel>Start Date *</FormLabel>
-            <FormControl>
-              <FormDatePicker control={form.control} name="startDate" />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+          <FormDatePicker control={form.control} name="startDate" label="Start Date" />
 
           {/* End Date */}
-          <FormItem>
-            <FormLabel>End Date (Optional)</FormLabel>
-            <FormControl>
-              <FormDatePicker control={form.control} name="endDate" />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
+          <FormDatePicker control={form.control} name="endDate" label="End Date" />
 
           {/* Project Description */}
           <FormField
@@ -189,7 +146,7 @@ export const TeamForm = ({ team, onClose, mode }: TeamFormProps) => {
                 <FormControl>
                   <Textarea
                     placeholder="Describe the project goals, requirements, and objectives..."
-                    className="min-h-[120px]"
+                    className="bg-card border-primary/30 min-h-[120px]"
                     {...field}
                   />
                 </FormControl>
@@ -199,19 +156,7 @@ export const TeamForm = ({ team, onClose, mode }: TeamFormProps) => {
           />
 
           {/* GitHub URL */}
-          <FormField
-            control={form.control}
-            name="githubLink"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>GitHub URL</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter GitHub URL" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <FormInputField control={form.control} name="githubLink" label="Github Url" />
 
           {/* GitHub URLs */}
           {/* <FormField */}
@@ -265,21 +210,16 @@ export const TeamForm = ({ team, onClose, mode }: TeamFormProps) => {
               </Button>
             )}
 
-            {createError && (
-              <p className='text-red-500 text-sm'>{createError.message}</p>
-            )}  
+            {createError && <p className="text-sm text-red-500">{createError.message}</p>}
 
-            {updateError && (
-              <p className='text-red-500 text-sm'>{updateError.message}</p>
-            )}
-
-            {mode === 'create' && <div />}
+            {updateError && <p className="text-sm text-red-500">{updateError.message}</p>}
 
             {/* Save/Cancel Buttons */}
-            <div className="flex items-center gap-3">
+            <div className="flex w-full items-center justify-end gap-3">
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancel
               </Button>
+
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting
                   ? 'Saving...'

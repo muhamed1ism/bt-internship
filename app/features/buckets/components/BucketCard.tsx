@@ -149,7 +149,7 @@ const BucketCard: React.FC<CardProps> = ({
   } else {
     return (
       <Card
-        className="border-border/50 hover:border-border flex h-96 cursor-pointer justify-between overflow-hidden p-0 transition-all duration-200 hover:shadow-md"
+        className="border-border/50 hover:border-border flex cursor-pointer justify-between overflow-hidden p-0 transition-all duration-200 hover:shadow-md"
         // div
         // className={`group relative flex min-h-50 transform cursor-pointer flex-col justify-between overflow-hidden rounded-xl border p-6 shadow-sm transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg ${
         //   isActive

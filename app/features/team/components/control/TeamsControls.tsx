@@ -1,9 +1,7 @@
 import { Input } from '@app/components/ui/input';
 import { Button } from '@app/components/ui/button';
-import { Search, Grid3x3, List, Plus, LayoutGrid } from 'lucide-react';
+import { Search, List, Plus, LayoutGrid } from 'lucide-react';
 import { ViewMode } from '@app/types/team';
-import { useNavigate } from 'react-router-dom';
-import routeNames from '@app/routes/route-names';
 
 interface TeamsControlsProps {
   searchQuery: string;
@@ -18,9 +16,8 @@ export const TeamsControls = ({
   onSearchChange,
   viewMode,
   onViewModeChange,
+  onCreateTeam,
 }: TeamsControlsProps) => {
-  const navigate = useNavigate();
-
   return (
     <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       {/* Search Bar */}
@@ -54,7 +51,7 @@ export const TeamsControls = ({
           </Button>
         </div>
 
-        <Button onClick={() => navigate(routeNames.teamAdd())} className="flex items-center gap-2">
+        <Button onClick={onCreateTeam} className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
           Create Team
         </Button>

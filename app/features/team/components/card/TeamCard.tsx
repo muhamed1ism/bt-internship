@@ -20,7 +20,10 @@ export const TeamCard = ({
   // List view variant
   if (viewMode === 'list') {
     return (
-      <Card className="group border-border/50 hover:border-border transition-all duration-200 hover:shadow-md">
+      <Card
+        onClick={onView}
+        className="group border-border/50 hover:border-border cursor-pointer transition-all duration-200 hover:shadow-md"
+      >
         {/* TODO: Fix view of cards on <500px screens  */}
         <CardContent className="px-6 py-0">
           <div className="flex items-center justify-between">
@@ -30,9 +33,9 @@ export const TeamCard = ({
                 {/* Three Aligned Avatar Circles */}
                 <div className="flex items-center justify-center">
                   {/* Left Avatar */}
-                  <Avatar className="relative z-10 h-10 w-10 border-1 border-white">
+                  <Avatar className="relative z-1 h-10 w-10 border-1 border-white">
                     <AvatarImage src={''} />
-                    <AvatarFallback className="bg-gray-200 text-xs font-medium text-gray-700">
+                    <AvatarFallback className="bg-neutral-200 text-xs font-medium text-neutral-700">
                       {teamLeaders[1] ? (
                         getInitials(teamLeaders[1].user.firstName, teamLeaders[1].user.lastName)
                       ) : (
@@ -42,9 +45,9 @@ export const TeamCard = ({
                   </Avatar>
 
                   {/* Center Avatar (Team Lead) - Overlapping */}
-                  <Avatar className="relative z-20 -mx-1.5 h-14 w-14 border-3 border-white">
+                  <Avatar className="relative z-2 -mx-1.5 h-14 w-14 border-3 border-white">
                     <AvatarImage src={``} />
-                    <AvatarFallback className="bg-gray-800 text-sm font-semibold text-white">
+                    <AvatarFallback className="bg-neutral-800 text-sm font-semibold text-white">
                       {teamLeaders[0] ? (
                         getInitials(teamLeaders[0].user.firstName, teamLeaders[0].user.lastName)
                       ) : (
@@ -54,9 +57,9 @@ export const TeamCard = ({
                   </Avatar>
 
                   {/* Right Avatar */}
-                  <Avatar className="relative z-10 h-10 w-10 border-1 border-white">
+                  <Avatar className="relative z-1 h-10 w-10 border-1 border-white">
                     <AvatarImage src={``} />
-                    <AvatarFallback className="bg-gray-200 text-xs font-medium text-gray-700">
+                    <AvatarFallback className="bg-neutral-200 text-xs font-medium text-neutral-700">
                       {teamLeaders[2] ? (
                         getInitials(teamLeaders[2].user.firstName, teamLeaders[2].user.lastName)
                       ) : (
@@ -136,7 +139,10 @@ export const TeamCard = ({
 
   // Grid view variant (default)
   return (
-    <Card className="group border-border/50 hover:border-border relative overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-lg">
+    <Card
+      onClick={onView}
+      className="group border-border/50 hover:border-border relative cursor-pointer overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
+    >
       <CardContent className="h-full w-full px-2 py-4">
         {/* Team Avatar Circles */}
         <div className="mb-6 flex w-full items-center justify-center">
@@ -144,7 +150,7 @@ export const TeamCard = ({
             {/* Three Aligned Avatar Circles */}
             <div className="flex items-center justify-center">
               {/* Left Avatar */}
-              <Avatar className="relative z-10 h-12 w-12 border-1 border-white">
+              <Avatar className="relative z-1 h-12 w-12 border-1 border-white">
                 <AvatarImage src={``} />
                 <AvatarFallback className="bg-neutral-200 text-xs font-medium text-neutral-700">
                   {teamLeaders[1] ? (
@@ -156,7 +162,7 @@ export const TeamCard = ({
               </Avatar>
 
               {/* Center Avatar (Team Lead) - Overlapping */}
-              <Avatar className="relative z-20 -mx-2 h-16 w-16 border-4 border-white">
+              <Avatar className="relative z-2 -mx-2 h-16 w-16 border-4 border-white">
                 <AvatarImage src={``} />
                 <AvatarFallback className="bg-neutral-800 text-sm font-semibold text-white">
                   {teamLeaders[0] ? (
@@ -168,7 +174,7 @@ export const TeamCard = ({
               </Avatar>
 
               {/* Right Avatar */}
-              <Avatar className="relative z-10 h-12 w-12 border-1 border-white">
+              <Avatar className="relative z-1 h-12 w-12 border-1 border-white">
                 <AvatarImage src={``} />
                 <AvatarFallback className="bg-neutral-200 text-xs font-medium text-neutral-700">
                   {teamLeaders[2] ? (
@@ -188,7 +194,7 @@ export const TeamCard = ({
         </div>
 
         {/* Team Info */}
-        <div className="w-full cursor-pointer space-y-6 text-center" onClick={onView}>
+        <div className="w-full cursor-pointer space-y-6 text-center">
           <div>
             <h3 className="text-foreground mb-1 line-clamp-2 px-2 text-2xl font-bold">
               {teamName}

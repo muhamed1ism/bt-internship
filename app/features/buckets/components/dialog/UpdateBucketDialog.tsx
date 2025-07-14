@@ -8,7 +8,7 @@ import {
 import { Button } from '@app/components/ui/button';
 import { FormInputField } from '@app/components/forms/FormInputField';
 import { useForm } from 'react-hook-form';
-import { bucketSchema, CreateCategoryFormValues } from '@app/schemas';
+import { bucketSchema, CreateCategoryFormValues, UpdateCategoryFormValues } from '@app/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
@@ -20,29 +20,34 @@ import {
 } from '@app/components/ui/form';
 import { Textarea } from '@app/components/ui/textarea';
 import { Spinner } from '@app/components/ui/spinner';
-import { useCreateCategory } from '@app/hooks/bucket';
+import { useUpdateCategory } from '@app/hooks/bucket';
+import { BucketCategory } from '@app/types/bucket';
 
-interface AddBucketDialogProps {
+interface UpdateBucketDialogProps {
   isOpen: boolean;
   onClose: () => void;
+  bucket: BucketCategory;
 }
 
-export const AddBucketDialog = ({ isOpen, onClose }: AddBucketDialogProps) => {
-  const { mutate: createCategory, isPending, error } = useCreateCategory();
-  const form = useForm<CreateCategoryFormValues>({
+export const UpdateBucketDialog = ({ isOpen, onClose, bucket }: UpdateBucketDialogProps) => {
+  const { mutate: updateCategory, isPending, error } = useUpdateCategory();
+  const form = useForm<UpdateCategoryFormValues>({
     resolver: zodResolver(bucketSchema.createCategory),
     defaultValues: {
-      name: '',
-      description: '',
+      name: bucket.name ?? '',
+      description: bucket.description ?? '',
     },
   });
 
+  console.log({ form });
+
   const handleClose = () => {
+    form.reset();
     onClose();
   };
 
-  const onSubmit = (formData: CreateCategoryFormValues) => {
-    createCategory(formData);
+  const onSubmit = (formData: UpdateCategoryFormValues) => {
+    updateCategory({ formData, categoryId: bucket.id });
     if (!error) handleClose();
   };
 
@@ -50,7 +55,7 @@ export const AddBucketDialog = ({ isOpen, onClose }: AddBucketDialogProps) => {
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create new bucket</DialogTitle>
+          <DialogTitle>Update new bucket</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -88,7 +93,7 @@ export const AddBucketDialog = ({ isOpen, onClose }: AddBucketDialogProps) => {
                 Cancel
               </Button>
               <Button type="submit">
-                {isPending ? <Spinner className="text-secondary" /> : 'Create'}
+                {isPending ? <Spinner className="text-secondary" /> : 'Update'}
               </Button>
             </DialogFooter>
           </form>
