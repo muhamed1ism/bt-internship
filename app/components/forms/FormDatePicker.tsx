@@ -21,7 +21,7 @@ export const FormDatePicker = ({ control, name, label }: FormDatePickerProps) =>
             <DatePicker
               date={field.value}
               setDate={field.onChange}
-              className="bg-secondary border-primary/50 w-full border-1"
+              className="bg-primary-foreground border-primary/30 w-full border-1"
             />
           </FormControl>
 

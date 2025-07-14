@@ -1,16 +1,14 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-  TeamHeader,
-  MembersGrid,
-  TeamFormModal,
-  useTeamForm,
-  PositionChangeModal,
-} from '@app/features/team';
 import { useGetTeamById, useUpdateMemberPosition } from '@app/hooks/team';
 import { TeamMember } from '@app/types/team';
 import { UpdateMemberPositionFormValues } from '@app/schemas';
 import { Spinner } from '@app/components/ui/spinner';
+import { useTeamForm } from '@app/features/team/hooks';
+import { TeamHeader } from '@app/features/team/components/TeamHeader';
+import { MembersGrid } from '@app/features/team/components/MembersGrid';
+import { TeamFormModal } from '@app/features/team/components/modal/TeamFormModal';
+import { PositionChangeModal } from '@app/features/team/components/modal/PositionChangeModal';
 
 export const TeamView = () => {
   // In a real app, you'd fetch team data based on the ID from params

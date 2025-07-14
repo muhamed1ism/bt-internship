@@ -9,7 +9,7 @@ const teamFormSchema = z.object({
   endDate: z.coerce.date().optional(),
   projectDescription: z.string().optional(),
   documentation: z.string().optional(),
-  githubLink: z.string().url('Invalid GitHub link').optional(),
+  githubLink: z.string().url('Invalid GitHub link').optional().or(z.literal('')),
   technologies: z.array(z.string()).optional(),
 });
 

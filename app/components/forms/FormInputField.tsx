@@ -29,7 +29,7 @@ export const FormInputField = ({
             <Input
               type={type}
               placeholder={label}
-              className="border-primary/50 border-1"
+              className="border-primary/30 bg-primary-foreground border-1"
               {...field}
               disabled={disabled}
             />

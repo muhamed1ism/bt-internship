@@ -2,16 +2,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus } from 'lucide-react';
 import { Button } from '@app/components/ui/button';
 import { SidebarInset } from '@app/components/ui/sidebar';
-import {
-  MemberManagementControls,
-  MemberManagementCard,
-  AddMemberCard,
-  PositionChangeModal,
-  useMemberManagementPage,
-} from '@app/features/team';
 import { useGetTeamById } from '@app/hooks/team';
 import { TeamMember } from '@app/types/team';
 import { Spinner } from '@app/components/ui/spinner';
+import { useMemberManagementPage } from '@app/features/team/hooks';
+import { MemberManagementControls } from '@app/features/team/components/control/MemberManagementControls';
+import { AddMemberCard } from '@app/features/team/components/card/AddMemberCard';
+import { MemberManagementCard } from '@app/features/team/components/card/MemberManagementCard';
+import { PositionChangeModal } from '@app/features/team/components/modal/PositionChangeModal';
 
 export const TeamMembers = () => {
   const { teamId } = useParams<{ teamId: string }>();
@@ -34,16 +32,14 @@ export const TeamMembers = () => {
     isPositionChangeOpen,
     handlePositionChangeConfirm,
     closePositionChangeModal,
-    // Add member modal
-    handleAddMember,
-    isAddMemberOpen,
-    handleAddMemberConfirm,
-    isAddingMembers,
-    closeAddMemberModal,
   } = useMemberManagementPage(team?.members ?? [], team?.id ?? '');
 
   const handleBackToTeam = () => {
     navigate(`/teams/${teamId}`);
+  };
+
+  const handleAddMember = () => {
+    navigate(`/teams/${teamId}/members/add`);
   };
 
   // Loading state
@@ -83,14 +79,14 @@ export const TeamMembers = () => {
 
           {/* Team Header */}
           <div className="mt-4 flex items-center justify-between">
-            <div className="flex gap-4">
+            <div className="flex items-center gap-4">
               {/* Team Avatars */}
               <div className="relative flex">
                 {team?.members &&
                   team.members.slice(0, 3).map((member, index) => (
                     <div
                       key={member.id}
-                      className="border-background flex h-12 w-12 items-center justify-center rounded-full border-2 bg-gray-200 text-sm font-medium"
+                      className="border-background flex h-12 w-12 items-center justify-center rounded-full border-2 bg-neutral-200 text-sm font-medium"
                       style={{ marginLeft: index > 0 ? '-8px' : '0', zIndex: 3 - index }}
                     >
                       {(member.user.firstName + ' ' + member.user.lastName)
@@ -118,7 +114,7 @@ export const TeamMembers = () => {
             {/* Add Member Button */}
             <Button
               size="lg"
-              onClick={() => navigate(`/teams/${teamId}/members/add`)}
+              onClick={handleAddMember}
               className="border-yellow-600 bg-yellow-400 text-black hover:border-yellow-700 hover:bg-yellow-500"
             >
               <Plus className="mr-2 h-4 w-4" />

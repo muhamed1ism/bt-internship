@@ -1,11 +1,14 @@
+import { Description } from '@radix-ui/react-dialog';
 import { z } from 'zod';
 
 const createCategoryFormSchema = z.object({
   name: z.string().min(3, 'Bucket name must be at least 3 characters'),
+  description: z.string().optional(),
 });
 
 const updateCategoryFormSchema = z.object({
   name: z.string().min(3, 'Bucket name must be at least 3 characters'),
+  description: z.string().optional(),
 });
 
 const createLevelFormSchema = z.object({
