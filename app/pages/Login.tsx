@@ -61,7 +61,7 @@ export const Login = () => {
             variant="ghost"
             onClick={handleGoogle}
             disabled={googleIsPending}
-            className="bg-primary-foreground border-primary/15 text-primary h-12 w-full border-1"
+            className="bg-card border-primary/15 text-primary h-12 w-full border-1"
           >
             {googleIsPending ? 'Loading...' : 'Sign up with Google'}
           </Button>

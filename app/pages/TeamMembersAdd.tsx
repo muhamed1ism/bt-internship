@@ -26,7 +26,6 @@ export const TeamMembersAdd = () => {
     handleChangePosition,
     handleDeselectMember,
     handleSelectMember,
-    isAddingMembers,
     searchTerm,
     selectedMembers,
     setSearchTerm,
@@ -63,7 +62,7 @@ export const TeamMembersAdd = () => {
                   team.members.slice(0, 3).map((member, index) => (
                     <div
                       key={member.id}
-                      className="border-background flex h-12 w-12 items-center justify-center rounded-full border-2 bg-gray-200 text-sm font-medium"
+                      className="border-background flex h-12 w-12 items-center justify-center rounded-full border-2 bg-neutral-200 text-sm font-medium"
                       style={{ marginLeft: index > 0 ? '-8px' : '0', zIndex: 3 - index }}
                     >
                       {(member.user.firstName + ' ' + member.user.lastName)
@@ -114,7 +113,7 @@ export const TeamMembersAdd = () => {
                 placeholder="Search members..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-primary-foreground h-[36px] pl-10"
+                className="bg-card h-[36px] pl-10"
               />
             </div>
 
@@ -123,14 +122,14 @@ export const TeamMembersAdd = () => {
               <Button
                 size="icon"
                 onClick={() => setViewMode('list')}
-                className={`rounded-r-none ${viewMode === 'list' ? 'text-primary-foreground bg-primary' : 'text-primary bg-primary-foreground hover:bg-primary/10'}`}
+                className={`rounded-r-none ${viewMode === 'list' ? 'text-secondary bg-primary' : 'text-primary bg-card hover:bg-primary/10'}`}
               >
                 <List className="h-4 w-4" />
               </Button>
               <Button
                 size="icon"
                 onClick={() => setViewMode('grid')}
-                className={`rounded-l-none ${viewMode === 'grid' ? 'text-primary-foreground bg-primary' : 'text-primary bg-primary-foreground hover:bg-primary/10'}`}
+                className={`rounded-l-none ${viewMode === 'grid' ? 'text-secondary bg-primary' : 'text-primary bg-card hover:bg-primary/10'}`}
               >
                 <LayoutGrid className="h-4 w-4" />
               </Button>

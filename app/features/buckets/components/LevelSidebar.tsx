@@ -45,21 +45,6 @@ export const LevelSidebar = ({
                 <div className="absolute -top-5 left-[50%] h-5 w-[0.2rem] bg-gray-400"></div>
               )}
 
-              {/* <Card */}
-              {/*   className={`cursor-pointer transition-all duration-200 hover:shadow-md ${ */}
-              {/*     selectedLevel?.id === level.id */}
-              {/*       ? selectedLevel?.level === maxLevel && */}
-              {/*         selectedLevel?.level === currentLevel?.level */}
-              {/*         ? 'bg-yellow-50/70 ring-2 ring-yellow-200' */}
-              {/*         : selectedLevel?.level === currentLevel?.level */}
-              {/*           ? 'bg-sky-50/70 ring-2 ring-sky-200' */}
-              {/*           : currentLevel && selectedLevel?.level > currentLevel?.level */}
-              {/*             ? 'bg-gray-200 ring-2 ring-gray-400' */}
-              {/*             : 'bg-emerald-50/60 ring-2 ring-emerald-200' */}
-              {/*       : 'hover:bg-primary-foreground/80' */}
-              {/*   }`} */}
-              {/*   onClick={() => onLevelSelect(level)} */}
-              {/* > */}
               <Card
                 className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
                   selectedLevel?.id === level.id && currentLevel?.level

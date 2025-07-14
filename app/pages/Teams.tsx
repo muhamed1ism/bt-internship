@@ -1,43 +1,27 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_TEAMS, createTeamFormData } from '@mocks/teams';
 import { ViewMode } from '@app/types/team';
-import {
-  useFilteredTeams,
-  TeamsControls,
-  TeamsGrid,
-  TeamsEmptyState,
-  TeamFormModal,
-  useTeamForm,
-} from '@app/features/team';
+
 import routeNames from '@app/routes/route-names';
-import { useGetAllTeams, useGetAllTeamsWithLeaders } from '@app/hooks/team';
-import { useGetTeamLeaders } from '@app/hooks/team/useGetTeamLeaders';
+import { useGetAllTeamsWithLeaders } from '@app/hooks/team';
+import { useFilteredTeams, useTeamForm } from '@app/features/team/hooks';
+import { TeamsControls } from '@app/features/team/components/control/TeamsControls';
+import { TeamsGrid } from '@app/features/team/components/TeamsGrid';
+import { TeamsEmptyState } from '@app/features/team/components/TeamsEmptyState';
+import { TeamFormModal } from '@app/features/team/components/modal/TeamFormModal';
 
 export const Teams = () => {
   const navigate = useNavigate();
   const { teams, isSuccess } = useGetAllTeamsWithLeaders();
 
-  console.log({ teams });
-
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const { filteredTeams } = useFilteredTeams(teams, searchQuery);
 
-  const { formState, openCreateForm, openEditForm, closeForm, handleSave, handleRemove } =
-    useTeamForm();
+  const { formState, openCreateForm, openEditForm, closeForm } = useTeamForm();
 
   const handleViewTeam = (teamId: string) => {
     navigate(routeNames.teamView({ teamId }));
-  };
-
-  const handleEditTeam = (teamId: string) => {
-    // const team = teams?.find((team) => team.id === teamId);
-    // if (team) {
-    // // Use clean, backend-ready form data from mocks
-    // const formData = createTeamFormData(team, 'sample');
-    // openEditForm(formData);
-    // }
   };
 
   return (
@@ -71,7 +55,7 @@ export const Teams = () => {
             teams={filteredTeams}
             viewMode={viewMode}
             onViewTeam={handleViewTeam}
-            onEditTeam={handleEditTeam}
+            onEditTeam={openEditForm}
           />
         ) : (
           <TeamsEmptyState onCreateTeam={openCreateForm} />
@@ -81,8 +65,6 @@ export const Teams = () => {
         <TeamFormModal
           isOpen={formState.isOpen}
           onClose={closeForm}
-          onSave={handleSave}
-          onRemove={handleRemove}
           mode={formState.mode}
           team={formState.team}
         />

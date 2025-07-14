@@ -1,4 +1,3 @@
-import { MOCK_USERS } from '@app/__mocks__';
 import { createColumn } from '@app/components/table/CreateColumn';
 import { DataTable } from '@app/components/table/DataTable';
 import { GlobalSearchInput } from '@app/components/table/GlobalSearchInput';

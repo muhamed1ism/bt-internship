@@ -8,7 +8,7 @@ export const useGetMyUserBuckets = () => {
     isLoading,
     isSuccess,
   } = useQuery<UserBucketLevel[] | undefined>({
-    queryKey: ['my-buckets'],
+    queryKey: ['get-my-buckets'],
     queryFn: getMyUserBucketsApi,
   });
 
