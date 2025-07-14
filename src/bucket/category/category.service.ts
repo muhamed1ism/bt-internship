@@ -16,6 +16,11 @@ export class CategoryService {
         id: true,
         name: true,
         description: true,
+        _count: {
+          select: {
+            bucketLevels: true,
+          },
+        },
         bucketLevels: {
           orderBy: {
             level: 'desc',
@@ -63,7 +68,7 @@ export class CategoryService {
         'Bucket category with this name already exists',
       );
 
-    await this.prisma.bucketCategory.create({
+    return this.prisma.bucketCategory.create({
       data: {
         name: dto.name,
         description: dto.description,
@@ -72,18 +77,21 @@ export class CategoryService {
   }
 
   async updateCategory(categoryId: string, dto: UpdateCategoryDto) {
-    try {
-      await this.prisma.bucketCategory.update({
-        where: { id: categoryId },
-        data: {
-          name: dto.name,
-          description: dto.description,
-        },
-      });
-    } catch (error) {
-      console.error(error);
-      throw new Error('Error while updating Bucket Category: ', error);
-    }
+    const category = await this.prisma.bucketCategory.findUnique({
+      where: {
+        id: categoryId,
+      },
+    });
+
+    if (!category) throw new NotFoundException('Bucket category not found');
+
+    return this.prisma.bucketCategory.update({
+      where: { id: categoryId },
+      data: {
+        name: dto.name,
+        description: dto.description,
+      },
+    });
   }
 
   async deleteCategory(categoryId: string) {

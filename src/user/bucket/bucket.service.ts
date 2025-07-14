@@ -68,10 +68,6 @@ export class BucketService {
   }
 
   async promoteUserBucketLevel(userId: string, categoryId: string) {
-    // const currentBucketLevel = await this.prisma.bucketLevel.findUnique({
-    //   where: { id: bucketId },
-    // });
-    //
     const userBucket = await this.prisma.userBucket.findFirst({
       where: {
         userId,
@@ -85,8 +81,6 @@ export class BucketService {
     });
 
     if (!userBucket) throw new NotFoundException('User bucket not found');
-
-    console.log({ bucket: userBucket.bucket.id });
 
     const nextLevel = await this.prisma.bucketLevel.findFirst({
       where: {
