@@ -2,13 +2,48 @@ import { Card, CardContent, CardFooter, CardHeader } from '@app/components/ui/ca
 import { Button } from '@app/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@app/components/ui/avatar';
 import { Badge } from '@app/components/ui/badge';
-import { FileText, UserCog, Mail, Calendar } from 'lucide-react';
+import { FileText, UserCog, Mail, Calendar, Target } from 'lucide-react';
 import { MemberCardProps } from '@app/types/team';
+import { useGetUserBucketsById } from '@app/hooks/bucket';
+import { UserBucketLevel } from '@app/types/bucket';
 
 export const MemberCard = ({ member, onSubmitReport, onChangePosition }: MemberCardProps) => {
+  const { buckets: userBuckets } = useGetUserBucketsById(member.user.id);
+
   // Generate initials for avatars
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+  };
+
+  // Component to display user buckets
+  const UserBucketsDisplay = ({ buckets }: { buckets: UserBucketLevel[] | undefined }) => {
+    if (!buckets || buckets.length === 0) return null;
+
+    const displayBuckets = buckets.slice(0, 3); // Show max 3 buckets
+
+    return (
+      <div className="flex flex-wrap gap-1.5">
+        {displayBuckets.map((userBucket) => (
+          <div
+            key={userBucket.bucketLevelId}
+            className="flex items-center gap-1 bg-muted/50 rounded-full px-2 py-1 text-xs"
+          >
+            <Target className="h-3 w-3 text-muted-foreground" />
+            <span className="text-muted-foreground font-medium">
+              {userBucket.bucket.category.name}
+            </span>
+            <Badge variant="secondary" className="text-xs px-1 py-0 h-4">
+              {userBucket.bucket.level}
+            </Badge>
+          </div>
+        ))}
+        {buckets.length > 3 && (
+          <div className="flex items-center gap-1 bg-muted/50 rounded-full px-2 py-1 text-xs">
+            <span className="text-muted-foreground">+{buckets.length - 3}</span>
+          </div>
+        )}
+      </div>
+    );
   };
 
   const positionBadgeClass =
@@ -75,6 +110,14 @@ export const MemberCard = ({ member, onSubmitReport, onChangePosition }: MemberC
           <div className="text-muted-foreground flex items-center gap-2 text-sm">
             <Calendar className="h-3 w-3" />
             <span>Joined {new Date(member.joinedAt).toLocaleDateString()}</span>
+          </div>
+
+          {/* User Buckets */}
+          <div className="space-y-2">
+            <p className="text-muted-foreground text-sm font-medium">Buckets</p>
+            <div className="h-16 flex items-start">
+              <UserBucketsDisplay buckets={userBuckets} />
+            </div>
           </div>
 
           {/* Skills */}
