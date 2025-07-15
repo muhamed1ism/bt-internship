@@ -8,6 +8,7 @@ export class Permission {
 action: string ;
 subject: string ;
 conditions: Prisma.JsonValue  | null;
+fields: string[] ;
 reason: string  | null;
 createdAt: Date ;
 updatedAt: Date ;

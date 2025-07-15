@@ -68,10 +68,6 @@ export class BucketService {
   }
 
   async promoteUserBucketLevel(userId: string, categoryId: string) {
-    // const currentBucketLevel = await this.prisma.bucketLevel.findUnique({
-    //   where: { id: bucketId },
-    // });
-    //
     const userBucket = await this.prisma.userBucket.findFirst({
       where: {
         userId,
@@ -85,8 +81,6 @@ export class BucketService {
     });
 
     if (!userBucket) throw new NotFoundException('User bucket not found');
-
-    console.log({ bucket: userBucket.bucket.id });
 
     const nextLevel = await this.prisma.bucketLevel.findFirst({
       where: {
@@ -111,20 +105,25 @@ export class BucketService {
   }
 
   async unassignUserBucket(userId: string, bucketLevelId: string) {
-    try {
-      await this.prisma.userBucket.delete({
-        where: {
-          userId_bucketLevelId: {
-            userId,
-            bucketLevelId,
-          },
+    const userBucketLevel = await this.prisma.userBucket.findUnique({
+      where: {
+        userId_bucketLevelId: {
+          userId,
+          bucketLevelId,
         },
-      });
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error('Unassigning bucket from user failed: ', error);
-      }
-      throw new NotFoundException('User bucket not found');
-    }
+      },
+    });
+
+    if (!userBucketLevel)
+      throw new NotFoundException('Bucket level is not assigned to user');
+
+    return this.prisma.userBucket.delete({
+      where: {
+        userId_bucketLevelId: {
+          userId,
+          bucketLevelId,
+        },
+      },
+    });
   }
 }

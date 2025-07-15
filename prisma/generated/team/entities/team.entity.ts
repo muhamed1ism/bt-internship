@@ -1,6 +1,6 @@
 
 import {TeamStatus} from '@prisma/client'
-import {Technology} from '../../technology/entities/technology.entity'
+import {TeamTechnology} from '../../team-technology/entities/team-technology.entity'
 import {TeamMember} from '../../team-member/entities/team-member.entity'
 
 
@@ -16,6 +16,6 @@ documentation: string ;
 githubLink: string ;
 createdAt: Date ;
 updatedAt: Date ;
-technologies?: Technology[] ;
+technologies?: TeamTechnology[] ;
 members?: TeamMember[] ;
 }

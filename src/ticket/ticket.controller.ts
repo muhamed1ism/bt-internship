@@ -1,31 +1,48 @@
-import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  UseGuards,
+  ForbiddenException,
+  Put,
+} from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { CreateMessageDto, CreateTicketDto } from './dto';
 import { FirebaseJwtGuard } from '../auth/guard';
 import { GetUser } from '../auth/decorator/get-user.decorator';
 import { User } from '../user/type/user.type';
+import { AbilitiesGuard } from 'src/casl/abilities/guard';
+import { CheckAbilities, RequestAbility } from 'src/casl/abilities/decorator';
+import {
+  Action,
+  AppAbility,
+  Subject,
+} from 'src/casl/ability-factory/casl-ability.factory';
 
 @Controller('tickets')
-@UseGuards(FirebaseJwtGuard)
+@UseGuards(FirebaseJwtGuard, AbilitiesGuard)
 export class TicketController {
   constructor(private readonly ticketService: TicketService) {}
 
   @Get('all')
-  async getAllTickets(@GetUser() user: User) {
-    return this.ticketService.getAllTickets(user.id);
+  @CheckAbilities((ability: AppAbility) =>
+    ability.can(Action.Read, Subject.Ticket),
+  ) // CTO and ADMIN only
+  async getAllTickets(@RequestAbility() ability: AppAbility) {
+    if (ability.cannot(Action.Read, Subject.Ticket)) {
+      throw new ForbiddenException(
+        'You are not authorized to access this resource',
+      );
+    }
+
+    return this.ticketService.getAllTickets();
   }
 
   @Get('my')
   async getMyTickets(@GetUser() user: User) {
     return this.ticketService.getMyTickets(user.id);
-  }
-
-  @Post()
-  async createTicket(
-    @Body() createTicketDto: CreateTicketDto,
-    @GetUser() user: User,
-  ) {
-    return this.ticketService.createTicket(user.id, createTicketDto);
   }
 
   @Get(':ticketId/messages')
@@ -36,40 +53,55 @@ export class TicketController {
     return this.ticketService.getTicketMessages(ticketId, user.id);
   }
 
+  @Post()
+  @CheckAbilities((ability: AppAbility) =>
+    ability.can(Action.Create, Subject.Ticket),
+  ) // CTO and ADMIN only
+  async createTicket(
+    @Body() createTicketDto: CreateTicketDto,
+    @GetUser() user: User,
+    @RequestAbility() ability: AppAbility,
+  ) {
+    if (ability.cannot(Action.Create, Subject.Ticket)) {
+      throw new ForbiddenException(
+        'You are not authorized to access this resource',
+      );
+    }
+
+    return this.ticketService.createTicket(user, createTicketDto);
+  }
+
   @Post(':ticketId/messages')
   async createMessage(
     @Param('ticketId') ticketId: string,
-    @Body() createMessageDto: CreateMessageDto,
+    @Body() messageData: CreateMessageDto,
     @GetUser() user: User,
   ) {
-    return this.ticketService.createMessage(
-      ticketId,
-      user.id,
-      createMessageDto,
-    );
+    return this.ticketService.createMessage(ticketId, user.id, messageData);
   }
 
-  @Post(':ticketId/mark-finished')
-  async markAsFinished(
+  @Put(':ticketId/mark-awaiting-confirmation')
+  async markAsAwaitingConfirmation(
     @Param('ticketId') ticketId: string,
     @GetUser() user: User,
   ) {
-    return this.ticketService.markAsFinished(ticketId, user.id);
+    return this.ticketService.markAsAwaitingConfirmation(ticketId, user.id);
   }
 
-  @Post(':ticketId/confirm-finished')
+  @Put(':ticketId/mark-finished')
+  @CheckAbilities((ability: AppAbility) =>
+    ability.can(Action.Update, Subject.Ticket),
+  ) // CTO and ADMIN only
   async confirmFinished(
     @Param('ticketId') ticketId: string,
-    @GetUser() user: User,
+    @RequestAbility() ability: AppAbility,
   ) {
-    return this.ticketService.confirmFinished(ticketId, user.id);
-  }
+    if (ability.cannot(Action.Update, Subject.Ticket)) {
+      throw new ForbiddenException(
+        'You are not authorized to access this resource',
+      );
+    }
 
-  @Post(':ticketId/mark-finished-by-cto')
-  async markAsFinishedByCTO(
-    @Param('ticketId') ticketId: string,
-    @GetUser() user: User,
-  ) {
-    return this.ticketService.markAsFinishedByCTO(ticketId, user.id);
+    return this.ticketService.markAsFinished(ticketId);
   }
 }

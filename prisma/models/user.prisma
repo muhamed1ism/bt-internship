@@ -17,8 +17,9 @@ model User {
   teams           TeamMember[]
   reports         Report[]     @relation("UserReports")
   authoredReports Report[]     @relation("AuthorReports")
-  tickets         Ticket[]
-  messages        Message[]
+  tickets         Ticket[]     @relation("EmployeeTickets")
+  authoredTickets Ticket[]     @relation("AuthorTickets")
+  Message         Message[]
 
   @@map("users")
 }

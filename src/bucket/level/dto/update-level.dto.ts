@@ -1,5 +1,4 @@
 export class UpdateLevelDto {
-  level: number;
   expectations: string[];
   skills: string[];
   tools: string[];

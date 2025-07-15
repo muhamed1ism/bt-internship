@@ -14,25 +14,23 @@ import {
   Action,
   AppAbility,
   Subject,
-} from '../casl/casl-ability.factory/casl-ability.factory';
-import { subject } from '@casl/ability';
+} from '../casl/ability-factory/casl-ability.factory';
 import { RequestAbility } from '../casl/abilities/decorator/request-ability.decorator';
 import { FirebaseJwtGuard } from 'src/auth/guard';
 import { GetUser } from 'src/auth/decorator/get-user.decorator';
+import { subject } from '@casl/ability';
 
-@UseGuards(FirebaseJwtGuard)
 @Controller('user')
+@UseGuards(FirebaseJwtGuard, AbilitiesGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get('current-user')
-  @UseGuards(FirebaseJwtGuard)
   getMe(@GetUser() user: User) {
     return user;
   }
 
   @Get('all')
-  @UseGuards(AbilitiesGuard)
   @CheckAbilities((ability: AppAbility) =>
     ability.can(Action.Read, Subject.User),
   )
@@ -43,23 +41,46 @@ export class UserController {
       ability.can(Action.Read, subject(Subject.User, user)),
     );
 
-    if (filteredUsers.length === 0)
+    if (filteredUsers.length === 0) {
       throw new ForbiddenException(
         'You are not authorized to access this resource',
       );
+    }
 
     return filteredUsers;
   }
 
   @Put(':userId/activate')
-  async activateUser(@Param('userId') userId: string) {
-    await this.userService.activateUser(userId);
-    return { msg: 'User activated successfully' };
+  @CheckAbilities((ability: AppAbility) =>
+    ability.can(Action.Update, Subject.User, 'status'),
+  )
+  async activateUser(
+    @Param('userId') userId: string,
+    @RequestAbility() ability: AppAbility,
+  ) {
+    if (ability.cannot(Action.Update, Subject.User)) {
+      throw new ForbiddenException(
+        'You are not authorized to access this resource',
+      );
+    }
+
+    return this.userService.activateUser(userId);
   }
 
   @Put(':userId/deactivate')
-  async deactivateUser(@Param('userId') userId: string) {
-    await this.userService.deactivateUser(userId);
-    return { msg: 'User deactivated successfully' };
+  @CheckAbilities((ability: AppAbility) =>
+    ability.can(Action.Update, Subject.User, 'status'),
+  )
+  async deactivateUser(
+    @Param('userId') userId: string,
+    @RequestAbility() ability: AppAbility,
+  ) {
+    if (ability.cannot(Action.Update, Subject.User)) {
+      throw new ForbiddenException(
+        'You are not authorized to access this resource',
+      );
+    }
+
+    return this.userService.deactivateUser(userId);
   }
 }

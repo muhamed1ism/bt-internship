@@ -1,4 +1,6 @@
-export class ConnectBucketCategoryDto {
-  id?: string;
-  name?: string;
-}
+
+  export class ConnectBucketCategoryDto {
+    id?: string;
+name?: string;
+  }
+  

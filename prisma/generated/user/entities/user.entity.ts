@@ -26,5 +26,6 @@ teams?: TeamMember[] ;
 reports?: Report[] ;
 authoredReports?: Report[] ;
 tickets?: Ticket[] ;
-messages?: Message[] ;
+authoredTickets?: Ticket[] ;
+Message?: Message[] ;
 }

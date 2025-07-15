@@ -9,10 +9,10 @@ export class Ticket {
 title: string ;
 description: string ;
 status: TicketStatus ;
-assignedAt: Date ;
-assignedBy: string ;
 createdAt: Date ;
 updatedAt: Date ;
+authorId: string ;
+author?: User ;
 employeeId: string ;
 employee?: User ;
 messages?: Message[] ;

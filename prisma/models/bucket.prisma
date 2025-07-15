@@ -1,6 +1,7 @@
 model BucketCategory {
   id           String        @id @default(uuid())
   name         String        @unique
+  description  String?
   bucketLevels BucketLevel[]
 
   @@map("bucket_categories")

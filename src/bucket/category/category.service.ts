@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto';
 
@@ -8,8 +12,20 @@ export class CategoryService {
 
   async getAllCategories() {
     const categories = await this.prisma.bucketCategory.findMany({
-      include: {
-        bucketLevels: true,
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        _count: {
+          select: {
+            bucketLevels: true,
+          },
+        },
+        bucketLevels: {
+          orderBy: {
+            level: 'desc',
+          },
+        },
       },
     });
 
@@ -20,31 +36,62 @@ export class CategoryService {
     return categories;
   }
 
-  async createCategory(dto: CreateCategoryDto) {
-    try {
-      await this.prisma.bucketCategory.create({
-        data: {
-          name: dto.name,
+  async getCategoryById(categoryId: string) {
+    const category = await this.prisma.bucketCategory.findUnique({
+      where: { id: categoryId },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        bucketLevels: {
+          orderBy: {
+            level: 'desc',
+          },
         },
-      });
-    } catch (error) {
-      console.error(error);
-      throw new Error('Error while creating Bucket Category: ', error);
-    }
+      },
+    });
+
+    if (!category) throw new NotFoundException('Category not found');
+
+    return category;
+  }
+
+  async createCategory(dto: CreateCategoryDto) {
+    const category = await this.prisma.bucketCategory.findUnique({
+      where: {
+        name: dto.name,
+      },
+    });
+
+    if (category)
+      throw new ConflictException(
+        'Bucket category with this name already exists',
+      );
+
+    return this.prisma.bucketCategory.create({
+      data: {
+        name: dto.name,
+        description: dto.description,
+      },
+    });
   }
 
   async updateCategory(categoryId: string, dto: UpdateCategoryDto) {
-    try {
-      await this.prisma.bucketCategory.update({
-        where: { id: categoryId },
-        data: {
-          name: dto.name,
-        },
-      });
-    } catch (error) {
-      console.error(error);
-      throw new Error('Error while updating Bucket Category: ', error);
-    }
+    const category = await this.prisma.bucketCategory.findUnique({
+      where: {
+        id: categoryId,
+      },
+    });
+
+    if (!category) throw new NotFoundException('Bucket category not found');
+
+    return this.prisma.bucketCategory.update({
+      where: { id: categoryId },
+      data: {
+        name: dto.name,
+        description: dto.description,
+      },
+    });
   }
 
   async deleteCategory(categoryId: string) {

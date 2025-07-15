@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import {
   AppAbility,
   CaslAbilityFactory,
-} from '../../casl-ability.factory/casl-ability.factory';
+} from '../../ability-factory/casl-ability.factory';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { AbilityHandler } from '../ability-handler.interface';
 import { CHECK_ABILITY } from '../decorator';

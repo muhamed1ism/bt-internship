@@ -1,1 +1,9 @@
-export class UpdateUserBucketDto {}
+
+
+
+
+
+
+export class UpdateUserBucketDto {
+  
+}

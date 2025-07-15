@@ -2,7 +2,9 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -13,34 +15,129 @@ import { CreateTeamDto, UpdateTeamDto } from './dto';
 import { FirebaseJwtGuard } from 'src/auth/guard';
 import { GetUser } from 'src/auth/decorator/get-user.decorator';
 import { User } from 'src/user/type/user.type';
+import { AbilitiesGuard } from 'src/casl/abilities/guard';
+import { CheckAbilities, RequestAbility } from 'src/casl/abilities/decorator';
+import {
+  Action,
+  AppAbility,
+  Subject,
+} from 'src/casl/ability-factory/casl-ability.factory';
+import { subject } from '@casl/ability';
 
 @Controller('team')
+@UseGuards(FirebaseJwtGuard, AbilitiesGuard)
 export class TeamController {
   constructor(private readonly teamService: TeamService) {}
 
   @Get('all')
-  getAllTeams() {
+  @CheckAbilities((ability: AppAbility) =>
+    ability.can(Action.Read, Subject.Team),
+  )
+  getAllTeams(@RequestAbility() ability: AppAbility) {
+    if (ability.cannot(Action.Read, Subject.Team)) {
+      throw new ForbiddenException(
+        'You are not authorized to access this resource',
+      );
+    }
+
     return this.teamService.getAllTeams();
   }
 
-  @Get('my')
+  @Get('all-with-leaders')
+  @CheckAbilities((ability: AppAbility) =>
+    ability.can(Action.Read, Subject.Team),
+  )
+  getAllTeamsWithLeaders(@RequestAbility() ability: AppAbility) {
+    if (ability.cannot(Action.Read, Subject.Team)) {
+      throw new ForbiddenException(
+        'You are not authorized to access this resource',
+      );
+    }
+
+    return this.teamService.getAllTeamsWithLeaders();
+  }
+
+  @Get('user')
+  @CheckAbilities((ability: AppAbility) =>
+    ability.can(Action.Read, Subject.Team),
+  )
   @UseGuards(FirebaseJwtGuard)
-  getMyTeams(@GetUser() user: User) {
-    return this.teamService.getMyTeams(user.id);
+  getUserTeams(@GetUser() user: User, @RequestAbility() ability: AppAbility) {
+    return this.teamService.getUserTeams(user.id);
+  }
+
+  @Get(':teamId')
+  @CheckAbilities((ability: AppAbility) =>
+    ability.can(Action.Read, Subject.Team),
+  )
+  async getTeamById(
+    @Param('teamId') teamId: string,
+    @RequestAbility() ability: AppAbility,
+  ) {
+    const team = await this.teamService.getTeamById(teamId);
+
+    if (!team) {
+      throw new NotFoundException('Team not found');
+    }
+
+    if (ability.cannot(Action.Read, subject(Subject.Team, { team }))) {
+      throw new ForbiddenException(
+        'You are not authorized to access this team',
+      );
+    }
+
+    return team;
   }
 
   @Post('add')
-  addTeam(@Body() teamData: CreateTeamDto) {
+  @CheckAbilities((ability: AppAbility) =>
+    ability.can(Action.Create, Subject.Team),
+  )
+  addTeam(
+    @Body() teamData: CreateTeamDto,
+    @RequestAbility() ability: AppAbility,
+  ) {
+    if (ability.cannot(Action.Create, Subject.Team)) {
+      throw new ForbiddenException(
+        'You are not authorized to access this resource',
+      );
+    }
+
     return this.teamService.createTeam(teamData);
   }
 
   @Put('update/:teamId')
-  updateTeam(@Param('teamId') teamId: string, @Body() teamData: UpdateTeamDto) {
+  @CheckAbilities((ability: AppAbility) =>
+    ability.can(Action.Update, Subject.Team),
+  )
+  updateTeam(
+    @Param('teamId') teamId: string,
+    @Body() teamData: UpdateTeamDto,
+    @RequestAbility() ability: AppAbility,
+  ) {
+    if (ability.cannot(Action.Update, Subject.Team)) {
+      throw new ForbiddenException(
+        'You are not authorized to access this resource',
+      );
+    }
+
     return this.teamService.updateTeam(teamId, teamData);
   }
 
   @Delete('delete/:teamId')
-  deleteTeam(@Param('teamId') teamId: string) {
+  @CheckAbilities((ability: AppAbility) =>
+    ability.can(Action.Delete, Subject.Team),
+  )
+  deleteTeam(
+    @Param('teamId') teamId: string,
+    @RequestAbility() ability: AppAbility,
+  ) {
+    if (ability.cannot(Action.Delete, Subject.Team)) {
+      throw new ForbiddenException(
+        'You are not authorized to access this resource',
+      );
+    }
+
     return this.teamService.deleteTeam(teamId);
   }
 }

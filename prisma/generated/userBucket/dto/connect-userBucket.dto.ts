@@ -1,1 +1,5 @@
-export class ConnectUserBucketDto {}
+
+  export class ConnectUserBucketDto {
+    
+  }
+  

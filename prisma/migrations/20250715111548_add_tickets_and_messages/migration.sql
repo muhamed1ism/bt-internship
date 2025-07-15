@@ -1,9 +1,12 @@
+-- CreateEnum
+CREATE TYPE "TicketStatus" AS ENUM ('PENDING', 'ONGOING', 'AWAITING_CONFIRMATION', 'FINISHED');
+
 -- CreateTable
 CREATE TABLE "tickets" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "assignedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "status" "TicketStatus" NOT NULL DEFAULT 'PENDING',
     "assignedBy" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -25,6 +28,9 @@ CREATE TABLE "messages" (
 
     CONSTRAINT "messages_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "tickets_title_key" ON "tickets"("title");
 
 -- AddForeignKey
 ALTER TABLE "tickets" ADD CONSTRAINT "tickets_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

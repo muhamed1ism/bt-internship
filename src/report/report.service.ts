@@ -30,7 +30,6 @@ export class ReportService {
   }
 
   async findReportsByUserId(userId: string) {
-    console.log(userId);
     const reports = this.prisma.report.findMany({
       where: { userId },
     });

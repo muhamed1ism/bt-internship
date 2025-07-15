@@ -1,1 +1,9 @@
-export class UpdateRolePermissonDto {}
+
+
+
+
+
+
+export class UpdateRolePermissonDto {
+  
+}

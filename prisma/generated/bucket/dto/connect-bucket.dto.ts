@@ -1,3 +1,5 @@
-export class ConnectBucketDto {
-  id: string;
-}
+
+  export class ConnectBucketDto {
+    id: string;
+  }
+  

@@ -3,13 +3,13 @@ model Ticket {
   title       String       @unique
   description String
   status      TicketStatus @default(PENDING)
-  assignedAt  DateTime     @default(now())
-  assignedBy  String
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
+  authorId   String
+  author     User      @relation("AuthorTickets", fields: [authorId], references: [id])
   employeeId String
-  employee   User      @relation(fields: [employeeId], references: [id])
+  employee   User      @relation("EmployeeTickets", fields: [employeeId], references: [id])
   messages   Message[]
 
   @@map("tickets")
@@ -18,8 +18,6 @@ model Ticket {
 model Message {
   id        String   @id @default(uuid())
   content   String
-  sender    String
-  timestamp DateTime @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -29,4 +27,4 @@ model Message {
   senderUser User   @relation(fields: [senderId], references: [id])
 
   @@map("messages")
-} 
+}
