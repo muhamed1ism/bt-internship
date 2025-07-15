@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { UserType, PersonalInfoFormType } from '@app/types/types';
-import { personalInfoSchema } from '../PersonalInfoModal/personalInfoSchema';
+import { personalInfoSchema } from '../schemas/personalInfoSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 export function usePersonalInfoForm(user: UserType | null) {

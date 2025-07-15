@@ -18,11 +18,20 @@ export const TECHNOLOGY_OPTIONS: TechnologyOption[] = [
 
 // Team status options
 export const TEAM_STATUS_OPTIONS = [
-  { value: 'planning', label: 'Planning' },
-  { value: 'in-progress', label: 'In Progress' },
-  { value: 'on-hold', label: 'On Hold' },
-  { value: 'completed', label: 'Completed' },
-  { value: 'cancelled', label: 'Cancelled' },
+  { value: 'PLANNING', label: 'Planning' },
+  { value: 'DESIGN', label: 'Design' },
+  { value: 'NOT_STARTED', label: 'Not Started' },
+  { value: 'IN_PROGRESS', label: 'In Progress' },
+  { value: 'IN_REVIEW', label: 'In Review' },
+  { value: 'IN_TESTING', label: 'In Testing' },
+  { value: 'ON_HOLD', label: 'On Hold' },
+  { value: 'REWORK_NEEDED', label: 'Rework Needed' },
+  { value: 'READY_TO_RELEASE', label: 'Ready to Release' },
+  { value: 'DEPLOYED_TO_STAGING', label: 'Deployed to Staging' },
+  { value: 'RELEASED', label: 'Released' },
+  { value: 'MONITORING', label: 'Monitoring' },
+  { value: 'COMPLETED', label: 'Completed' },
+  { value: 'CANCELLED', label: 'Cancelled' },
 ];
 
 // Priority options

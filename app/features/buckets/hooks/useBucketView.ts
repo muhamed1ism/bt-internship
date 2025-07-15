@@ -1,23 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import type { Level, Bucket, BucketViewState, EditableField, BucketLevel } from '@app/types/bucket';
-import { MOCK_BUCKETS, DEFAULT_EDITING_LEVEL } from '@app/constants/bucket';
-import {
-  useCreateLevel,
-  useGetCategoryById,
-  useGetUserCategoryLevel,
-  useUpdateLevel,
-} from '../../../hooks/bucket';
-import { CreateLevelFormValues, UpdateLevelFormValues } from '@app/schemas';
+import type { Level, BucketViewState, EditableField, BucketLevel } from '@app/types/bucket';
+import { DEFAULT_EDITING_LEVEL } from '@app/constants/bucket';
+import { useGetCategoryById, useGetUserCategoryLevel } from '../../../hooks/bucket';
 
 export const useBucketView = () => {
   const navigate = useNavigate();
   const { bucketId } = useParams();
 
-  // Mock bucket data lookup
-  const { category: bucket, isLoading, isSuccess } = useGetCategoryById(bucketId || '');
-  // const bucket: Bucket | undefined = bucketId ? MOCK_BUCKETS[bucketId] : undefined;
-  const hasLevels = bucket && bucket.bucketLevels.length > 0;
+  const { category: bucket } = useGetCategoryById(bucketId || '');
+  const maxLevel = bucket?.bucketLevels.length ?? 0;
+  const hasLevels = maxLevel > 0;
   const { level } = useGetUserCategoryLevel(bucketId || '');
 
   const currentLevel =
@@ -142,6 +135,7 @@ export const useBucketView = () => {
     bucket,
     hasLevels,
     currentLevel,
+    maxLevel,
 
     // State
     ...state,

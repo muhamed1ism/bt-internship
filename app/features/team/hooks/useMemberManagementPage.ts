@@ -1,11 +1,9 @@
 import { useState, useMemo } from 'react';
 import type { ViewMode } from '@app/types/member-management';
 import { TeamMember } from '@app/types/team';
-import { useAddMembers, useDeleteMember, useUpdateMemberPosition } from '@app/hooks/team';
-import { AddMembersFormValues } from '@app/schemas';
+import { useDeleteMember, useUpdateMemberPosition } from '@app/hooks/team';
 
 export const useMemberManagementPage = (teamMembers: TeamMember[] | [], teamId: string) => {
-  const { mutate: addMember, isPending: isAddingMembers } = useAddMembers(teamId);
   const { mutate: removeMember, isPending: isRemovingMember } = useDeleteMember();
   const { mutate: changePosition, isPending: isChangingPosition } = useUpdateMemberPosition();
 
@@ -15,9 +13,6 @@ export const useMemberManagementPage = (teamMembers: TeamMember[] | [], teamId: 
   // Position change modal state
   const [isPositionChangeOpen, setIsPositionChangeOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
-
-  // Add member modal state
-  const [isAddMemberOpen, setIsAddMemberOpen] = useState(false);
 
   const filteredMembers = useMemo(() => {
     if (!searchTerm.trim()) return teamMembers;
@@ -41,18 +36,6 @@ export const useMemberManagementPage = (teamMembers: TeamMember[] | [], teamId: 
       // || matchesSkills || matchesProjects;
     });
   }, [teamMembers, searchTerm]);
-
-  const handleAddMember = () => {
-    setIsAddMemberOpen(true);
-  };
-
-  const handleAddMemberConfirm = (formData: AddMembersFormValues) => {
-    addMember(formData);
-  };
-
-  const closeAddMemberModal = () => {
-    setIsAddMemberOpen(false);
-  };
 
   const handleRemoveMember = (memberId: string) => {
     removeMember(memberId);
@@ -91,11 +74,5 @@ export const useMemberManagementPage = (teamMembers: TeamMember[] | [], teamId: 
     selectedMember,
     handlePositionChangeConfirm,
     closePositionChangeModal,
-    // Add member modal
-    handleAddMember,
-    isAddMemberOpen,
-    handleAddMemberConfirm,
-    closeAddMemberModal,
-    isAddingMembers,
   };
 };

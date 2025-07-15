@@ -7,7 +7,7 @@ export const useGetUserBucketsById = (userId: string) => {
     isLoading,
     isSuccess,
   } = useQuery({
-    queryKey: ['user-buckets', userId],
+    queryKey: ['user-buckets'],
     queryFn: () => getUserBucketsByIdApi(userId),
     enabled: !!userId,
   });

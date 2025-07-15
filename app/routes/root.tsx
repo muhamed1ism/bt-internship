@@ -12,7 +12,6 @@ import { Home } from '@app/pages/Home.tsx';
 import { Dashboard } from '@app/pages/Dashboard.tsx';
 import { Evaluation } from '@app/pages/Evaluation.tsx';
 import { People } from '@app/pages/People.tsx';
-import { UserDetail } from '@app/pages/UserDetail.tsx';
 import { Roles } from '@app/pages/Roles.tsx';
 import { Teams } from '@app/pages/Teams.tsx';
 import { TeamView } from '@app/pages/TeamView.tsx';
@@ -24,6 +23,7 @@ import { GoogleRegister } from '@app/pages/GoogleRegister.tsx';
 import { Buckets } from '@app/pages/Buckets.tsx';
 import { BucketView } from '@app/pages/BucketView.tsx';
 import { TeamMembersAdd } from '@app/pages/TeamMembersAdd.tsx';
+import { UserDetail } from '@app/pages/UserDetail.tsx';
 
 const routesForPublic = [
   {

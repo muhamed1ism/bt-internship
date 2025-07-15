@@ -1,17 +1,14 @@
 import { CheckCircle2, Clock, Plus, Star } from 'lucide-react';
 import { Button } from '@app/components/ui/button';
-import { Badge } from '@app/components/ui/badge';
 import { Card, CardContent } from '@app/components/ui/card';
-import type { Bucket, BucketLevel, Level } from '@app/types/bucket';
-import { STATUS_ICONS, DIFFICULTY_COLORS } from '@app/constants/bucket';
-import { getStatusClasses, formatLevelTitle } from '@app/utils/bucket';
-import { useGetUserCategoryLevel } from '@app/hooks/bucket';
+import type { BucketLevel } from '@app/types/bucket';
 
 interface LevelSidebarProps {
   name: string;
   currentLevel: BucketLevel | null;
   levels: BucketLevel[];
   selectedLevel: BucketLevel | null;
+  maxLevel: number;
   onLevelSelect: (level: BucketLevel) => void;
   onCreateLevel: () => void;
   showCreateButton?: boolean;
@@ -22,22 +19,18 @@ export const LevelSidebar = ({
   levels,
   currentLevel,
   selectedLevel,
+  maxLevel,
   onLevelSelect,
   onCreateLevel,
   showCreateButton = true,
 }: LevelSidebarProps) => {
-  const renderIcon = (status: any) => {
-    const IconComponent = status === 'current' ? Clock : status === 'locked' ? Star : CheckCircle2;
-    return <IconComponent className="h-4 w-4" />;
-  };
-
   return (
     <div className="lg:col-span-1">
       <div className="sticky top-6">
         {showCreateButton && (
           <Button
             onClick={onCreateLevel}
-            className="mb-6 w-full bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg hover:from-green-600 hover:to-green-700"
+            className="mb-6 w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg hover:from-emerald-600 hover:to-emerald-700"
           >
             <Plus className="mr-2 h-4 w-4" />
             Add Level
@@ -54,12 +47,14 @@ export const LevelSidebar = ({
 
               <Card
                 className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
-                  selectedLevel?.id === level.id
-                    ? selectedLevel?.level === currentLevel?.level
-                      ? 'bg-blue-50/70 ring-2 ring-blue-200'
-                      : currentLevel && selectedLevel?.level > currentLevel?.level
-                        ? 'bg-gray-200 ring-2 ring-gray-400'
-                        : 'bg-green-50/60 ring-2 ring-green-200'
+                  selectedLevel?.id === level.id && currentLevel?.level
+                    ? (selectedLevel.level === currentLevel?.level &&
+                        selectedLevel?.level === maxLevel) ||
+                      selectedLevel?.level < currentLevel?.level
+                      ? 'bg-emerald-50/60 ring-2 ring-emerald-200'
+                      : selectedLevel?.level === currentLevel?.level
+                        ? 'bg-sky-50/70 ring-2 ring-sky-200'
+                        : 'bg-gray-200 ring-2 ring-gray-400'
                     : 'hover:bg-primary-foreground/80'
                 }`}
                 onClick={() => onLevelSelect(level)}
@@ -71,15 +66,15 @@ export const LevelSidebar = ({
                         const diff = currentLevel.level - level.level;
 
                         const config =
-                          diff > 0
+                          (currentLevel.level === maxLevel && diff === 0) || diff > 0
                             ? {
                                 icon: <CheckCircle2 className="h-4 w-4" />,
-                                className: 'bg-green-100 text-green-600',
+                                className: 'bg-emerald-100 text-emerald-600',
                               }
                             : diff === 0
                               ? {
                                   icon: <Clock className="h-4 w-4" />,
-                                  className: 'bg-blue-100 text-blue-600',
+                                  className: 'bg-sky-100 text-sky-600',
                                 }
                               : {
                                   icon: <Star className="h-4 w-4" />,

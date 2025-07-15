@@ -9,6 +9,7 @@ interface BucketHeaderProps {
   totalLevels?: number;
   onNavigateBack: () => void;
   breadcrumb?: string;
+  onOpenUpdateBucket?: () => void;
 }
 
 export const BucketHeader = ({
@@ -17,6 +18,7 @@ export const BucketHeader = ({
   totalLevels,
   onNavigateBack,
   breadcrumb = 'Buckets',
+  onOpenUpdateBucket,
 }: BucketHeaderProps) => {
   return (
     <div className="bg-card border-b shadow-sm">
@@ -53,7 +55,7 @@ export const BucketHeader = ({
                 <p className="text-muted-foreground mt-1">{description}</p>
               </div>
             </div>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onOpenUpdateBucket}>
               <Edit2 className="h-4 w-4" />
             </Button>
           </div>
