@@ -2,6 +2,7 @@ import {
   BookUser,
   ClipboardCheck,
   Contact,
+  FileText,
   Home,
   Layers,
   ShieldUser,
@@ -30,6 +31,7 @@ const items = [
   { title: 'Teams', url: routeNames.teams(), icon: <UserRound /> },
   { title: 'Users', url: routeNames.users(), icon: <BookUser /> },
   { title: 'Roles', url: routeNames.roles(), icon: <ShieldUser /> },
+  { title: 'Reports', url: routeNames.reports(), icon: <FileText /> },
   { title: 'Contact', url: routeNames.contact(), icon: <Contact /> },
 ];
 

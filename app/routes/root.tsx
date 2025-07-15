@@ -24,6 +24,8 @@ import { Buckets } from '@app/pages/Buckets.tsx';
 import { BucketView } from '@app/pages/BucketView.tsx';
 import { TeamMembersAdd } from '@app/pages/TeamMembersAdd.tsx';
 import { UserDetail } from '@app/pages/UserDetail.tsx';
+import { Reports } from '@app/pages/Reports.tsx';
+import { ReportDetail } from '@app/pages/ReportDetail.tsx';
 
 const routesForPublic = [
   {
@@ -63,6 +65,8 @@ const routesForAuthenticated = [
       { path: routeNames.teamMembersAdd(), element: <TeamMembersAdd /> },
       { path: routeNames.users(), element: <Users /> },
       { path: routeNames.roles(), element: <Roles /> },
+      { path: routeNames.reports(), element: <Reports /> },
+      { path: routeNames.reportDetail(), element: <ReportDetail /> },
     ],
   },
 ];

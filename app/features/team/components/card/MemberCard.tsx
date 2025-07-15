@@ -4,8 +4,14 @@ import { Avatar, AvatarImage, AvatarFallback } from '@app/components/ui/avatar';
 import { Badge } from '@app/components/ui/badge';
 import { FileText, UserCog, Mail, Calendar } from 'lucide-react';
 import { MemberCardProps } from '@app/types/team';
+import { useAuth } from '@app/context/AuthContext';
 
 export const MemberCard = ({ member, onSubmitReport, onChangePosition }: MemberCardProps) => {
+  const { user: currentUser } = useAuth();
+
+  // Check if current user is trying to report about themselves
+  const isSelfReporting = currentUser && currentUser.id === member.user.id;
+
   // Generate initials for avatars
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
@@ -103,6 +109,8 @@ export const MemberCard = ({ member, onSubmitReport, onChangePosition }: MemberC
             variant="outline"
             size="sm"
             className="border-primary/30 hover:border-primary/50 flex-1 transition-colors"
+            disabled={isSelfReporting || false}
+            title={isSelfReporting ? "You cannot write a report about yourself" : "Submit a report about this team member"}
           >
             <FileText className="mr-1 h-4 w-4" />
             Submit Report

@@ -115,6 +115,10 @@ export const ENDPOINTS = {
       uri: `/report/delete/${reportId}`,
       method: 'DELETE',
     }),
+    getById: (reportId: string) => ({
+      uri: `/report/${reportId}`,
+      method: 'GET',
+    }),
     getByUserId: (userId: string) => ({
       uri: `/report/${userId}`,
       method: 'GET',

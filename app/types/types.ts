@@ -36,6 +36,17 @@ export interface PersonalInfoFormType {
   linkedin?: string;
 }
 
+export interface Report {
+  id: string;
+  content: string;
+  userId: string;
+  authorId: string;
+  createdAt: string;
+  updatedAt: string;
+  user?: UserType;
+  author?: UserType;
+}
+
 // Re-export shared types for backward compatibility
 export type {
   Role as RoleType,

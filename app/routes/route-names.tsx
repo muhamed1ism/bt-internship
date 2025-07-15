@@ -30,6 +30,8 @@ const routeNames = {
   users: (params?: Record<string, string>): string => generateRoute('/users', params),
   people: (params?: Record<string, string>): string => generateRoute('/people', params),
   userDetail: (params?: Record<string, string>): string => generateRoute('/people/:userId', params),
+  reports: (params?: Record<string, string>): string => generateRoute('/reports', params),
+  reportDetail: (params?: Record<string, string>): string => generateRoute('/reports/:reportId', params),
 };
 
 export default routeNames;

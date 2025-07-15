@@ -10,6 +10,9 @@ import { UserBucketLevel } from '@app/types/bucket';
 import { Mail, Phone, Calendar, User, Shield, Target, ArrowLeft } from 'lucide-react';
 import { Spinner } from '@app/components/ui/spinner';
 import routeNames from '@app/routes/route-names';
+import { UserReportsSection } from '@app/features/users/components/UserReportsSection';
+import { UserReportModal } from '@app/features/users/components/modal/UserReportModal';
+import { useState } from 'react';
 
 export const UserDetail = () => {
   const { userId } = useParams<{ userId: string }>();
@@ -22,6 +25,9 @@ export const UserDetail = () => {
   // Get user buckets
   const { buckets: userBuckets, isLoading: bucketsLoading } = useGetUserBucketsById(userId || '');
 
+  // Report modal state
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+
   // Generate initials for avatar fallback
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
@@ -29,6 +35,14 @@ export const UserDetail = () => {
 
   const handleBackButton = () => {
     navigate(routeNames.people());
+  };
+
+  const handleAddReport = () => {
+    setIsReportModalOpen(true);
+  };
+
+  const handleCloseReportModal = () => {
+    setIsReportModalOpen(false);
   };
 
   // Get status color
@@ -244,8 +258,31 @@ export const UserDetail = () => {
               )}
             </CardContent>
           </Card>
+
+          {/* User Reports */}
+          <UserReportsSection
+            userId={user.id}
+            userName={fullName}
+            onAddReport={handleAddReport}
+            onViewAllReports={() => {
+              console.log('🔍 UserDetail: View All Reports clicked for user:', {
+                userId: user.id,
+                userName: fullName,
+                searchQuery: fullName
+              });
+              // Navigate with search parameter in the URL
+              navigate(`/reports?search=${encodeURIComponent(fullName)}`);
+            }}
+          />
         </div>
       </div>
+
+      {/* Report Modal */}
+      <UserReportModal
+        isOpen={isReportModalOpen}
+        onClose={handleCloseReportModal}
+        user={user}
+      />
     </div>
   );
 };
