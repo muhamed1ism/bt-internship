@@ -56,7 +56,7 @@ export const FormChipsInputField = ({
         return (
           <FormItem>
             <FormLabel className="ml-1">{label}</FormLabel>
-            <div className="border-primary/30 bg-primary-foreground flex min-h-9 flex-wrap items-center rounded-md border-1 px-1 pb-1">
+            <div className="border-primary/30 bg-card flex min-h-9 flex-wrap items-center rounded-md border-1 px-1 pb-1">
               {items.map((item) => (
                 <div
                   key={item}
