@@ -20,12 +20,9 @@ export const TeamCard = ({
   // List view variant
   if (viewMode === 'list') {
     return (
-      <Card
-        onClick={onView}
-        className="group border-border/50 hover:border-border cursor-pointer transition-all duration-200 hover:shadow-md"
-      >
+      <Card className="group border-border/50 hover:border-border transition-all duration-200 hover:shadow-md">
         {/* TODO: Fix view of cards on <500px screens  */}
-        <CardContent className="px-6 py-0">
+        <CardContent onClick={onView} className="px-6 py-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               {/* Compact Avatar Group */}
@@ -139,11 +136,8 @@ export const TeamCard = ({
 
   // Grid view variant (default)
   return (
-    <Card
-      onClick={onView}
-      className="group border-border/50 hover:border-border relative cursor-pointer overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
-    >
-      <CardContent className="h-full w-full px-2 py-4">
+    <Card className="group border-border/50 hover:border-border relative cursor-pointer overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-lg">
+      <CardContent onClick={onView} className="h-full w-full px-2 py-4">
         {/* Team Avatar Circles */}
         <div className="mb-6 flex w-full items-center justify-center">
           <div className="relative">

@@ -60,8 +60,8 @@ export const MemberManagementCard = ({
       <Card className="group border-border/50 hover:border-border flex h-36 flex-row justify-between py-0 transition-all duration-200 hover:shadow-md">
         <CardHeader className="flex items-center gap-4 py-6">
           {/* Avatar */}
-          <div className="relative px-4">
-            <Avatar className="h-18 w-18">
+          <div className="relative p-4">
+            <Avatar className="size-18">
               <AvatarImage src={``} />
               <AvatarFallback className="bg-gray-200 text-sm font-medium text-gray-700">
                 {getInitials(name)}

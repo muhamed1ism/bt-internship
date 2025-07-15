@@ -1,10 +1,10 @@
 import { UserBucketLevel } from '@app/types/bucket';
 import { useMemo } from 'react';
 
-export function useFilteredUserBuckets(
+export const useFilteredUserBuckets = (
   buckets: UserBucketLevel[] | undefined,
   searchQuery: string,
-) {
+) => {
   const filteredUserBuckets = useMemo(() => {
     if (!searchQuery.trim()) return buckets;
 
@@ -22,4 +22,4 @@ export function useFilteredUserBuckets(
   }, [buckets, searchQuery]);
 
   return { filteredUserBuckets };
-}
+};

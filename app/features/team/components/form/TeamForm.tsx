@@ -52,17 +52,22 @@ export const TeamForm = ({ team, onClose, mode }: TeamFormProps) => {
 
   const form = useForm<TeamFormValues>({
     resolver: zodResolver(teamSchema.form),
-    defaultValues: (team as TeamFormValues) || {
-      name: '',
-      clientName: '',
-      status: '',
-      startDate: new Date(),
-      endDate: undefined,
-      projectDescription: '',
-      documentation: '',
-      githubLink: '',
-      technologies: [],
-    },
+    defaultValues: team
+      ? {
+          ...team,
+          technologies: team.technologies?.map((tech) => tech.name) || [],
+        }
+      : {
+          name: '',
+          clientName: '',
+          status: '',
+          startDate: new Date(),
+          endDate: undefined,
+          projectDescription: '',
+          documentation: '',
+          githubLink: '',
+          technologies: [],
+        },
   });
 
   const onSubmit = (formData: TeamFormValues) => {
