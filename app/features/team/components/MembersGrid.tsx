@@ -75,7 +75,7 @@ export const MembersGrid = ({ members, onSubmitReport, onChangePosition }: Membe
       <div
         className={` ${
           viewMode === 'grid'
-            ? 'grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3'
+            ? 'grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3'
             : 'flex flex-col gap-4'
         } `}
       >
@@ -85,6 +85,7 @@ export const MembersGrid = ({ members, onSubmitReport, onChangePosition }: Membe
             member={member}
             onSubmitReport={onSubmitReport}
             onChangePosition={onChangePosition}
+            viewMode={viewMode}
           />
         ))}
       </div>
