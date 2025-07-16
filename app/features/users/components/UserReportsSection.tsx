@@ -5,7 +5,7 @@ import { Badge } from '@app/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@app/components/ui/avatar';
 import { useGetReportsByUserId } from '@app/hooks/report';
 import { Report } from '@app/types/types';
-import { FileText, Calendar, User, Plus, ExternalLink } from 'lucide-react';
+import { FileText, Calendar, User, Plus, ExternalLink, ChevronDown } from 'lucide-react';
 import { Spinner } from '@app/components/ui/spinner';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@app/components/ui/collapsible';
 import { useNavigate } from 'react-router-dom';
@@ -48,7 +48,7 @@ export const UserReportsSection = ({ userId, userName, onAddReport, onViewAllRep
     navigate(routeNames.reportDetail({ reportId }));
   };
 
-  const truncateText = (text: string, maxLength: number = 150) => {
+  const truncateText = (text: string, maxLength: number = 120) => {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
   };
@@ -58,7 +58,7 @@ export const UserReportsSection = ({ userId, userName, onAddReport, onViewAllRep
       <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
         <CollapsibleTrigger asChild>
           <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex items-center gap-4">
                 <div className="bg-primary/10 rounded-xl p-3">
                   <FileText className="text-primary size-5" />
@@ -70,8 +70,8 @@ export const UserReportsSection = ({ userId, userName, onAddReport, onViewAllRep
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-xs">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-2">
+                <Badge variant="outline" className="text-xs w-fit">
                   {isLoading ? '...' : reports?.length || 0} reports
                 </Badge>
                 {onViewAllReports && (
@@ -93,7 +93,17 @@ export const UserReportsSection = ({ userId, userName, onAddReport, onViewAllRep
                   </Button>
                 )}
                 <Button variant="ghost" size="sm">
-                  {isExpanded ? 'Hide' : 'Show'}
+                  {isExpanded ? (
+                    <>
+                      <span className="hidden lg:inline">Hide</span>
+                      <ChevronDown className="h-4 w-4 rotate-180 lg:hidden" />
+                    </>
+                  ) : (
+                    <>
+                      <span className="hidden lg:inline">Show</span>
+                      <ChevronDown className="h-4 w-4 lg:hidden" />
+                    </>
+                  )}
                 </Button>
               </div>
             </div>
@@ -101,13 +111,13 @@ export const UserReportsSection = ({ userId, userName, onAddReport, onViewAllRep
         </CollapsibleTrigger>
 
         <CollapsibleContent>
-          <CardContent className="pt-0">
+          <CardContent className="pt-0 px-4 pb-4 lg:px-6">
             {/* Add Report Button - Only show if not self-reporting */}
             {!isSelfReporting && (
               <div className="mb-4">
                 <Button 
                   onClick={onAddReport} 
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 w-full sm:w-auto"
                 >
                   <Plus className="h-4 w-4" />
                   Add Report
@@ -164,16 +174,16 @@ export const UserReportsSection = ({ userId, userName, onAddReport, onViewAllRep
             )}
 
             {isSuccess && reports && reports.length > 0 && (
-              <div className="max-h-48 space-y-4 overflow-y-auto">
+              <div className="max-h-48 space-y-4 overflow-y-auto overflow-x-hidden">
                 {reports
                   .sort((a: Report, b: Report) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
                   .map((report: Report) => (
                     <div 
                       key={report.id} 
-                      className="border rounded-lg p-4 bg-muted/30 hover:bg-muted/50 cursor-pointer transition-colors"
+                      className="border rounded-lg p-4 bg-muted/30 hover:bg-muted/50 cursor-pointer transition-colors overflow-hidden"
                       onClick={() => handleReportClick(report.id)}
                     >
-                      <div className="flex items-start justify-between mb-3">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-2">
                         <div className="flex items-center gap-2">
                           <Avatar className="h-6 w-6">
                             <AvatarImage src="" />
@@ -193,7 +203,7 @@ export const UserReportsSection = ({ userId, userName, onAddReport, onViewAllRep
                           <ExternalLink className="h-3 w-3 text-muted-foreground" />
                         </div>
                       </div>
-                      <p className="text-sm leading-relaxed text-muted-foreground">
+                      <p className="text-sm leading-relaxed text-muted-foreground mt-3 line-clamp-3 overflow-hidden break-words">
                         {truncateText(report.content)}
                       </p>
                     </div>

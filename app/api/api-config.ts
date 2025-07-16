@@ -25,6 +25,10 @@ export const ENDPOINTS = {
       uri: '/user/all',
       method: 'GET',
     },
+    updateProfile: {
+      uri: '/user/profile',
+      method: 'PUT',
+    },
     activate: (userId: string) => ({
       uri: `user/${userId}/activate`,
       method: 'PUT',
