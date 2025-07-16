@@ -26,12 +26,6 @@ const updateMemberPositionFormSchema = z.object({
   position: z.string().min(3, 'Position name is required'),
 });
 
-const technologySchema = z.object({
-  id: z.string(),
-  name: z.string().min(1, 'Technology name is required'),
-  color: z.string(),
-});
-
 export type AddMemberFormValues = z.infer<typeof addMemberFormSchema>;
 export type AddMembersFormValues = z.infer<typeof addMembersFormSchema>;
 export type UpdateMemberPositionFormValues = z.infer<typeof updateMemberPositionFormSchema>;

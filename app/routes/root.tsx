@@ -24,6 +24,8 @@ import { Buckets } from '@app/pages/Buckets.tsx';
 import { BucketView } from '@app/pages/BucketView.tsx';
 import { TeamMembersAdd } from '@app/pages/TeamMembersAdd.tsx';
 import { UserDetail } from '@app/pages/UserDetail.tsx';
+import { CtoTicketTest } from '@app/pages/cto-ticket-test.tsx';
+import { EmployeeTicketTest } from '@app/pages/employee-ticket-test.tsx';
 
 const routesForPublic = [
   {
@@ -63,6 +65,9 @@ const routesForAuthenticated = [
       { path: routeNames.teamMembersAdd(), element: <TeamMembersAdd /> },
       { path: routeNames.users(), element: <Users /> },
       { path: routeNames.roles(), element: <Roles /> },
+      // Test pages - will be role-based later
+      { path: routeNames.ctoTicketTest(), element: <CtoTicketTest /> },
+      { path: routeNames.employeeTicketTest(), element: <EmployeeTicketTest /> },
     ],
   },
 ];
