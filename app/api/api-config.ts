@@ -190,4 +190,35 @@ export const ENDPOINTS = {
       }),
     },
   },
+
+  ticket: {
+    getAll: {
+      uri: '/tickets/all',
+      method: 'GET',
+    },
+    getMy: {
+      uri: '/tickets/my',
+      method: 'GET',
+    },
+    getMessages: (ticketId: string) => ({
+      uri: `/tickets/${ticketId}/messages`,
+      method: 'GET',
+    }),
+    create: (employeeId: string) => ({
+      uri: `/tickets/${employeeId}`,
+      method: 'POST',
+    }),
+    createMessage: (ticketId: string) => ({
+      uri: `/tickets/${ticketId}/messages`,
+      method: 'POST',
+    }),
+    markAwaitingConfirmation: (ticketId: string) => ({
+      uri: `/tickets/${ticketId}/mark-awaiting-confirmation`,
+      method: 'PUT',
+    }),
+    markFinished: (ticketId: string) => ({
+      uri: `/tickets/${ticketId}/mark-finished`,
+      method: 'PUT',
+    }),
+  },
 };

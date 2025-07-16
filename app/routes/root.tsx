@@ -26,6 +26,8 @@ import { TeamMembersAdd } from '@app/pages/TeamMembersAdd.tsx';
 import { UserDetail } from '@app/pages/UserDetail.tsx';
 import { Reports } from '@app/pages/Reports.tsx';
 import { ReportDetail } from '@app/pages/ReportDetail.tsx';
+import { CtoTicketTest } from '@app/pages/cto-ticket-test.tsx';
+import { EmployeeTicketTest } from '@app/pages/employee-ticket-test.tsx';
 
 const routesForPublic = [
   {
@@ -67,6 +69,9 @@ const routesForAuthenticated = [
       { path: routeNames.roles(), element: <Roles /> },
       { path: routeNames.reports(), element: <Reports /> },
       { path: routeNames.reportDetail(), element: <ReportDetail /> },
+      // Test pages - will be role-based later
+      { path: routeNames.ctoTicketTest(), element: <CtoTicketTest /> },
+      { path: routeNames.employeeTicketTest(), element: <EmployeeTicketTest /> },
     ],
   },
 ];

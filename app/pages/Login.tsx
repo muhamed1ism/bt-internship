@@ -8,6 +8,7 @@ import routeNames from '@app/routes/route-names';
 import { useLogin, useGoogleSignIn } from '@app/hooks/auth';
 import { authSchema, LoginFormValues } from '@app/schemas';
 import { FormInputField } from '@app/components/forms/FormInputField';
+import { Spinner } from '@app/components/ui/spinner';
 
 export const Login = () => {
   const { mutate, isPending, error } = useLogin();
@@ -51,8 +52,8 @@ export const Login = () => {
               </Link>
             </span>
 
-            <Button size="lg" type="submit" disabled={isPending}>
-              {isPending ? 'Loading...' : 'Login'}
+            <Button size="lg" type="submit" disabled={isPending} className="w-22">
+              {isPending ? <Spinner className="text-secondary" /> : 'Login'}
             </Button>
           </div>
           <Button

@@ -5,7 +5,9 @@ import {
   FileText,
   Home,
   Layers,
+  MessageSquareText,
   ShieldUser,
+  Ticket,
   UserRound,
   UserRoundSearch,
 } from 'lucide-react';
@@ -23,6 +25,10 @@ import { useEffect } from 'react';
 import { SidebarButton } from './SidebarButton';
 import routeNames from '@app/routes/route-names';
 
+// TODO: Make sidebar items role-based - show different items based on user role
+// CTO role: Should see "CTO Tickets"
+// Employee role: Should see "Employee Chat"
+// Admin role: Should see both
 const items = [
   { title: 'Dashboard', url: routeNames.dashboard(), icon: <Home /> },
   { title: 'People', url: routeNames.people(), icon: <UserRoundSearch /> },
@@ -33,6 +39,9 @@ const items = [
   { title: 'Roles', url: routeNames.roles(), icon: <ShieldUser /> },
   { title: 'Reports', url: routeNames.reports(), icon: <FileText /> },
   { title: 'Contact', url: routeNames.contact(), icon: <Contact /> },
+  // Test pages - will be role-based later
+  { title: 'CTO Tickets', url: routeNames.ctoTicketTest(), icon: <Ticket /> },
+  { title: 'Employee Chat', url: routeNames.employeeTicketTest(), icon: <MessageSquareText /> },
 ];
 
 export const AppSidebar = () => {
