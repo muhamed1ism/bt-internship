@@ -90,7 +90,6 @@ export const MOCK_BUCKETS: Record<string, Bucket> = {
 };
 
 export const DEFAULT_EDITING_LEVEL = {
-  title: '',
   expectations: [''],
   skills: [''],
   tools: [''],

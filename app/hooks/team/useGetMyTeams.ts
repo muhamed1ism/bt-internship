@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getMyTeamsApi } from '@app/api/team-api';
+import { getUserTeamsApi } from '@app/api/team-api';
 
 export const useGetMyTeams = () => {
   const {
@@ -8,7 +8,7 @@ export const useGetMyTeams = () => {
     isSuccess,
   } = useQuery({
     queryKey: ['get-my-teams'],
-    queryFn: getMyTeamsApi,
+    queryFn: getUserTeamsApi,
   });
 
   return { reports, isLoading, isSuccess };

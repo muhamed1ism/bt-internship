@@ -1,3 +1,5 @@
+import { UserType } from './types';
+
 // Core ticket types (matching API)
 export type TicketStatus = 'PENDING' | 'ONGOING' | 'AWAITING_CONFIRMATION' | 'FINISHED';
 
@@ -6,12 +8,17 @@ export interface Ticket {
   title: string;
   description: string;
   status: TicketStatus;
-  assignedAt: string;
-  assignedBy: string;
   createdAt: string;
   updatedAt: string;
   employeeId: string;
   employee: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+  authorId: string;
+  author: {
     id: string;
     firstName: string;
     lastName: string;
@@ -23,8 +30,6 @@ export interface Ticket {
 export interface TicketMessage {
   id: string;
   content: string;
-  sender: string;
-  timestamp: string;
   createdAt: string;
   updatedAt: string;
   ticketId: string;
@@ -35,19 +40,6 @@ export interface TicketMessage {
     lastName: string;
     email: string;
   };
-}
-
-export interface CreateTicketRequest {
-  title: string;
-  description: string;
-  employeeId: string;
-}
-
-// Ticket form interfaces
-export interface CreateTicketForm {
-  title: string;
-  description: string;
-  employeeId: string;
 }
 
 // Status display configuration interface
@@ -75,23 +67,12 @@ export interface TicketSortConfig {
   direction: 'asc' | 'desc';
 }
 
-// User interface for ticket assignment
-export interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  dateOfBirth: Date;
-  roleId: string;
-}
-
 // Chat/Message related types
 export interface Message {
   id: string;
   content: string;
-  sender: string;
-  timestamp: string;
+  senderUser: UserType;
+  createdAt: string;
   ticketId: string;
 }
 
@@ -125,7 +106,7 @@ export interface TicketActionsProps {
 }
 
 export interface ChatMessageProps {
-  message: Message;
+  message: TicketMessage;
   isCurrentUser: boolean;
 }
 

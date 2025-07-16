@@ -1,28 +1,29 @@
 import { useState, useEffect } from 'react';
 import { getAllUsersApi } from '@app/api/user-api';
 import { useAuth } from '@app/context/AuthContext';
+import { Ticket } from '@app/types/ticket';
+import { DEFAULT_CREATE_TICKET_FORM, MESSAGE_PLACEHOLDERS } from '@app/constants/ticket';
 import {
   useRealtimeAllTickets,
-  useRealtimeTicket,
   useRealtimeChat,
-  TicketCard,
-  TicketStatusBadge,
-  ChatMessage,
-  MessageInput,
-  formatDateTime,
-  isMessageOwner,
-  DEFAULT_CREATE_TICKET_FORM,
-  MESSAGE_PLACEHOLDERS,
-} from '@app/features/tickets';
-import type { Ticket, CreateTicketForm, User } from '@app/features/tickets';
+  useRealtimeTicket,
+} from '@app/features/tickets/hooks';
+import { UserType } from '@app/types/types';
+import { TicketCard } from '@app/features/tickets/components/TicketCard';
+import { TicketStatusBadge } from '@app/features/tickets/components/TicketStatusBadge';
+import { formatDateTime, isMessageOwner } from '@app/features/tickets/utils/ticketHelpers';
+import { ChatMessage } from '@app/features/tickets/components/ChatMessage';
+import { MessageInput } from '@app/features/tickets/components/MessageInput';
+import { CreateTicketValue } from '@app/schemas/ticketSchema';
 
 export const CtoTickets = () => {
   const { user: currentUser } = useAuth();
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserType[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
-  const [createForm, setCreateForm] = useState<CreateTicketForm>(DEFAULT_CREATE_TICKET_FORM);
+  const [employeeId, setEmployeeId] = useState<string>('');
+  const [createForm, setCreateForm] = useState<CreateTicketValue>(DEFAULT_CREATE_TICKET_FORM);
   const [newMessage, setNewMessage] = useState('');
 
   // Real-time ticket management
@@ -32,8 +33,7 @@ export const CtoTickets = () => {
   // Real-time selected ticket details
   const {
     ticket: realtimeTicket,
-    confirmTicketFinish,
-    markTicketFinishedDirectly,
+    markTicketFinished,
     isConfirming,
     isMarkingFinished,
     canConfirm,
@@ -72,7 +72,7 @@ export const CtoTickets = () => {
   const handleCreateTicket = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await createNewTicket(createForm);
+      await createNewTicket(employeeId, createForm);
       setCreateForm(DEFAULT_CREATE_TICKET_FORM);
       setShowCreateForm(false);
     } catch (error) {
@@ -95,7 +95,7 @@ export const CtoTickets = () => {
   const handleConfirmFinished = async () => {
     if (!currentTicket || !canConfirm) return;
     try {
-      await confirmTicketFinish(currentTicket.id);
+      await markTicketFinished(currentTicket.id);
     } catch (error) {
       console.error('Failed to confirm ticket finished:', error);
     }
@@ -104,7 +104,7 @@ export const CtoTickets = () => {
   const handleMarkAsFinishedByCTO = async () => {
     if (!currentTicket || !canMarkFinished) return;
     try {
-      await markTicketFinishedDirectly(currentTicket.id);
+      await markTicketFinished(currentTicket.id);
     } catch (error) {
       console.error('Failed to mark ticket as finished by CTO:', error);
     }
@@ -120,9 +120,9 @@ export const CtoTickets = () => {
     setExpandedDescriptions(newExpanded);
   };
 
-  const getCurrentUserName = () => {
+  const getCurrentUserId = () => {
     if (!currentUser) return '';
-    return `${currentUser.firstName} ${currentUser.lastName}`;
+    return currentUser.id;
   };
 
   if (isLoading) {
@@ -236,8 +236,8 @@ export const CtoTickets = () => {
                     Assign to Employee
                   </label>
                   <select
-                    value={createForm.employeeId}
-                    onChange={(e) => setCreateForm({ ...createForm, employeeId: e.target.value })}
+                    value={employeeId}
+                    onChange={(e) => setEmployeeId(e.target.value)}
                     className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                     required
                   >
@@ -439,7 +439,7 @@ export const CtoTickets = () => {
                         <ChatMessage
                           key={message.id}
                           message={message}
-                          isCurrentUser={isMessageOwner(message.sender, getCurrentUserName())}
+                          isCurrentUser={isMessageOwner(message.senderId, getCurrentUserId())}
                         />
                       ))}
                       <div ref={messagesEndRef} />

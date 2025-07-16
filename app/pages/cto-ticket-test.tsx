@@ -1,21 +1,29 @@
 import { useState, useEffect } from 'react';
 import { getAllUsersApi } from '@app/api/user-api';
 import { useAuth } from '@app/context/AuthContext';
-import { useRealtimeAllTickets, useRealtimeTicket, useRealtimeChat } from '@app/features/tickets';
-import type { Ticket, CreateTicketForm, User } from '@app/features/tickets';
+import { UserType } from '@app/types/types';
+import { Ticket } from '@app/types/ticket';
+import { CreateTicketValue } from '@app/schemas/ticketSchema';
+import {
+  useRealtimeAllTickets,
+  useRealtimeChat,
+  useRealtimeTicket,
+} from '@app/features/tickets/hooks';
+import { Button } from '@app/components/ui/button';
+import { Plus, X } from 'lucide-react';
 
 // Interfaces now imported from @app/features/tickets
 
 export const CtoTicketTest = () => {
   const { user: currentUser } = useAuth();
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserType[]>([]);
+  const [employeeId, setEmployeeId] = useState<string>('');
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
-  const [createForm, setCreateForm] = useState<CreateTicketForm>({
+  const [createForm, setCreateForm] = useState<CreateTicketValue>({
     title: '',
     description: '',
-    employeeId: '',
   });
 
   // Use real-time ticket management
@@ -25,11 +33,9 @@ export const CtoTicketTest = () => {
   // Use real-time selected ticket details
   const {
     ticket: realtimeTicket,
-    confirmTicketFinish,
-    markTicketFinishedDirectly,
     isConfirming,
+    markTicketFinished,
     isMarkingFinished,
-    canConfirm,
     canMarkFinished,
   } = useRealtimeTicket(selectedTicket?.id || null);
 
@@ -66,9 +72,10 @@ export const CtoTicketTest = () => {
   const handleCreateTicket = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.log('Creating Ticket: ', { createForm });
     try {
-      await createNewTicket(createForm);
-      setCreateForm({ title: '', description: '', employeeId: '' });
+      await createNewTicket(employeeId, createForm);
+      setCreateForm({ title: '', description: '' });
       setShowCreateForm(false);
       console.log('Ticket created successfully!');
     } catch (error) {
@@ -88,21 +95,11 @@ export const CtoTicketTest = () => {
     }
   };
 
-  const handleConfirmFinished = async () => {
-    if (!currentTicket || !canConfirm) return;
-
-    try {
-      await confirmTicketFinish(currentTicket.id);
-    } catch (error) {
-      console.error('Failed to confirm ticket finished:', error);
-    }
-  };
-
-  const handleMarkAsFinishedByCTO = async () => {
+  const handleMarkAsFinished = async () => {
     if (!currentTicket || !canMarkFinished) return;
 
     try {
-      await markTicketFinishedDirectly(currentTicket.id);
+      await markTicketFinished(currentTicket.id);
     } catch (error) {
       console.error('Failed to mark ticket as finished by CTO:', error);
     }
@@ -183,10 +180,9 @@ export const CtoTicketTest = () => {
   };
 
   // Fix message ownership detection
-  const isMyMessage = (sender: string) => {
+  const isMyMessage = (senderId: string) => {
     if (!currentUser) return false;
-    const currentUserName = `${currentUser.firstName} ${currentUser.lastName}`;
-    return sender === currentUserName;
+    return senderId === currentUser.id;
   };
 
   if (isLoading) {
@@ -201,53 +197,29 @@ export const CtoTicketTest = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="h-full bg-gray-100">
       <div className="mx-auto max-w-7xl p-6">
         <div className="mb-8">
           <h1 className="mb-2 text-3xl font-bold text-gray-900">Ticket Management</h1>
           <p className="text-gray-600">Create, assign, and manage team tickets</p>
 
           <div className="mt-6">
-            <button
-              onClick={() => setShowCreateForm(!showCreateForm)}
-              className="inline-flex items-center rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
+            <Button
+              variant={showCreateForm ? 'outline' : 'default'}
+              size="lg"
+              onClick={() => setShowCreateForm((prev) => !prev)}
+              className={`${showCreateForm ? 'border-primary/30' : ''} w-46`}
             >
               {showCreateForm ? (
                 <>
-                  <svg
-                    className="mr-2 h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                  Cancel
+                  <X /> Cancel
                 </>
               ) : (
                 <>
-                  <svg
-                    className="mr-2 h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    />
-                  </svg>
-                  Create New Ticket
+                  <Plus /> Create New Ticket
                 </>
               )}
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -293,8 +265,8 @@ export const CtoTicketTest = () => {
                     Assign to Employee
                   </label>
                   <select
-                    value={createForm.employeeId}
-                    onChange={(e) => setCreateForm({ ...createForm, employeeId: e.target.value })}
+                    value={employeeId}
+                    onChange={(e) => setEmployeeId(e.target.value)}
                     className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                     required
                   >
@@ -444,7 +416,7 @@ export const CtoTicketTest = () => {
               </div>
             </div>
 
-            <div className="p-6">
+            <div className="h-[560px] p-6">
               {tickets.length === 0 ? (
                 <div className="py-12 text-center">
                   <div className="mx-auto mb-4 h-12 w-12 text-gray-400">
@@ -466,7 +438,7 @@ export const CtoTicketTest = () => {
                   <p className="text-gray-500">Create your first ticket to get started!</p>
                 </div>
               ) : (
-                <div className="max-h-96 space-y-4 overflow-y-auto">
+                <div className="h-full space-y-4 overflow-y-auto">
                   {tickets.map((ticket) => {
                     const isExpanded = expandedDescriptions.has(ticket.id);
                     const shouldTruncate = ticket.description.length > 120;
@@ -554,7 +526,9 @@ export const CtoTicketTest = () => {
                                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                               />
                             </svg>
-                            <span>By: {ticket.assignedBy}</span>
+                            <span>
+                              By: {ticket.author.firstName} {ticket.author.lastName}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -670,7 +644,7 @@ export const CtoTicketTest = () => {
                           <span>Employee marked this as finished</span>
                         </div>
                         <button
-                          onClick={handleConfirmFinished}
+                          onClick={handleMarkAsFinished}
                           disabled={isConfirming}
                           className="inline-flex items-center rounded-lg bg-green-600 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                         >
@@ -721,75 +695,76 @@ export const CtoTicketTest = () => {
                   )}
 
                   {/* CTO Direct Mark as Finished - Available for all non-finished tickets */}
-                  {selectedTicket.status !== 'FINISHED' && (
-                    <div className="mt-3 border-t border-gray-200 pt-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center text-xs text-blue-600">
-                          <svg
-                            className="mr-1 h-3 w-3"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
+                  {selectedTicket.status !== 'FINISHED' &&
+                    selectedTicket.status !== 'AWAITING_CONFIRMATION' && (
+                      <div className="mt-3 border-t border-gray-200 pt-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center text-xs text-blue-600">
+                            <svg
+                              className="mr-1 h-3 w-3"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                            <span>Mark as finished directly (CTO)</span>
+                          </div>
+                          <button
+                            onClick={handleMarkAsFinished}
+                            disabled={isMarkingFinished}
+                            className="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          <span>Mark as finished directly (CTO)</span>
-                        </div>
-                        <button
-                          onClick={handleMarkAsFinishedByCTO}
-                          disabled={isMarkingFinished}
-                          className="inline-flex items-center rounded-lg bg-blue-600 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          {isMarkingFinished ? (
-                            <>
-                              <svg
-                                className="mr-2 -ml-1 h-3 w-3 animate-spin text-white"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                              >
-                                <circle
-                                  className="opacity-25"
-                                  cx="12"
-                                  cy="12"
-                                  r="10"
+                            {isMarkingFinished ? (
+                              <>
+                                <svg
+                                  className="mr-2 -ml-1 h-3 w-3 animate-spin text-white"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                  ></circle>
+                                  <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                  ></path>
+                                </svg>
+                                Marking as Finished...
+                              </>
+                            ) : (
+                              <>
+                                <svg
+                                  className="mr-2 h-3 w-3"
+                                  fill="none"
                                   stroke="currentColor"
-                                  strokeWidth="4"
-                                ></circle>
-                                <path
-                                  className="opacity-75"
-                                  fill="currentColor"
-                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                ></path>
-                              </svg>
-                              Marking as Finished...
-                            </>
-                          ) : (
-                            <>
-                              <svg
-                                className="mr-2 h-3 w-3"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M5 13l4 4L19 7"
-                                />
-                              </svg>
-                              Mark as Finished
-                            </>
-                          )}
-                        </button>
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M5 13l4 4L19 7"
+                                  />
+                                </svg>
+                                Mark as Finished
+                              </>
+                            )}
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
 
                 {/* Messages Area */}
@@ -828,7 +803,7 @@ export const CtoTicketTest = () => {
                   ) : (
                     <div className="space-y-4">
                       {messages.map((message) => {
-                        const isCurrentUser = isMyMessage(message.sender);
+                        const isCurrentUser = isMyMessage(message.senderId);
                         return (
                           <div
                             key={message.id}
@@ -843,7 +818,9 @@ export const CtoTicketTest = () => {
                                   isCurrentUser ? 'bg-blue-500' : 'bg-gray-500'
                                 }`}
                               >
-                                {getInitials(message.sender)}
+                                {getInitials(
+                                  `${message.senderUser.firstName} ${message.senderUser.lastName}`,
+                                )}
                               </div>
 
                               {/* Message Bubble */}
@@ -860,7 +837,7 @@ export const CtoTicketTest = () => {
                                     isCurrentUser ? 'text-blue-100' : 'text-gray-500'
                                   }`}
                                 >
-                                  {formatTime(message.timestamp)}
+                                  {formatTime(message.createdAt)}
                                 </p>
                               </div>
                             </div>

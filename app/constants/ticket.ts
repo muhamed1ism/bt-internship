@@ -65,7 +65,6 @@ export const UI_CONFIG = {
 export const DEFAULT_CREATE_TICKET_FORM = {
   title: '',
   description: '',
-  employeeId: '',
 } as const;
 
 // Message input placeholder text

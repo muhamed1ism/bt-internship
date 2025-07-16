@@ -88,6 +88,6 @@ export const filterTicketsBySearch = (tickets: Ticket[], searchTerm: string): Ti
 /**
  * Check if user is owner of a message based on their name
  */
-export const isMessageOwner = (messageSender: string, currentUserName: string): boolean => {
-  return messageSender === currentUserName;
+export const isMessageOwner = (messageSenderId: string, currentUserId: string): boolean => {
+  return messageSenderId === currentUserId;
 };

@@ -1,12 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  getTicketMessages,
-  createMessage,
-  type TicketMessage,
-  type CreateMessageRequest,
-} from '@app/api/ticket-api';
 import { POLLING_INTERVALS, CACHE_CONFIG } from '@app/constants/ticket';
+import { createMessageApi, getTicketMessagesApi } from '@app/api/ticket-api';
+import { CreateMessageValue } from '@app/schemas/ticketSchema';
+import { TicketMessage } from '@app/types/ticket';
 
 /**
  * React Query keys for chat functionality
@@ -42,7 +39,7 @@ export const useRealtimeChat = (
     error,
   } = useQuery({
     queryKey: CHAT_QUERY_KEYS.messages(ticketId || ''),
-    queryFn: () => getTicketMessages(ticketId!),
+    queryFn: () => getTicketMessagesApi(ticketId!),
     enabled: enabled && !!ticketId,
     refetchInterval: pollingInterval,
     refetchIntervalInBackground: true,
@@ -59,8 +56,8 @@ export const useRealtimeChat = (
       messageData,
     }: {
       ticketId: string;
-      messageData: CreateMessageRequest;
-    }) => createMessage(ticketId, messageData),
+      messageData: CreateMessageValue;
+    }) => createMessageApi(ticketId, messageData),
     onSuccess: (newMessage, variables) => {
       // Optimistically update the query cache
       queryClient.setQueryData(

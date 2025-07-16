@@ -1,4 +1,4 @@
-import RolesTable from '@app/features/roles/RolesTable/RolesTable';
+import RolesTable from '@app/features/roles/components/RolesTable';
 
 export const Roles = () => {
   return (

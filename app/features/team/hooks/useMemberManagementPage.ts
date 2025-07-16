@@ -1,67 +1,56 @@
 import { useState, useMemo } from 'react';
-import { MOCK_TEAM_MEMBER_CARDS } from '@app/__mocks__/team-members';
-import type { TeamMemberCard, ViewMode, MemberPosition } from '@app/types/member-management';
+import type { ViewMode } from '@app/types/member-management';
+import { TeamMember } from '@app/types/team';
+import { useDeleteMember, useUpdateMemberPosition } from '@app/hooks/team';
 
-export const useMemberManagementPage = () => {
-  const [members, setMembers] = useState<TeamMemberCard[]>(MOCK_TEAM_MEMBER_CARDS);
+export const useMemberManagementPage = (teamMembers: TeamMember[] | [], teamId: string) => {
+  const { mutate: removeMember, isPending: isRemovingMember } = useDeleteMember();
+  const { mutate: changePosition, isPending: isChangingPosition } = useUpdateMemberPosition();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
   // Position change modal state
   const [isPositionChangeOpen, setIsPositionChangeOpen] = useState(false);
-  const [selectedMember, setSelectedMember] = useState<TeamMemberCard | null>(null);
+  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
 
   const filteredMembers = useMemo(() => {
-    if (!searchTerm.trim()) return members;
+    if (!searchTerm.trim()) return teamMembers;
 
     const searchLower = searchTerm.toLowerCase();
-    return members.filter((member) => {
-      const matchesName = member.name.toLowerCase().includes(searchLower);
-      const matchesEmail = member.email.toLowerCase().includes(searchLower);
-      const matchesPosition = member.position.title.toLowerCase().includes(searchLower);
-      const matchesSkills = member.skills.some((skill) =>
-        skill.toLowerCase().includes(searchLower),
-      );
-      const matchesProjects = member.projects.some(
-        (project) =>
-          project.name.toLowerCase().includes(searchLower) ||
-          project.code.toLowerCase().includes(searchLower),
-      );
+    return teamMembers.filter((member) => {
+      const matchesFirstName = member.user.firstName.toLowerCase().includes(searchLower);
+      const matchesLastName = member.user.lastName.toLowerCase().includes(searchLower);
+      const matchesEmail = member.user.email.toLowerCase().includes(searchLower);
+      const matchesPosition = member.position.toLowerCase().includes(searchLower);
+      // const matchesSkills = member.skills.some((skill) =>
+      //   skill.toLowerCase().includes(searchLower),
+      // );
+      // const matchesProjects = member.projects.some(
+      //   (project) =>
+      //     project.name.toLowerCase().includes(searchLower) ||
+      //     project.code.toLowerCase().includes(searchLower),
+      // );
 
-      return matchesName || matchesEmail || matchesPosition || matchesSkills || matchesProjects;
+      return matchesFirstName || matchesLastName || matchesEmail || matchesPosition;
+      // || matchesSkills || matchesProjects;
     });
-  }, [members, searchTerm]);
-
-  const handleAddMember = () => {
-    console.log('Add member clicked');
-    // TODO: Open add member modal or navigate to add member page
-  };
+  }, [teamMembers, searchTerm]);
 
   const handleRemoveMember = (memberId: string) => {
-    console.log('Remove member:', memberId);
-    // TODO: Implement member removal
-    setMembers((prevMembers) => prevMembers.filter((member) => member.id !== memberId));
+    removeMember(memberId);
   };
 
   const handleChangePosition = (memberId: string) => {
-    const member = members.find((m) => m.id === memberId);
-    if (member) {
-      setSelectedMember(member);
+    const teamMember = teamMembers.find((member) => member.id === memberId);
+    if (teamMember) {
+      setSelectedMember(teamMember);
       setIsPositionChangeOpen(true);
     }
   };
 
-  const handlePositionChangeConfirm = async (memberId: string, newPosition: MemberPosition) => {
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    setMembers((prevMembers) =>
-      prevMembers.map((member) =>
-        member.id === memberId ? { ...member, position: newPosition } : member,
-      ),
-    );
-
-    console.log('Position changed for member:', memberId, 'to:', newPosition.title);
+  const handlePositionChangeConfirm = async (memberId: string, newPosition: string) => {
+    changePosition({ formData: { position: newPosition }, memberId });
   };
 
   const closePositionChangeModal = () => {
@@ -70,15 +59,16 @@ export const useMemberManagementPage = () => {
   };
 
   return {
-    members,
+    members: teamMembers,
     filteredMembers,
     searchTerm,
     viewMode,
     setSearchTerm,
     setViewMode,
-    handleAddMember,
     handleRemoveMember,
+    isRemovingMember,
     handleChangePosition,
+    isChangingPosition,
     // Position change modal
     isPositionChangeOpen,
     selectedMember,

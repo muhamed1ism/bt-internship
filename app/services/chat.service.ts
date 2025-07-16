@@ -1,21 +1,22 @@
 // Chat Service - Backend Integration for Ticket Messages
 // This file contains chat functionality connected to the backend API
 
-import { getTicketMessages, createMessage, type TicketMessage } from '../api/ticket-api';
+import { createMessageApi, getTicketMessagesApi } from '@app/api/ticket-api';
+import { TicketMessage } from '@app/types/ticket';
 
 // Types for chat functionality
 export interface ChatMessage {
   id: string;
   sender: string;
   message: string;
-  timestamp: Date;
+  createdAt: Date;
 }
 
 // Simplified message structure for window.chatMemory
 export interface SimpleChatMessage {
   sender: string;
   message: string;
-  timestamp?: Date;
+  createdAt?: Date;
 }
 
 export interface ChatChannel {
@@ -59,7 +60,7 @@ export class ChatService {
 
     try {
       // Load existing messages from backend
-      const messages = await getTicketMessages(ticketId);
+      const messages = await getTicketMessagesApi(ticketId);
 
       // Store messages in active channel
       const channel: ChatChannel = {
@@ -74,9 +75,9 @@ export class ChatService {
       // Also store in window.chatMemory for compatibility
       if (typeof window !== 'undefined') {
         window.chatMemory[ticketId] = messages.map((msg) => ({
-          sender: msg.sender,
+          sender: `${msg.senderUser.firstName} ${msg.senderUser.lastName}`,
           message: msg.content,
-          timestamp: new Date(msg.timestamp),
+          createdAt: new Date(msg.createdAt),
         }));
       }
 
@@ -106,7 +107,7 @@ export class ChatService {
 
     try {
       // Send message to backend
-      const ticketMessage = await createMessage(ticketId, { content: message });
+      const ticketMessage = await createMessageApi(ticketId, { content: message });
 
       // Convert to ChatMessage format
       const newMessage = this.convertTicketMessageToChatMessage(ticketMessage);
@@ -116,7 +117,7 @@ export class ChatService {
         window.chatMemory[ticketId].push({
           sender: newMessage.sender,
           message: newMessage.message,
-          timestamp: newMessage.timestamp,
+          createdAt: newMessage.createdAt,
         });
       }
 
@@ -140,9 +141,9 @@ export class ChatService {
   private convertTicketMessageToChatMessage(ticketMessage: TicketMessage): ChatMessage {
     return {
       id: ticketMessage.id,
-      sender: ticketMessage.sender,
+      sender: `${ticketMessage.senderUser.firstName} ${ticketMessage.senderUser.lastName}`,
       message: ticketMessage.content,
-      timestamp: new Date(ticketMessage.timestamp),
+      createdAt: new Date(ticketMessage.createdAt),
     };
   }
 
@@ -158,7 +159,7 @@ export class ChatService {
 
     try {
       // Fetch messages from backend
-      const messages = await getTicketMessages(ticketId);
+      const messages = await getTicketMessagesApi(ticketId);
 
       // Convert to ChatMessage format
       const chatMessages = messages.map(this.convertTicketMessageToChatMessage);
@@ -166,9 +167,9 @@ export class ChatService {
       // Update window.chatMemory for compatibility
       if (typeof window !== 'undefined') {
         window.chatMemory[ticketId] = messages.map((msg) => ({
-          sender: msg.sender,
+          sender: `${msg.senderUser.firstName} ${msg.senderUser.lastName}`,
           message: msg.content,
-          timestamp: new Date(msg.timestamp),
+          createdAt: new Date(msg.createdAt),
         }));
       }
 
@@ -188,7 +189,7 @@ export class ChatService {
           id: `${ticketId}-${index}`,
           sender: msg.sender,
           message: msg.message,
-          timestamp: msg.timestamp || new Date(),
+          createdAt: msg.createdAt || new Date(),
         }));
       }
 

@@ -29,7 +29,7 @@ export const ChatMessage = ({ message, isCurrentUser }: ChatMessageProps) => {
             isCurrentUser ? 'bg-green-500' : 'bg-blue-500'
           }`}
         >
-          {getInitials(message.sender)}
+          {getInitials(`${message.senderUser.firstName} ${message.senderUser.lastName}`)}
         </div>
 
         {/* Message Bubble */}
@@ -42,7 +42,7 @@ export const ChatMessage = ({ message, isCurrentUser }: ChatMessageProps) => {
         >
           <p className="text-sm leading-relaxed">{message.content}</p>
           <p className={`mt-1 text-xs ${isCurrentUser ? 'text-green-100' : 'text-gray-500'}`}>
-            {formatTime(message.timestamp)}
+            {formatTime(message.createdAt)}
           </p>
         </div>
       </div>

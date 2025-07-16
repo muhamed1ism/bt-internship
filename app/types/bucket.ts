@@ -1,3 +1,5 @@
+import { UserBucketLevelType } from '@app/hooks/bucket';
+
 export type LevelStatus = 'current' | 'completed' | 'locked';
 export type LevelDifficulty = 'beginner' | 'intermediate' | 'advanced' | 'expert';
 
@@ -31,6 +33,7 @@ export interface BucketLevel {
 export interface BucketCategory {
   id: string;
   name: string;
+  description: string;
   bucketLevels: BucketLevel[];
 }
 
@@ -42,14 +45,9 @@ export interface Bucket {
   levels: Level[];
 }
 
-export interface MyBucketLevel {
+export interface UserBucket {
   id: string;
   level: number;
-  expectations: string[];
-  skills: string[];
-  tools: string[];
-  knowledge: string[];
-  toAdvance: string[];
   categoryId: string;
   category: BucketCategory;
 }
@@ -57,15 +55,15 @@ export interface MyBucketLevel {
 export interface UserBucketLevel {
   userId: string;
   bucketLevelId: string;
-  bucket: MyBucketLevel;
+  bucket: UserBucket;
 }
 
 export interface BucketViewState {
-  selectedLevel: Level | null;
+  selectedLevel: BucketLevel | null;
   isEditingLevel: boolean;
   isCreatingLevel: boolean;
   bucketTitle: string;
-  editingLevel: Partial<Level>;
+  editingLevel: Partial<BucketLevel>;
 }
 
 export type EditableField = 'expectations' | 'skills' | 'tools' | 'knowledge' | 'toAdvance';

@@ -1,16 +1,24 @@
 import { useMemo } from 'react';
 import { Team } from '@app/types/team';
 
-export function useFilteredTeams(teams: Team[], searchQuery: string) {
+export function useFilteredTeams(teams: Team[] | undefined, searchQuery: string) {
   const filteredTeams = useMemo(() => {
     if (!searchQuery.trim()) return teams;
 
+    if (!teams) return [];
+
     return teams.filter((team) => {
-      const teamName = `Team ${team.teamNumber}`.toLowerCase();
-      const leadName = `${team.teamLead.firstName} ${team.teamLead.lastName}`.toLowerCase();
+      const leadNames =
+        team && team.members && team.members.length > 0
+          ? team.members
+              .map((lead) => {
+                return `${lead.user.firstName} ${lead.user.lastName}`;
+              })
+              .join(' ')
+          : '';
       const query = searchQuery.toLowerCase();
 
-      return teamName.includes(query) || leadName.includes(query);
+      return team.name.toLowerCase().includes(query) || leadNames.toLowerCase().includes(query);
     });
   }, [teams, searchQuery]);
 

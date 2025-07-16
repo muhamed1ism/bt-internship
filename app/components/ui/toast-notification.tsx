@@ -7,7 +7,7 @@ interface ToastNotification {
   sender: string;
   ticketTitle: string;
   messagePreview: string;
-  timestamp: Date;
+  createdAt: Date;
 }
 
 interface ToastNotificationProps {
@@ -74,7 +74,7 @@ export const ToastNotificationComponent = ({
               <div>
                 <p className="text-sm font-semibold text-gray-900">{notification.sender}</p>
                 <p className="text-xs text-gray-500">
-                  {new Date(notification.timestamp).toLocaleTimeString([], {
+                  {new Date(notification.createdAt).toLocaleTimeString([], {
                     hour: '2-digit',
                     minute: '2-digit',
                   })}

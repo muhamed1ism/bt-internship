@@ -8,7 +8,7 @@ export const useGetCategories = () => {
     isLoading,
     isSuccess,
   } = useQuery<BucketCategory[] | undefined>({
-    queryKey: ['categories'],
+    queryKey: ['get-all-categories'],
     queryFn: getAllCategoriesApi,
   });
 

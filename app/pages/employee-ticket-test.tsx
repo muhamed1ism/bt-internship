@@ -1,11 +1,18 @@
 import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import {
   useRealtimeChat,
   useRealtimeMyTickets,
   useRealtimeTicket,
-  type Ticket,
-} from '@app/features/tickets';
-import { useAuth } from '../context/AuthContext';
+} from '@app/features/tickets/hooks';
+import { Ticket } from '@app/types/ticket';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@app/components/ui/select';
 
 export const EmployeeTicketTest = () => {
   const { user: currentUser } = useAuth();
@@ -20,7 +27,7 @@ export const EmployeeTicketTest = () => {
   // Use real-time selected ticket details
   const {
     ticket: realtimeTicket,
-    markAsFinished,
+    markAsAwaitingConfirmation,
     isMarkingAsFinished,
     canMarkFinished,
   } = useRealtimeTicket(selectedTicket?.id || null);
@@ -44,7 +51,7 @@ export const EmployeeTicketTest = () => {
     if (!currentTicket || !canMarkFinished) return;
 
     try {
-      await markAsFinished(currentTicket.id);
+      await markAsAwaitingConfirmation(currentTicket.id);
     } catch (error) {
       console.error('Failed to mark ticket as finished:', error);
     }
@@ -137,10 +144,9 @@ export const EmployeeTicketTest = () => {
   };
 
   // Fix message ownership detection
-  const isMyMessage = (sender: string) => {
+  const isMyMessage = (senderId: string) => {
     if (!currentUser) return false;
-    const currentUserName = `${currentUser.firstName} ${currentUser.lastName}`;
-    return sender === currentUserName;
+    return senderId === currentUser.id;
   };
 
   const getTimeAgo = (dateString: string) => {
@@ -183,7 +189,7 @@ export const EmployeeTicketTest = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-100">
       <div className="mx-auto max-w-7xl p-6">
         <div className="mb-8">
           <h1 className="mb-2 text-3xl font-bold text-gray-900">My Assigned Tickets</h1>
@@ -212,18 +218,23 @@ export const EmployeeTicketTest = () => {
                   placeholder="Search tickets..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 py-3 pr-4 pl-10 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                  className="border-primary/30 bg-card h-9 w-full rounded-lg border pr-4 pl-10 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as 'date' | 'title')}
-              className="rounded-lg border border-gray-300 bg-white px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="date">Sort by Date</option>
-              <option value="title">Sort by Title</option>
-            </select>
+            <Select>
+              <SelectTrigger className="bg-card border-primary/30 w-34">
+                <SelectValue defaultValue={sortBy} placeholder="Sort by Date" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="date" onClick={() => setSortBy('date')}>
+                  Sort by Date
+                </SelectItem>
+                <SelectItem value="title" onClick={() => setSortBy('date')}>
+                  Sort by Title
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -334,7 +345,9 @@ export const EmployeeTicketTest = () => {
                                   d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                                 />
                               </svg>
-                              <span>Assigned by: {ticket.assignedBy}</span>
+                              <span>
+                                Assigned by: {ticket.author.firstName} {ticket.author.lastName}
+                              </span>
                             </div>
                           </div>
                           <div className="flex items-center text-gray-400">
@@ -406,7 +419,8 @@ export const EmployeeTicketTest = () => {
               </h2>
               {selectedTicket && (
                 <p className="mt-1 text-sm text-gray-600">
-                  Communication with {selectedTicket.assignedBy}
+                  Communication with {selectedTicket.author.firstName}{' '}
+                  {selectedTicket.author.lastName}
                 </p>
               )}
             </div>
@@ -451,7 +465,10 @@ export const EmployeeTicketTest = () => {
                           d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                         />
                       </svg>
-                      <span>Assigned by: {selectedTicket.assignedBy}</span>
+                      <span>
+                        Assigned by: {selectedTicket.author.firstName}{' '}
+                        {selectedTicket.author.lastName}
+                      </span>
                     </div>
                     <div className="flex items-center text-gray-500">
                       <svg
@@ -561,7 +578,7 @@ export const EmployeeTicketTest = () => {
                   ) : (
                     <div className="space-y-4">
                       {messages.map((message) => {
-                        const isCurrentUser = isMyMessage(message.sender);
+                        const isCurrentUser = isMyMessage(message.senderId);
                         return (
                           <div
                             key={message.id}
@@ -576,7 +593,9 @@ export const EmployeeTicketTest = () => {
                                   isCurrentUser ? 'bg-green-500' : 'bg-blue-500'
                                 }`}
                               >
-                                {getInitials(message.sender)}
+                                {getInitials(
+                                  `${message.senderUser.firstName} ${message.senderUser.lastName}`,
+                                )}
                               </div>
 
                               {/* Message Bubble */}
@@ -593,7 +612,7 @@ export const EmployeeTicketTest = () => {
                                     isCurrentUser ? 'text-green-100' : 'text-gray-500'
                                   }`}
                                 >
-                                  {formatTime(message.timestamp)}
+                                  {formatTime(message.createdAt)}
                                 </p>
                               </div>
                             </div>

@@ -25,8 +25,11 @@ const routeNames = {
   teamView: (params?: Record<string, string>): string => generateRoute('/teams/:teamId', params),
   teamMembers: (params?: Record<string, string>): string =>
     generateRoute('/teams/:teamId/members', params),
+  teamMembersAdd: (params?: Record<string, string>): string =>
+    generateRoute('/teams/:teamId/members/add', params),
   users: (params?: Record<string, string>): string => generateRoute('/users', params),
   people: (params?: Record<string, string>): string => generateRoute('/people', params),
+  userDetail: (params?: Record<string, string>): string => generateRoute('/people/:userId', params),
   // Test pages - will be role-based later
   ctoTicketTest: (params?: Record<string, string>): string =>
     generateRoute('/cto-ticket-test', params),

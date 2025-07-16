@@ -1,14 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  getAllTickets,
-  getMyTickets,
-  createTicket,
-  markTicketAsFinished,
-  confirmTicketFinished,
-  markTicketFinishedByCTO,
-} from '@app/api/ticket-api';
 import { POLLING_INTERVALS, CACHE_CONFIG } from '@app/constants/ticket';
-import type { CreateTicketRequest, Ticket } from '@app/types/ticket';
+import type { Ticket } from '@app/types/ticket';
+import {
+  createTicketApi,
+  getAllTicketsApi,
+  getMyTicketsApi,
+  markTicketAwaitingConfirmationApi,
+  markTicketFinishedApi,
+} from '@app/api/ticket-api';
+import { CreateTicketValue } from '@app/schemas/ticketSchema';
 
 /**
  * React Query keys for ticket functionality
@@ -39,7 +39,7 @@ export const useRealtimeAllTickets = (
     refetch,
   } = useQuery({
     queryKey: TICKET_QUERY_KEYS.allTickets(),
-    queryFn: getAllTickets,
+    queryFn: getAllTicketsApi,
     enabled,
     refetchInterval: pollingInterval,
     refetchIntervalInBackground: true,
@@ -69,38 +69,33 @@ export const useRealtimeAllTickets = (
   });
 
   // Mutations
-  const createTicketMutation = useMutation({
-    mutationFn: createTicket,
+  const createTicket = useMutation({
+    mutationFn: ({
+      employeeId,
+      ticketData,
+    }: {
+      employeeId: string;
+      ticketData: CreateTicketValue;
+    }) => createTicketApi(employeeId, ticketData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: TICKET_QUERY_KEYS.allTickets() });
     },
   });
 
-  const confirmFinishedMutation = useMutation({
-    mutationFn: confirmTicketFinished,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: TICKET_QUERY_KEYS.allTickets() });
-    },
-  });
-
-  const markFinishedByCTOMutation = useMutation({
-    mutationFn: markTicketFinishedByCTO,
+  const markFinished = useMutation({
+    mutationFn: markTicketFinishedApi,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: TICKET_QUERY_KEYS.allTickets() });
     },
   });
 
   // Helper methods
-  const createNewTicket = async (ticketData: CreateTicketRequest) => {
-    return createTicketMutation.mutateAsync(ticketData);
-  };
-
-  const confirmTicketFinish = async (ticketId: string) => {
-    return confirmFinishedMutation.mutateAsync(ticketId);
+  const createNewTicket = async (employeeId: string, ticketData: CreateTicketValue) => {
+    return createTicket.mutateAsync({ employeeId, ticketData });
   };
 
   const markTicketFinishedDirectly = async (ticketId: string) => {
-    return markFinishedByCTOMutation.mutateAsync(ticketId);
+    return markFinished.mutateAsync(ticketId);
   };
 
   const refreshTickets = () => {
@@ -125,15 +120,14 @@ export const useRealtimeAllTickets = (
 
     // Actions
     createNewTicket,
-    confirmTicketFinish,
     markTicketFinishedDirectly,
     refreshTickets,
     refetch,
 
     // Mutation states
-    isCreating: createTicketMutation.isPending,
-    isConfirming: confirmFinishedMutation.isPending,
-    isMarkingFinished: markFinishedByCTOMutation.isPending,
+    isCreating: createTicket.isPending,
+    isConfirming: markFinished.isPending,
+    isMarkingFinished: markFinished.isPending,
 
     // Computed
     hasAwaitingConfirmation: ticketCounts.awaitingConfirmation > 0,
@@ -160,7 +154,7 @@ export const useRealtimeMyTickets = (
     refetch,
   } = useQuery({
     queryKey: TICKET_QUERY_KEYS.myTickets(),
-    queryFn: getMyTickets,
+    queryFn: getMyTicketsApi,
     enabled,
     refetchInterval: pollingInterval,
     refetchIntervalInBackground: true,
@@ -189,7 +183,7 @@ export const useRealtimeMyTickets = (
   });
 
   const markAsFinishedMutation = useMutation({
-    mutationFn: markTicketAsFinished,
+    mutationFn: markTicketFinishedApi,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: TICKET_QUERY_KEYS.myTickets() });
     },
@@ -272,41 +266,8 @@ export const useRealtimeTicket = (
     gcTime: CACHE_CONFIG.GC_TIME.SHORT,
   });
 
-  // Mutations with optimistic updates
-  const confirmFinishedMutation = useMutation({
-    mutationFn: confirmTicketFinished,
-    onMutate: async (ticketId) => {
-      // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: TICKET_QUERY_KEYS.ticket(ticketId) });
-
-      // Snapshot previous value
-      const previousTicket = queryClient.getQueryData(TICKET_QUERY_KEYS.ticket(ticketId));
-
-      // Optimistically update
-      if (previousTicket) {
-        queryClient.setQueryData(TICKET_QUERY_KEYS.ticket(ticketId), {
-          ...previousTicket,
-          status: 'FINISHED',
-        });
-      }
-
-      return { previousTicket };
-    },
-    onError: (_err, ticketId, context) => {
-      // Rollback on error
-      if (context?.previousTicket) {
-        queryClient.setQueryData(TICKET_QUERY_KEYS.ticket(ticketId), context.previousTicket);
-      }
-    },
-    onSuccess: () => {
-      // Invalidate related queries
-      queryClient.invalidateQueries({ queryKey: TICKET_QUERY_KEYS.allTickets() });
-      queryClient.invalidateQueries({ queryKey: TICKET_QUERY_KEYS.myTickets() });
-    },
-  });
-
-  const markFinishedByCTOMutation = useMutation({
-    mutationFn: markTicketFinishedByCTO,
+  const markFinishedMutation = useMutation({
+    mutationFn: markTicketFinishedApi,
     onMutate: async (ticketId) => {
       await queryClient.cancelQueries({ queryKey: TICKET_QUERY_KEYS.ticket(ticketId) });
       const previousTicket = queryClient.getQueryData(TICKET_QUERY_KEYS.ticket(ticketId));
@@ -331,8 +292,8 @@ export const useRealtimeTicket = (
     },
   });
 
-  const markAsFinishedMutation = useMutation({
-    mutationFn: markTicketAsFinished,
+  const markAsAwaitingConfirmationMutation = useMutation({
+    mutationFn: markTicketAwaitingConfirmationApi,
     onMutate: async (ticketId) => {
       await queryClient.cancelQueries({ queryKey: TICKET_QUERY_KEYS.ticket(ticketId) });
       const previousTicket = queryClient.getQueryData(TICKET_QUERY_KEYS.ticket(ticketId));
@@ -358,16 +319,12 @@ export const useRealtimeTicket = (
   });
 
   // Actions
-  const confirmTicketFinish = async (ticketId: string) => {
-    return confirmFinishedMutation.mutateAsync(ticketId);
+  const markTicketFinished = async (ticketId: string) => {
+    return markFinishedMutation.mutateAsync(ticketId);
   };
 
-  const markTicketFinishedDirectly = async (ticketId: string) => {
-    return markFinishedByCTOMutation.mutateAsync(ticketId);
-  };
-
-  const markAsFinished = async (ticketId: string) => {
-    return markAsFinishedMutation.mutateAsync(ticketId);
+  const markAsAwaitingConfirmation = async (ticketId: string) => {
+    return markAsAwaitingConfirmationMutation.mutateAsync(ticketId);
   };
 
   const refreshTicket = () => {
@@ -385,16 +342,15 @@ export const useRealtimeTicket = (
     error,
 
     // Actions
-    confirmTicketFinish,
-    markTicketFinishedDirectly,
-    markAsFinished,
+    markTicketFinished,
+    markAsAwaitingConfirmation,
     refreshTicket,
     refetch,
 
     // Mutation states
-    isConfirming: confirmFinishedMutation.isPending,
-    isMarkingFinished: markFinishedByCTOMutation.isPending,
-    isMarkingAsFinished: markAsFinishedMutation.isPending,
+    isConfirming: markFinishedMutation.isPending,
+    isMarkingFinished: markFinishedMutation.isPending,
+    isMarkingAsFinished: markAsAwaitingConfirmationMutation.isPending,
 
     // Status helpers
     isAwaitingConfirmation: ticket?.status === 'AWAITING_CONFIRMATION',

@@ -1,37 +1,27 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_TEAMS, createTeamFormData } from '@mocks/teams';
 import { ViewMode } from '@app/types/team';
-import {
-  useFilteredTeams,
-  TeamsControls,
-  TeamsGrid,
-  TeamsEmptyState,
-  TeamFormModal,
-  useTeamForm,
-} from '@app/features/team';
+
 import routeNames from '@app/routes/route-names';
+import { useGetAllTeamsWithLeaders } from '@app/hooks/team';
+import { useFilteredTeams, useTeamForm } from '@app/features/team/hooks';
+import { TeamsControls } from '@app/features/team/components/control/TeamsControls';
+import { TeamsGrid } from '@app/features/team/components/TeamsGrid';
+import { TeamsEmptyState } from '@app/features/team/components/TeamsEmptyState';
+import { TeamFormModal } from '@app/features/team/components/modal/TeamFormModal';
 
 export const Teams = () => {
   const navigate = useNavigate();
+  const { teams, isSuccess } = useGetAllTeamsWithLeaders();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const { filteredTeams } = useFilteredTeams(teams, searchQuery);
 
-  const { filteredTeams } = useFilteredTeams(MOCK_TEAMS, searchQuery);
-  const { formState, openCreateForm, openEditForm, closeForm, handleSave, handleRemove } =
-    useTeamForm();
+  const { formState, openCreateForm, openEditForm, closeForm } = useTeamForm();
 
-  const handleViewTeam = (teamId: number) => {
-    navigate(routeNames.teamView({ teamId: teamId.toString() }));
-  };
-
-  const handleEditTeam = (teamId: number) => {
-    const team = MOCK_TEAMS.find((t) => t.id === teamId);
-    if (team) {
-      // Use clean, backend-ready form data from mocks
-      const formData = createTeamFormData(team, 'sample');
-      openEditForm(formData);
-    }
+  const handleViewTeam = (teamId: string) => {
+    navigate(routeNames.teamView({ teamId }));
   };
 
   return (
@@ -55,17 +45,17 @@ export const Teams = () => {
         {/* Results Count */}
         <div className="mb-6">
           <p className="text-muted-foreground text-sm">
-            Found {filteredTeams.length} team{filteredTeams.length !== 1 ? 's' : ''}
+            Found {filteredTeams?.length} team{filteredTeams?.length !== 1 ? 's' : ''}
           </p>
         </div>
 
         {/* Teams Grid or Empty State */}
-        {filteredTeams.length > 0 ? (
+        {filteredTeams && filteredTeams.length > 0 ? (
           <TeamsGrid
             teams={filteredTeams}
             viewMode={viewMode}
             onViewTeam={handleViewTeam}
-            onEditTeam={handleEditTeam}
+            onEditTeam={openEditForm}
           />
         ) : (
           <TeamsEmptyState onCreateTeam={openCreateForm} />
@@ -75,8 +65,6 @@ export const Teams = () => {
         <TeamFormModal
           isOpen={formState.isOpen}
           onClose={closeForm}
-          onSave={handleSave}
-          onRemove={handleRemove}
           mode={formState.mode}
           team={formState.team}
         />
