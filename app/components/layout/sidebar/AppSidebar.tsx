@@ -2,6 +2,7 @@ import {
   BookUser,
   ClipboardCheck,
   Contact,
+  FileText,
   Home,
   Layers,
   MessageSquareText,
@@ -36,6 +37,7 @@ const items = [
   { title: 'Teams', url: routeNames.teams(), icon: <UserRound /> },
   { title: 'Users', url: routeNames.users(), icon: <BookUser /> },
   { title: 'Roles', url: routeNames.roles(), icon: <ShieldUser /> },
+  { title: 'Reports', url: routeNames.reports(), icon: <FileText /> },
   { title: 'Contact', url: routeNames.contact(), icon: <Contact /> },
   // Test pages - will be role-based later
   { title: 'CTO Tickets', url: routeNames.ctoTicketTest(), icon: <Ticket /> },

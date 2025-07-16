@@ -2,6 +2,31 @@ import { getAuthHeaders } from '@app/lib/firebase';
 import { BASE_URL, ENDPOINTS } from './api-config';
 import { CreateReportFormValues, UpdateReportFormValues } from '@app/schemas';
 
+export const getReportByIdApi = async (reportId: string) => {
+  const { uri, method } = ENDPOINTS.report.getById(reportId);
+  const authHeaders = await getAuthHeaders();
+
+  try {
+    const res = await fetch(BASE_URL + uri, {
+      method,
+      headers: {
+        ...authHeaders,
+      },
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message || "Failed to fetch report");
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch report: ", error);
+    throw error;
+  }
+};
+
 export const getReportsByUserIdApi = async (userId: string) => {
   const { uri, method } = ENDPOINTS.report.getByUserId(userId);
   const authHeaders = await getAuthHeaders();
