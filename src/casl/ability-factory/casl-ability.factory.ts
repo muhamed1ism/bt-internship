@@ -27,6 +27,7 @@ export enum Subject {
   TeamMember = 'TeamMember',
   Report = 'Report',
   Technology = 'Technology',
+  Ticket = 'Ticket',
   All = 'all',
 }
 
