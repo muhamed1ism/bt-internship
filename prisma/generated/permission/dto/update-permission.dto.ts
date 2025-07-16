@@ -10,4 +10,6 @@ subject?: string;
 conditions?: Prisma.InputJsonValue;
 fields?: string[];
 reason?: string;
+conditionHash?: string;
+fieldsHash?: string;
 }
