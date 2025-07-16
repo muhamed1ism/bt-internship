@@ -12,6 +12,7 @@ import { BucketModule } from './bucket/bucket.module';
 import { TeamModule } from './team/team.module';
 import { ReportModule } from './report/report.module';
 import { TicketModule } from './ticket/ticket.module';
+import { RoleModule } from './role/role.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { TicketModule } from './ticket/ticket.module';
     TeamModule,
     ReportModule,
     TicketModule,
+    RoleModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppConfigService],

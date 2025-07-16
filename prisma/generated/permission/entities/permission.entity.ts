@@ -12,5 +12,7 @@ fields: string[] ;
 reason: string  | null;
 createdAt: Date ;
 updatedAt: Date ;
+conditionHash: string  | null;
+fieldsHash: string  | null;
 roles?: Role[] ;
 }
