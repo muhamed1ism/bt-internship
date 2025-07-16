@@ -44,7 +44,7 @@ const BucketCard: React.FC<CardProps> = ({
 
   if (viewMode === 'list') {
     return (
-      <Card className="border-border/50 hover:border-border flex cursor-pointer flex-row overflow-hidden p-0 transition-all duration-200 hover:shadow-md">
+      <Card className="border-border/50 hover:border-border flex cursor-pointer flex-row overflow-hidden p-0 transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
         {/* Gradient accent for active cards */}
         {isActive && (
           <div className="from-primary via-primary/60 to-primary/40 w-1 rounded-l-2xl bg-gradient-to-b" />
@@ -149,7 +149,7 @@ const BucketCard: React.FC<CardProps> = ({
   } else {
     return (
       <Card
-        className="border-border/50 hover:border-border flex cursor-pointer justify-between overflow-hidden p-0 transition-all duration-200 hover:shadow-md"
+        className="border-border/50 hover:border-border flex cursor-pointer justify-between overflow-hidden p-0 transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
         // div
         // className={`group relative flex min-h-50 transform cursor-pointer flex-col justify-between overflow-hidden rounded-xl border p-6 shadow-sm transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg ${
         //   isActive

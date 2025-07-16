@@ -54,7 +54,19 @@ export const useAddMembersPage = (availableUsers: UserType[] | [], teamId: strin
   };
 
   const handleAddMembers = () => {
-    if (selectedMembers.length === 0) navigate(`/teams/${teamId}/members`);
+    if (selectedMembers.length === 0) {
+      navigate(`/teams/${teamId}/members`);
+      return;
+    }
+
+    // Check if any member doesn't have a position assigned
+    const membersWithoutPosition = selectedMembers.filter(member => !member.position.trim());
+    
+    if (membersWithoutPosition.length > 0) {
+      // Show alert - we'll handle this in the component
+      return { hasError: true, membersWithoutPosition };
+    }
+
     addMembers({ members: selectedMembers });
   };
 
