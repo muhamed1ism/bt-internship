@@ -53,11 +53,6 @@ export class TicketController {
     return this.ticketService.getTicketMessages(ticketId, user.id);
   }
 
-  @Post('test')
-  async test(test: string) {
-    return 'Test: ' + test;
-  }
-
   @Post(':employeeId')
   @CheckAbilities((ability: AppAbility) =>
     ability.can(Action.Create, Subject.Ticket),
