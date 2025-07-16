@@ -11,6 +11,7 @@ import { CaslModule } from './casl/casl.module';
 import { BucketModule } from './bucket/bucket.module';
 import { TeamModule } from './team/team.module';
 import { ReportModule } from './report/report.module';
+import { TicketModule } from './ticket/ticket.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ReportModule } from './report/report.module';
     BucketModule,
     TeamModule,
     ReportModule,
+    TicketModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppConfigService],

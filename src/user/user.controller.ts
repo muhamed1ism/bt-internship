@@ -41,10 +41,11 @@ export class UserController {
       ability.can(Action.Read, subject(Subject.User, user)),
     );
 
-    if (filteredUsers.length === 0)
+    if (filteredUsers.length === 0) {
       throw new ForbiddenException(
         'You are not authorized to access this resource',
       );
+    }
 
     return filteredUsers;
   }

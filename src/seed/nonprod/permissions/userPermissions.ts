@@ -1,5 +1,4 @@
-import { subject } from '@casl/ability';
-import { Action, Subject } from 'src/casl/ability-factory/casl-ability.factory';
+import { Action } from 'src/casl/ability-factory/casl-ability.factory';
 
 export const userPermissions = [
   // USER PERMISSIONS
