@@ -53,11 +53,12 @@ export class TicketController {
     return this.ticketService.getTicketMessages(ticketId, user.id);
   }
 
-  @Post()
+  @Post(':employeeId')
   @CheckAbilities((ability: AppAbility) =>
     ability.can(Action.Create, Subject.Ticket),
-  ) // CTO and ADMIN only
+  )
   async createTicket(
+    @Param('employeeId') employeeId: string,
     @Body() createTicketDto: CreateTicketDto,
     @GetUser() user: User,
     @RequestAbility() ability: AppAbility,
@@ -68,7 +69,7 @@ export class TicketController {
       );
     }
 
-    return this.ticketService.createTicket(user, createTicketDto);
+    return this.ticketService.createTicket(employeeId, user, createTicketDto);
   }
 
   @Post(':ticketId/messages')

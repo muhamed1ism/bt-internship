@@ -23,6 +23,14 @@ export class TicketService {
             email: true,
           },
         },
+        author: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
         messages: {
           orderBy: { createdAt: 'desc' },
           take: 1, // Get latest message for preview
@@ -46,6 +54,14 @@ export class TicketService {
       where: { employeeId: userId },
       include: {
         employee: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
+        author: {
           select: {
             id: true,
             firstName: true,
@@ -107,10 +123,10 @@ export class TicketService {
     return messages;
   }
 
-  async createTicket(user: User, dto: CreateTicketDto) {
+  async createTicket(employeeId: string, user: User, dto: CreateTicketDto) {
     // Verify the employee exists
     const employee = await this.prisma.user.findUnique({
-      where: { id: dto.employeeId },
+      where: { id: employeeId },
     });
 
     if (!employee) {
@@ -122,7 +138,7 @@ export class TicketService {
         title: dto.title,
         description: dto.description,
         authorId: user.id,
-        employeeId: dto.employeeId,
+        employeeId: employeeId,
       },
       include: {
         employee: {
