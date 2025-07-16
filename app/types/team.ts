@@ -50,4 +50,5 @@ export interface MemberCardProps {
   member: TeamMember;
   onSubmitReport?: (memberId: string) => void;
   onChangePosition?: (memberId: string) => void;
+  viewMode?: string;
 }

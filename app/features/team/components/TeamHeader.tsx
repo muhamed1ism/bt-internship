@@ -40,7 +40,7 @@ export const TeamHeader = ({ team, onManageMembers, onEdit }: TeamHeaderProps) =
               <div className="relative">
                 <div className="flex items-center justify-center">
                   {/* Left Avatar */}
-                  <Avatar className="relative z-10 h-12 w-12 border-1 border-white">
+                  <Avatar className="relative z-1 h-12 w-12 border-1 border-white">
                     <AvatarImage src={``} />
                     <AvatarFallback className="bg-neutral-200 text-sm font-medium text-neutral-700">
                       {team.members && team.members[1] ? (
@@ -52,7 +52,7 @@ export const TeamHeader = ({ team, onManageMembers, onEdit }: TeamHeaderProps) =
                   </Avatar>
 
                   {/* Center Avatar (Team Lead) */}
-                  <Avatar className="relative z-20 -mx-3 h-16 w-16 border-4 border-white">
+                  <Avatar className="relative z-2 -mx-3 h-16 w-16 border-4 border-white">
                     <AvatarImage src={``} />
                     <AvatarFallback className="bg-neutral-800 text-lg font-semibold text-white">
                       {team.members && team.members[0] ? (
@@ -64,7 +64,7 @@ export const TeamHeader = ({ team, onManageMembers, onEdit }: TeamHeaderProps) =
                   </Avatar>
 
                   {/* Right Avatar */}
-                  <Avatar className="relative z-10 h-12 w-12 border-1 border-white">
+                  <Avatar className="relative z-1 h-12 w-12 border-1 border-white">
                     <AvatarImage src={``} />
                     <AvatarFallback className="bg-neutral-200 text-sm font-medium text-neutral-700">
                       {team.members && team.members[2] ? (
