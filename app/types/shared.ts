@@ -1,6 +1,8 @@
 // Shared types used across multiple features
 // This file eliminates duplicate type definitions
 
+import { UserType } from './types';
+
 // Common position interface - used by both team members and member management
 export interface Position {
   title: string;
@@ -61,10 +63,23 @@ export type SortConfig<T = Record<string, unknown>> = {
 export interface Role {
   id: string;
   name: string;
-  permissions: {
-    [category: string]: string[];
-  };
+  description?: string;
+  users: UserType[];
+  permissions: Permission[];
 }
+
+export interface Permission {
+  id: string;
+  action: string;
+  subject: string;
+  conditions?: Record<string, any> | null;
+  fields: string[];
+  reason?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type CategorizedPermissions = Record<string, Permission[]>;
 
 // Experience level type
 export type ExperienceLevel = 'intern' | 'junior' | 'medior' | 'senior' | 'lead';

@@ -221,4 +221,27 @@ export const ENDPOINTS = {
       method: 'PUT',
     }),
   },
+
+  role: {
+    getAllRoles: {
+      uri: '/roles',
+      method: 'GET',
+    },
+    getAllPermissions: {
+      uri: '/roles/permissions',
+      method: 'GET',
+    },
+    createRole: {
+      uri: '/roles',
+      method: 'POST',
+    },
+    updateRole: (roleId: string) => ({
+      uri: `/roles/${roleId}`,
+      method: 'PUT',
+    }),
+    deleteRole: (roleId: string) => ({
+      uri: `/roles/${roleId}`,
+      method: 'DELETE',
+    }),
+  },
 };

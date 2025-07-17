@@ -11,10 +11,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@app/components/ui/tab
 import { useSkillsForm } from '../../hooks/useSkillsForm';
 import { UserType } from '@app/types/types';
 import { SkillsFormType } from '../../schemas/skillsSchema';
-
-import { SkillsForm } from '../../SkillsModal/SkillsForm';
-import { TopicsForm } from '../../SkillsModal/TopicsForm';
-import { BucketsForm } from '../../SkillsModal/BucketsForm';
+import { SkillsForm } from '../form/SkillsForm';
+import { TopicsForm } from '../form/TopicsForm';
+import { BucketsForm } from '../form/BucketsForm';
 
 type SkillsModalProps = {
   open: boolean;
