@@ -20,6 +20,11 @@ export class BucketService {
           },
         },
       },
+      orderBy: {
+        bucket: {
+          level: 'desc',
+        },
+      },
     });
 
     if (!userBuckets) throw new NotFoundException('User buckets not found');

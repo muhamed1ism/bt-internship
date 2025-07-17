@@ -8,7 +8,7 @@ export class RoleService {
 
   async getAllPermissions() {
     const permissions = await this.prisma.permission.findMany({
-      orderBy: { subject: 'asc' },
+      orderBy: [{ subject: 'desc' }, { action: 'asc' }],
     });
 
     if (!permissions) throw new NotFoundException('Permissions not found');
