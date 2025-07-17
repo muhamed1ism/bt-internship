@@ -14,15 +14,15 @@ import { FormInput } from '@app/components/ui/form-input';
 interface BasicInfoFormProps {
   register: UseFormRegister<PersonalInfoFormType>;
   errors: FieldErrors<PersonalInfoFormType>;
-  experienceLevel: experienceLevelType;
-  onExperienceLevelChange: (value: experienceLevelType) => void;
+  // experienceLevel: experienceLevelType;
+  // onExperienceLevelChange: (value: experienceLevelType) => void;
 }
 
 export const BasicInfoForm = ({
   register,
   errors,
-  experienceLevel,
-  onExperienceLevelChange,
+  // experienceLevel,
+  // onExperienceLevelChange,
 }: BasicInfoFormProps) => {
   return (
     <div className="space-y-4">
@@ -49,38 +49,38 @@ export const BasicInfoForm = ({
         error={errors.email?.message}
       />
 
-      <div className="grid grid-cols-2 gap-4">
-        <FormInput
-          id="password"
-          label="Password"
-          type="password"
-          register={register}
-          error={errors.password?.message}
-        />
-        <FormInput
-          id="confirmPassword"
-          label="Confirm Password"
-          type="password"
-          register={register}
-          error={errors.confirmPassword?.message}
-        />
-      </div>
+      {/* <div className="grid grid-cols-2 gap-4"> */}
+      {/*   <FormInput */}
+      {/*     id="password" */}
+      {/*     label="Password" */}
+      {/*     type="password" */}
+      {/*     register={register} */}
+      {/*     error={errors.password?.message} */}
+      {/*   /> */}
+      {/*   <FormInput */}
+      {/*     id="confirmPassword" */}
+      {/*     label="Confirm Password" */}
+      {/*     type="password" */}
+      {/*     register={register} */}
+      {/*     error={errors.confirmPassword?.message} */}
+      {/*   /> */}
+      {/* </div> */}
 
-      <div className="space-y-2">
-        <Label htmlFor="experienceLevel">Experience Level</Label>
-        <Select value={experienceLevel} onValueChange={onExperienceLevelChange}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select experience level" />
-          </SelectTrigger>
-          <SelectContent>
-            {EXPERIENCE_LEVELS.map((level) => (
-              <SelectItem key={level.value} value={level.value}>
-                {level.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      {/* <div className="space-y-2"> */}
+      {/*   <Label htmlFor="experienceLevel">Experience Level</Label> */}
+      {/*   <Select value={experienceLevel} onValueChange={onExperienceLevelChange}> */}
+      {/*     <SelectTrigger> */}
+      {/*       <SelectValue placeholder="Select experience level" /> */}
+      {/*     </SelectTrigger> */}
+      {/*     <SelectContent> */}
+      {/*       {EXPERIENCE_LEVELS.map((level) => ( */}
+      {/*         <SelectItem key={level.value} value={level.value}> */}
+      {/*           {level.label} */}
+      {/*         </SelectItem> */}
+      {/*       ))} */}
+      {/*     </SelectContent> */}
+      {/*   </Select> */}
+      {/* </div> */}
     </div>
   );
 };
