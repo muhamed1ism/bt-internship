@@ -6,24 +6,35 @@ export const userPermissions = [
     action: Action.Read,
     subject: 'User',
     conditions: { id: { $eq: '${user.id}' } },
+    reason: 'View own profile',
   },
   {
     action: Action.Update,
     subject: 'User',
     conditions: { id: { $eq: '${user.id}' } },
     fields: ['firstName', 'lastName', 'email', 'phoneNumber', 'dateOfBirth'],
+    reason: 'Update own user profile',
   },
 
   // BUCKET PERMISSIONS
   // Bucket Category
-  { action: Action.Read, subject: 'BucketCategory' },
+  {
+    action: Action.Read,
+    subject: 'BucketCategory',
+    reason: 'View Bucket Categories',
+  },
   // Bucket Level
-  { action: Action.Read, subject: 'BucketLevel' },
+  {
+    action: Action.Read,
+    subject: 'BucketLevel',
+    readon: 'View Bucket Levels',
+  },
   // User Bucket
   {
     action: Action.Read,
     subject: 'UserBucket',
     conditions: { userId: { $eq: '${user.id}' } },
+    reason: 'View own buckets',
   },
 
   // TEAM PERMISSIONS
@@ -33,6 +44,7 @@ export const userPermissions = [
     conditions: {
       'members.user.id': { $eq: '${user.id}' },
     },
+    reason: 'View own teams',
   },
   {
     action: Action.Read,
@@ -40,14 +52,6 @@ export const userPermissions = [
     conditions: {
       'user.id': { $eq: '${user.id}' },
     },
+    reason: 'View my team colleagues',
   },
-  // REPORT PERMISSIONS
-  {
-    action: Action.Read,
-    subject: 'Report',
-    conditions: { userId: { $eq: '${user.id}' } },
-  },
-
-  // TECHNOLOGY PERMISSIONS
-  { action: Action.Read, subject: 'Technology' },
 ];

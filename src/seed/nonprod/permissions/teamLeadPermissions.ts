@@ -2,38 +2,46 @@ import { Action } from 'src/casl/ability-factory/casl-ability.factory';
 
 export const teamLeadPermissions = [
   // User permissions
-  { action: Action.Read, subject: 'User' },
+  {
+    action: Action.Read,
+    subject: 'User',
+    reason: 'View All Users',
+  },
   {
     action: Action.Update,
     subject: 'User',
-    conditions: { id: { $ne: '${user.id}' } },
+    conditions: { id: { $eq: '${user.id}' } },
+    fields: ['firstName', 'lastName', 'phoneNumber', 'dateOfBirth'],
+    reason: 'Update own user profile',
   },
-  { action: Action.Read, subject: 'Role' },
 
   // Bucket permissions
-  { action: Action.Create, subject: 'Bucket' },
-  { action: Action.Read, subject: 'Bucket' },
-  { action: Action.Update, subject: 'Bucket' },
-  { action: Action.Delete, subject: 'Bucket' },
-  { action: Action.Read, subject: 'BucketCategory' },
-  { action: Action.Read, subject: 'BucketLevel' },
+  {
+    action: Action.Read,
+    subject: 'BucketCategory',
+    reason: 'View Bucket Categories',
+  },
+  { action: Action.Read, subject: 'BucketLevel', reason: 'View Bucket Levels' },
+  { action: Action.Read, subject: 'UserBucket', reason: 'View User Buckets' },
 
   // Team permissions
-  { action: Action.Create, subject: 'Team' },
-  { action: Action.Read, subject: 'Team' },
-  { action: Action.Update, subject: 'Team' },
-  { action: Action.Delete, subject: 'Team' },
-  { action: Action.Create, subject: 'TeamMember' },
-  { action: Action.Read, subject: 'TeamMember' },
-  { action: Action.Update, subject: 'TeamMember' },
-  { action: Action.Delete, subject: 'TeamMember' },
+  { action: Action.Manage, subject: 'Team', reason: 'Manage Team' },
+  {
+    action: Action.Manage,
+    subject: 'TeamMember',
+    reason: 'Manage Team Members',
+  },
 
   // Report permissions
-  { action: Action.Create, subject: 'Report' },
-  { action: Action.Read, subject: 'Report' },
-  { action: Action.Update, subject: 'Report' },
-  { action: Action.Delete, subject: 'Report' },
+  { action: Action.Create, subject: 'Report', reason: 'Create Report' },
+  { action: Action.Read, subject: 'Report', reason: 'View Reports' },
+  { action: Action.Update, subject: 'Report', reason: 'Update Reports' },
 
-  // Technology permissions
-  { action: Action.Read, subject: 'Technology' },
+  // Ticket
+  {
+    action: Action.Read,
+    subject: 'Ticket',
+    conditions: { id: { $ne: '${user.id}' } },
+    reason: 'View own tickets',
+  },
 ];
