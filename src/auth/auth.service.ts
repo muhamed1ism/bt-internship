@@ -7,6 +7,7 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { FirebaseService } from 'src/firebase/firebase.service';
+import { UserEntity } from 'src/user/entity/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -31,7 +32,7 @@ export class AuthService {
     try {
       const defaultRole = await this.getDefaultRole();
 
-      await this.prisma.user.create({
+      const user = await this.prisma.user.create({
         data: {
           firebaseUid,
           email: dto.email,
@@ -42,6 +43,8 @@ export class AuthService {
           roleId: defaultRole?.id,
         },
       });
+
+      return new UserEntity(user);
     } catch (error) {
       if (error.code === 'P2002') {
         throw new ForbiddenException('Prisma: Credentials taken');

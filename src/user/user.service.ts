@@ -1,11 +1,21 @@
-import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserStatus } from '@prisma/client';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { FirebaseService } from 'src/firebase/firebase.service';
+import { UserEntity } from './entity/user.entity';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly firebase: FirebaseService,
+  ) {}
 
   async findAll() {
     const users = await this.prisma.user.findMany({
@@ -59,66 +69,62 @@ export class UserService {
     return this.updateUserStatus(userId, 'INACTIVE');
   }
 
-  async updateProfile(userId: string, updateProfileDto: UpdateProfileDto) {
-    try {
-      // Check if user exists
-      const existingUser = await this.prisma.user.findUnique({
-        where: { id: userId },
-        include: { role: true },
+  async updateProfile(authHeader: string, dto: UpdateProfileDto) {
+    const idToken = authHeader.replace('Bearer ', '');
+    const decodedToken = await this.firebase.getAuth().verifyIdToken(idToken);
+    const { uid, email } = decodedToken;
+
+    // Check if email is already taken by another user
+    const emailExists = await this.prisma.user.findFirst({
+      where: {
+        AND: [{ email: dto.email }, { email: { not: email } }],
+      },
+    });
+
+    if (emailExists) {
+      throw new ConflictException('Email already exists');
+    }
+
+    await this.firebase
+      .getAuth()
+      .updateUser(uid, {
+        email: dto.email,
+        displayName: `${dto.firstName} ${dto.lastName}`,
+        phoneNumber: dto.phoneNumber,
+      })
+      .catch((error) => {
+        throw new BadRequestException(
+          'Firebase update failed: ',
+          error.message,
+        );
       });
 
-      if (!existingUser) {
-        throw new NotFoundException('User not found');
-      }
-
-      // Check if email is already taken by another user
-      if (updateProfileDto.email !== existingUser.email) {
-        const emailExists = await this.prisma.user.findUnique({
-          where: { email: updateProfileDto.email },
-        });
-
-        if (emailExists) {
-          throw new ConflictException('Email already exists');
-        }
-      }
-
-      // Update user profile
-      const updatedUser = await this.prisma.user.update({
-        where: { id: userId },
+    // Update user profile
+    const updatedUser = await this.prisma.user
+      .update({
+        where: { firebaseUid: uid },
         data: {
-          firstName: updateProfileDto.firstName,
-          lastName: updateProfileDto.lastName,
-          email: updateProfileDto.email,
-          phoneNumber: updateProfileDto.phoneNumber,
-          dateOfBirth: updateProfileDto.dateOfBirth,
+          firstName: dto.firstName,
+          lastName: dto.lastName,
+          email: dto.email,
+          phoneNumber: dto.phoneNumber,
+          dateOfBirth: dto.dateOfBirth,
         },
         include: {
           role: {
-            select: {
-              id: true,
-              name: true,
-              description: true,
+            include: {
+              permissions: true,
             },
           },
         },
+      })
+      .catch((error) => {
+        throw new BadRequestException(
+          'Database update failed: ',
+          error.message,
+        );
       });
 
-      return {
-        id: updatedUser.id,
-        firstName: updatedUser.firstName,
-        lastName: updatedUser.lastName,
-        email: updatedUser.email,
-        phoneNumber: updatedUser.phoneNumber,
-        dateOfBirth: updatedUser.dateOfBirth,
-        status: updatedUser.status,
-        role: updatedUser.role,
-      };
-    } catch (error) {
-      if (error instanceof NotFoundException || error instanceof ConflictException) {
-        throw error;
-      }
-      console.error('Error updating user profile: ', error);
-      throw new BadRequestException('Failed to update profile');
-    }
+    return new UserEntity(updatedUser);
   }
 }

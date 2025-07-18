@@ -6,6 +6,7 @@ import {
   Put,
   Param,
   Body,
+  Headers,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '@prisma/client';
@@ -91,7 +92,7 @@ export class UserController {
     ability.can(Action.Update, Subject.User),
   )
   async updateProfile(
-    @GetUser() user: User,
+    @Headers('authorization') authHeader: string,
     @Body() updateProfileDto: UpdateProfileDto,
     @RequestAbility() ability: AppAbility,
   ) {
@@ -102,6 +103,6 @@ export class UserController {
       );
     }
 
-    return this.userService.updateProfile(user.id, updateProfileDto);
+    return this.userService.updateProfile(authHeader, updateProfileDto);
   }
 }
