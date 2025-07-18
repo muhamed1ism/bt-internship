@@ -12,7 +12,7 @@ export const userPermissions = [
     action: Action.Update,
     subject: 'User',
     conditions: { id: { $eq: '${user.id}' } },
-    fields: ['firstName', 'lastName', 'phoneNumber', 'dateOfBirth'],
+    fields: ['firstName', 'lastName', 'email', 'phoneNumber', 'dateOfBirth'],
     reason: 'Update own user profile',
   },
 

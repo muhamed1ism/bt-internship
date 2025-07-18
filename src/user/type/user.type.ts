@@ -1,3 +1,5 @@
+import { Role } from 'prisma/generated/role/entities';
+
 export type User = {
   id: string;
   email: string;
@@ -6,5 +8,5 @@ export type User = {
   phoneNumber: string;
   dateOfBirth: Date;
   status: string;
-  role: string;
+  role: Role;
 };

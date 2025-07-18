@@ -5,9 +5,12 @@ import {
   ForbiddenException,
   Put,
   Param,
+  Body,
+  Headers,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '@prisma/client';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { AbilitiesGuard } from '../casl/abilities/guard/abilities.guard';
 import { CheckAbilities } from '../casl/abilities/decorator/check-abilities.decorator';
 import {
@@ -82,5 +85,24 @@ export class UserController {
     }
 
     return this.userService.deactivateUser(userId);
+  }
+
+  @Put('profile')
+  @CheckAbilities((ability: AppAbility) =>
+    ability.can(Action.Update, Subject.User),
+  )
+  async updateProfile(
+    @Headers('authorization') authHeader: string,
+    @Body() updateProfileDto: UpdateProfileDto,
+    @RequestAbility() ability: AppAbility,
+  ) {
+    // Ensure user can only update their own profile
+    if (ability.cannot(Action.Update, Subject.User)) {
+      throw new ForbiddenException(
+        'You are not authorized to update user profiles',
+      );
+    }
+
+    return this.userService.updateProfile(authHeader, updateProfileDto);
   }
 }

@@ -102,4 +102,80 @@ describe('User (e2e)', () => {
       .set('Authorization', 'Bearer ' + token)
       .expect(HttpStatus.OK);
   });
+
+  it('should update user profile successfully', async () => {
+    const updateProfileDto = {
+      firstName: 'Jane',
+      lastName: 'Smith',
+      email: 'jane.smith@example.com',
+      phoneNumber: '+38761234568',
+      dateOfBirth: new Date('1995-05-15T00:00:00.000Z'),
+    };
+
+    const response = await request(app.getHttpServer())
+      .put('/user/profile')
+      .set('Authorization', 'Bearer ' + token)
+      .send(updateProfileDto);
+
+    expect(response.status).toBe(HttpStatus.OK);
+    expect(response.body).toMatchObject({
+      firstName: updateProfileDto.firstName,
+      lastName: updateProfileDto.lastName,
+      email: updateProfileDto.email,
+      phoneNumber: updateProfileDto.phoneNumber,
+      dateOfBirth: '1995-05-15T00:00:00.000Z',
+    });
+    expect(response.body).toHaveProperty('id');
+    expect(response.body).toHaveProperty('status');
+    expect(response.body).toHaveProperty('role');
+  });
+
+  it('should reject profile update with duplicate email', async () => {
+    // Create another user first
+    const anotherUser = {
+      email: 'another@example.com',
+      password: '123ABcd.',
+      firstName: 'Another',
+      lastName: 'User',
+      phoneNumber: '+38761234569',
+      dateOfBirth: new Date('1990-01-01T00:00:00.000Z'),
+    };
+
+    await request(app.getHttpServer())
+      .post('/auth/register')
+      .send(anotherUser);
+
+    // Try to update profile with existing email
+    const updateProfileDto = {
+      firstName: 'Jane',
+      lastName: 'Smith',
+      email: 'another@example.com', // This email already exists
+      phoneNumber: '+38761234568',
+      dateOfBirth: new Date('1995-05-15T00:00:00.000Z'),
+    };
+
+    const response = await request(app.getHttpServer())
+      .put('/user/profile')
+      .set('Authorization', 'Bearer ' + token)
+      .send(updateProfileDto);
+
+    expect(response.status).toBe(HttpStatus.CONFLICT);
+    expect(response.body.message).toBe('Email already exists');
+  });
+
+  it('should reject profile update without authentication', async () => {
+    const updateProfileDto = {
+      firstName: 'Jane',
+      lastName: 'Smith',
+      email: 'jane.smith@example.com',
+      phoneNumber: '+38761234568',
+      dateOfBirth: new Date('1995-05-15T00:00:00.000Z'),
+    };
+
+    const response = await request(app.getHttpServer())
+      .put('/user/profile')
+      .send(updateProfileDto);
+
+    expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+  });
 });

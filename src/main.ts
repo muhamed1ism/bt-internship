@@ -1,9 +1,10 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { execSync } from 'child_process';
 import { AppModule } from './app.module';
 import { AppConfigService } from 'config/service/appConfig.service';
 import {
+  ClassSerializerInterceptor,
   INestApplication,
   Logger,
   RequestMethod,
@@ -25,6 +26,7 @@ async function bootstrap() {
   });
   const appConfig = app.get(AppConfigService);
   app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   app.enableCors({
     credentials: true,

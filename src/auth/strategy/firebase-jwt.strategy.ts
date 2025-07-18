@@ -4,6 +4,7 @@ import { Request } from 'express';
 import { Strategy } from 'passport-custom';
 import { FirebaseService } from 'src/firebase/firebase.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UserEntity } from 'src/user/entity/user.entity';
 import { User } from 'src/user/type/user.type';
 
 @Injectable()
@@ -36,7 +37,11 @@ export class FirebaseJwtStrategy extends PassportStrategy(
       const user = await this.prisma.user.findUnique({
         where: { firebaseUid },
         include: {
-          role: true,
+          role: {
+            include: {
+              permissions: true,
+            },
+          },
         },
       });
 
@@ -44,16 +49,7 @@ export class FirebaseJwtStrategy extends PassportStrategy(
         throw new UnauthorizedException('User not found');
       }
 
-      return {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        phoneNumber: user.phoneNumber,
-        dateOfBirth: user.dateOfBirth,
-        status: user.status,
-        role: user.role.name,
-      };
+      return new UserEntity(user);
     } catch (error) {
       console.error('Token verification failed:', error);
       throw new UnauthorizedException('Invalid token');
