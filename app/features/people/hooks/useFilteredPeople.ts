@@ -1,7 +1,7 @@
-import { UserType } from '@app/types/types';
+import { User } from '@app/types/types';
 import { useMemo } from 'react';
 
-export const useFilteredPeople = (users: UserType[] | undefined, searchQuery: string) => {
+export const useFilteredPeople = (users: User[] | undefined, searchQuery: string) => {
   const filteredPeople = useMemo(() => {
     if (!users) return [];
 

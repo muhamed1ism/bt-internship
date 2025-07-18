@@ -1,5 +1,5 @@
 import type { Role as RoleType } from '@app/types/shared';
-import type { UserType } from '@app/types/types';
+import type { User } from '@app/types/types';
 
 // All available permissions
 export const allPermissions = {
@@ -38,7 +38,7 @@ export const allPermissions = {
 };
 
 // Standardized naming: MOCK_USERS instead of fake_users
-export const MOCK_USERS: UserType[] = [
+export const MOCK_USERS: User[] = [
   {
     id: '001',
     firstName: 'John',

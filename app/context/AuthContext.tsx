@@ -1,20 +1,13 @@
-import { useCheckAuth } from '@app/hooks/auth';
+import { Spinner } from '@app/components/ui/spinner';
+import { useGetCurrentUser } from '@app/hooks/auth';
+import { User } from '@app/types/types';
 import { createContext, ReactNode, useContext, useMemo } from 'react';
-
-interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  dateOfBirth: Date;
-  roleId: string;
-}
 
 interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   user: User | null;
+  error: globalThis.Error | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -24,19 +17,26 @@ interface AuthProviderProps {
 }
 
 const AuthProvider = ({ children }: AuthProviderProps) => {
-  const { user, isLoading, isAuthenticated } = useCheckAuth();
+  const { user, isLoading, isAuthenticated, error } = useGetCurrentUser();
 
   const contextValue = useMemo(
     () => ({
       user: user ?? null,
       isLoading,
       isAuthenticated,
+      error,
     }),
-    [user, isLoading, isAuthenticated],
+    [user, isLoading, isAuthenticated, error],
   );
 
+  error?.stack;
+
   if (isLoading) {
-    return <h1>Loading...</h1>;
+    return (
+      <div className="bg-100 text-primary flex h-screen w-full items-center justify-center">
+        <Spinner size="large" />
+      </div>
+    );
   }
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;

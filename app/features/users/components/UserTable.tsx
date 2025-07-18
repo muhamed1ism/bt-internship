@@ -1,7 +1,7 @@
 import { createColumn } from '@app/components/table/CreateColumn';
 import { DataTable } from '@app/components/table/DataTable';
 import { GlobalSearchInput } from '@app/components/table/GlobalSearchInput';
-import { UserType } from '@app/types/types';
+import { User } from '@app/types/types';
 import { useState } from 'react';
 import { userGlobalFilterFn } from '../lib/table/globalFilterFns';
 import { ColumnDef } from '@tanstack/react-table';
@@ -18,13 +18,13 @@ export const UserTable = () => {
 
   const globalFilter = `${searchInput}|||${statusFilter}`;
 
-  const columns: ColumnDef<UserType, any>[] = [
-    createColumn<UserType>('id', 'ID'),
-    createColumn<UserType>('email', 'Email'),
-    createColumn<UserType>('firstName', 'First Name'),
-    createColumn<UserType>('lastName', 'Last Name'),
+  const columns: ColumnDef<User, any>[] = [
+    createColumn<User>('id', 'ID'),
+    createColumn<User>('email', 'Email'),
+    createColumn<User>('firstName', 'First Name'),
+    createColumn<User>('lastName', 'Last Name'),
     StatusColumn,
-    createColumn<UserType>('role', 'Role', (row) => row.role.name),
+    createColumn<User>('role', 'Role', (row) => row.role.name),
     ActionColumn,
   ];
 
@@ -55,7 +55,7 @@ export const UserTable = () => {
         <StatusFilter statusFilter={statusFilter} onStatusFilter={setStatusFilter} />
       </div>
 
-      <DataTable<UserType, any>
+      <DataTable<User, any>
         columns={columns}
         data={users ?? []}
         globalFilter={globalFilter}

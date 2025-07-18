@@ -2,10 +2,10 @@
 import { Button } from '@app/components/ui/button';
 import { Badge } from '@app/components/ui/badge';
 import { PenSquare } from 'lucide-react';
-import { UserType } from '@app/types/types';
+import { User } from '@app/types/types';
 
 interface CustomPermissionsSectionProps {
-  user: UserType;
+  user: User;
   assignedRoles: string[];
   onEditPermissions: () => void;
 }

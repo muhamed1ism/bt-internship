@@ -1,12 +1,12 @@
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { TableHead } from '../../../components/ui/table';
-import { UserType } from '../../../types/types';
+import { User } from '../../../types/types';
 
 type SortableHeaderProps = {
-  column: keyof UserType | any;
-  sortKey: keyof UserType | null;
+  column: keyof User | any;
+  sortKey: keyof User | null;
   direction: 'ascending' | 'descending';
-  onSort: (key: keyof UserType) => void;
+  onSort: (key: keyof User) => void;
   label?: string;
 };
 

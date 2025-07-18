@@ -1,12 +1,17 @@
+import { getUserByIdApi } from '@app/api/user-api';
+import { User } from '@app/types/types';
 import { useQuery } from '@tanstack/react-query';
-import { useGetAllUsers } from './useGetAllUsers';
-import { UserType } from '@app/types/types';
 
 export const useGetUserById = (userId: string) => {
-  const { users, isLoading, error } = useGetAllUsers();
+  const {
+    data: user,
+    isLoading,
+    isSuccess,
+    error,
+  } = useQuery<User>({
+    queryKey: ['get-user-by-id'],
+    queryFn: () => getUserByIdApi(userId),
+  });
 
-  // Find the specific user from the users list
-  const user = users?.find((u: UserType) => u.id === userId);
-
-  return { user, isLoading, isSuccess: !error && !isLoading };
-}; 
+  return { user, isLoading, isSuccess, error };
+};

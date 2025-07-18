@@ -1,18 +1,9 @@
 import { getAuthHeaders } from '@app/lib/firebase';
 import { BASE_URL, ENDPOINTS } from './api-config';
-import { UserType } from '@app/types/types';
+import { User } from '@app/types/types';
+import { UpdateProfileFormValues } from '@app/schemas';
 
-interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  dateOfBirth: Date;
-  roleId: string;
-}
-
-export const currentUserApi = async (): Promise<User | null> => {
+export const useGetCurrentUserApi = async (): Promise<User | null> => {
   try {
     const authHeaders = await getAuthHeaders();
     const { uri, method } = ENDPOINTS.user.current;
@@ -24,7 +15,7 @@ export const currentUserApi = async (): Promise<User | null> => {
       },
     });
 
-    if (!res.ok) throw new Error('Unauthorized');
+    if (!res.ok) throw new Error('Error fetching current user');
 
     return await res.json();
   } catch (error) {
@@ -33,7 +24,28 @@ export const currentUserApi = async (): Promise<User | null> => {
   }
 };
 
-export const getAllUsersApi = async (): Promise<UserType[] | null> => {
+export const getUserByIdApi = async (userId: string) => {
+  try {
+    const authHeaders = await getAuthHeaders();
+    const { uri, method } = ENDPOINTS.user.getById(userId);
+
+    const res = await fetch(BASE_URL + uri, {
+      method,
+      headers: {
+        ...authHeaders,
+      },
+    });
+
+    if (!res.ok) throw new Error('Error fetching user');
+
+    return await res.json();
+  } catch (error) {
+    console.error('Error fetching user: ', error);
+    throw error;
+  }
+};
+
+export const getAllUsersApi = async (): Promise<User[] | null> => {
   try {
     const authHeaders = await getAuthHeaders();
     const { uri, method } = ENDPOINTS.user.allUsers;
@@ -92,6 +104,32 @@ export const deactivateUser = async (userId: string) => {
     return await res.json();
   } catch (error) {
     console.error('Error deactivating user: ', error);
+    throw error;
+  }
+};
+
+export const updateProfileApi = async (profileData: UpdateProfileFormValues) => {
+  try {
+    const authHeaders = await getAuthHeaders();
+    const { uri, method } = ENDPOINTS.user.updateProfile;
+
+    const res = await fetch(BASE_URL + uri, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeaders,
+      },
+      body: JSON.stringify(profileData),
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message || 'Failed to update profile');
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error('Failed to update profile: ', error);
     throw error;
   }
 };

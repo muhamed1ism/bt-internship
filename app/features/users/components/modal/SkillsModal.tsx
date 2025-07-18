@@ -9,16 +9,16 @@ import { Button } from '@app/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@app/components/ui/tabs';
 
 import { useSkillsForm } from '../../hooks/useSkillsForm';
-import { UserType } from '@app/types/types';
+import { User } from '@app/types/types';
 import { SkillsFormType } from '../../schemas/skillsSchema';
+import { BucketsForm } from '../form/BucketsForm';
 import { SkillsForm } from '../form/SkillsForm';
 import { TopicsForm } from '../form/TopicsForm';
-import { BucketsForm } from '../form/BucketsForm';
 
 type SkillsModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  user: UserType | null;
+  user: User | null;
 };
 
 export function SkillsModal({ open, onOpenChange, user }: SkillsModalProps) {

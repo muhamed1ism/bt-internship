@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { SortConfig, SortDirection, UserType } from '../../../types/types';
+import { SortConfig, SortDirection, User } from '../../../types/types';
 import { ITEMS_PER_PAGE } from '@app/utils/constants';
 import { getTotalPages } from '@app/utils/getTotalPages';
 
-export function useFilteredUsers(users: UserType[]) {
+export function useFilteredUsers(users: User[]) {
   const itemsPerPage = ITEMS_PER_PAGE;
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -14,7 +14,7 @@ export function useFilteredUsers(users: UserType[]) {
     direction: SortDirection.Ascending,
   });
 
-  const [filteredUsers, setFilteredUsers] = useState<UserType[]>(users);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>(users);
 
   const searchableFields = ['firstName', 'lastName', 'email', 'id', 'role'];
 
@@ -26,7 +26,7 @@ export function useFilteredUsers(users: UserType[]) {
       const lowerCaseQuery = searchQuery.toLowerCase();
       result = result.filter((user) =>
         searchableFields.some((field) =>
-          user[field as keyof UserType]?.toString().toLowerCase().includes(lowerCaseQuery),
+          user[field as keyof User]?.toString().toLowerCase().includes(lowerCaseQuery),
         ),
       );
     }
@@ -39,8 +39,8 @@ export function useFilteredUsers(users: UserType[]) {
     // Apply sorting
     if (sortConfig.key) {
       result.sort((a, b) => {
-        const aValue = a[sortConfig.key as keyof UserType];
-        const bValue = b[sortConfig.key as keyof UserType];
+        const aValue = a[sortConfig.key as keyof User];
+        const bValue = b[sortConfig.key as keyof User];
 
         if (aValue == null && bValue == null) return 0;
         if (aValue == null) return sortConfig.direction === SortDirection.Ascending ? 1 : -1;

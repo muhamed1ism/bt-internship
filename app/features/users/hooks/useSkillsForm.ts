@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { UserType } from '@app/types/types';
+import { User } from '@app/types/types';
 import { skillsSchema, SkillsFormType } from '../schemas/skillsSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-export function useSkillsForm(user: UserType | null) {
+export function useSkillsForm(user: User | null) {
   const {
     register,
     handleSubmit,

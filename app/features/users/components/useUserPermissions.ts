@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { UserType } from '@app/types/types';
+import { User } from '@app/types/types';
 import { userPermissionsSchema, UserPermissionsFormType } from '../schemas/userPermissionsSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { usePermissionManager } from '../../roles/hooks';
 import { getCombinedRolePermissions } from '../../roles/utils/roleUtils';
 
-export function useUserPermissions(user: UserType | null) {
+export function useUserPermissions(user: User | null) {
   const { selectedPermissions, setSelectedPermissions, activeTab, setActiveTab, resetPermissions } =
     usePermissionManager();
 

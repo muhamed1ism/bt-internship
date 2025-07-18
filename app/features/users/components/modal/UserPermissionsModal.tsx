@@ -21,11 +21,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '../../../../components/ui/alert-dialog';
-import { RoleType, UserType } from '../../../../types/types';
+import { RoleType, User } from '../../../../types/types';
 
 import { useUserPermissions } from '../useUserPermissions';
 import { UserPermissionsFormType } from '../../schemas/userPermissionsSchema';
-import { RoleAssignmentForm } from '../../UserPermissionsModal/RoleAssignmentForm';
 import { CustomPermissionsSection } from '../CustomPermissionsSection';
 import { PermissionEditorDialog } from '../../../roles/components/dialog/PermissionEditorDialog';
 import { hasModifiedPermissions } from '../../../roles/utils/roleUtils';
@@ -33,8 +32,8 @@ import { hasModifiedPermissions } from '../../../roles/utils/roleUtils';
 export interface UserPermissionsModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  user: UserType | null;
-  onSave: (user: UserType) => void;
+  user: User | null;
+  onSave: (user: User) => void;
 }
 
 export function UserPermissionsModal({

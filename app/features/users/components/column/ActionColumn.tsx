@@ -5,7 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@app/components/ui/dropdown-menu';
-import { UserModalType, UserType } from '@app/types/types';
+import { User as UserType } from '@app/types/types';
 import { ColumnDef } from '@tanstack/react-table';
 import { Code, MoreVertical, Shield, User } from 'lucide-react';
 import { useState } from 'react';

@@ -1,4 +1,4 @@
-import { UserType } from './types';
+import { User } from './types';
 
 // Core ticket types (matching API)
 export type TicketStatus = 'PENDING' | 'ONGOING' | 'AWAITING_CONFIRMATION' | 'FINISHED';
@@ -71,7 +71,7 @@ export interface TicketSortConfig {
 export interface Message {
   id: string;
   content: string;
-  senderUser: UserType;
+  senderUser: User;
   createdAt: string;
   ticketId: string;
 }

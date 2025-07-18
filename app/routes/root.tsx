@@ -1,5 +1,5 @@
 import { QueryClientProvider } from '@tanstack/react-query';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import { queryClient } from '../utils/query-client.ts';
 import routeNames from './route-names.tsx';
 import '../main.css';
@@ -24,6 +24,7 @@ import { Buckets } from '@app/pages/Buckets.tsx';
 import { BucketView } from '@app/pages/BucketView.tsx';
 import { TeamMembersAdd } from '@app/pages/TeamMembersAdd.tsx';
 import { UserDetail } from '@app/pages/UserDetail.tsx';
+import { Profile } from '@app/pages/Profile.tsx';
 import { Reports } from '@app/pages/Reports.tsx';
 import { ReportDetail } from '@app/pages/ReportDetail.tsx';
 import { CtoTicketTest } from '@app/pages/cto-ticket-test.tsx';
@@ -55,9 +56,11 @@ const routesForAuthenticated = [
     path: '/',
     element: <ProtectedRoute />,
     children: [
+      { path: '/', element: <Navigate to={routeNames.dashboard()} replace /> },
       { path: routeNames.dashboard(), element: <Dashboard /> },
       { path: routeNames.people(), element: <People /> },
       { path: routeNames.userDetail(), element: <UserDetail /> },
+      { path: routeNames.profile(), element: <Profile /> },
       { path: routeNames.buckets(), element: <Buckets /> },
       { path: routeNames.bucketView(), element: <BucketView /> },
       { path: routeNames.evaluation(), element: <Evaluation /> },

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getAllUsersApi } from '@app/api/user-api';
 import { useAuth } from '@app/context/AuthContext';
-import { UserType } from '@app/types/types';
+import { User } from '@app/types/types';
 import { Ticket } from '@app/types/ticket';
 import { CreateTicketValue } from '@app/schemas/ticketSchema';
 import {
@@ -16,7 +16,7 @@ import { Plus, X } from 'lucide-react';
 
 export const CtoTicketTest = () => {
   const { user: currentUser } = useAuth();
-  const [users, setUsers] = useState<UserType[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [employeeId, setEmployeeId] = useState<string>('');
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);

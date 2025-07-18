@@ -1,6 +1,6 @@
-import { UserType } from '@app/types/types';
+import { User } from '@app/types/types';
 
-export const getStatusColor = (status: UserType['status']) => {
+export const getStatusColor = (status: User['status']) => {
   switch (status) {
     case 'active':
       return 'bg-green-100 text-green-800 hover:bg-green-100/80';

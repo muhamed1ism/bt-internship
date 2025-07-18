@@ -21,9 +21,17 @@ export const ENDPOINTS = {
       uri: '/user/current-user',
       method: 'GET',
     },
+    getById: (userId: string) => ({
+      uri: `/user/${userId}`,
+      method: 'GET',
+    }),
     allUsers: {
       uri: '/user/all',
       method: 'GET',
+    },
+    updateProfile: {
+      uri: '/user/profile',
+      method: 'PUT',
     },
     activate: (userId: string) => ({
       uri: `user/${userId}/activate`,

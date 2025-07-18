@@ -1,16 +1,17 @@
-import { currentUserApi } from '@app/api/user-api';
+import { useGetCurrentUserApi } from '@app/api/user-api';
 import { useQuery } from '@tanstack/react-query';
 
-export const useCheckAuth = () => {
+export const useGetCurrentUser = () => {
   const {
     data: user,
     isLoading,
     isSuccess: isAuthenticated,
+    error,
   } = useQuery({
-    queryKey: ['current-user'],
-    queryFn: currentUserApi,
+    queryKey: ['get-current-user'],
+    queryFn: useGetCurrentUserApi,
     retry: false,
   });
 
-  return { user, isLoading, isAuthenticated };
+  return { user, isLoading, isAuthenticated, error };
 };
