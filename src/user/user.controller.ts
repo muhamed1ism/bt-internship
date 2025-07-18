@@ -53,6 +53,25 @@ export class UserController {
     return filteredUsers;
   }
 
+  @Get(':userId')
+  @CheckAbilities((ability: AppAbility) =>
+    ability.can(Action.Read, Subject.User),
+  )
+  async getUserById(
+    @Param('userId') userId: string,
+    @RequestAbility() ability: AppAbility,
+  ) {
+    const user = this.userService.getUserById(userId);
+
+    if (ability.cannot(Action.Read, subject(Subject.User, user))) {
+      throw new ForbiddenException(
+        'You are not authorized to access this resource',
+      );
+    }
+
+    return user;
+  }
+
   @Put(':userId/activate')
   @CheckAbilities((ability: AppAbility) =>
     ability.can(Action.Update, Subject.User, 'status'),
