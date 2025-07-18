@@ -24,7 +24,12 @@ type PersonalInfoModalProps = {
 export function PersonalInfoModal({ open, onOpenChange, user }: PersonalInfoModalProps) {
   const { register, handleSubmit, watch, errors, setValue } = usePersonalInfoForm(user);
 
-  const { firstName, lastName, email, experienceLevel } = watch();
+  const {
+    firstName,
+    lastName,
+    email,
+    // , experienceLevel
+  } = watch();
 
   const onSubmit = (data: PersonalInfoFormType) => {
     console.log('Saving personal info:', data);
@@ -61,10 +66,10 @@ export function PersonalInfoModal({ open, onOpenChange, user }: PersonalInfoModa
                 <BasicInfoForm
                   register={register}
                   errors={errors}
-                  experienceLevel={experienceLevel}
-                  onExperienceLevelChange={(value) =>
-                    setValue('experienceLevel', value as experienceLevelType)
-                  }
+                  // experienceLevel={experienceLevel}
+                  // onExperienceLevelChange={(value) =>
+                  //   setValue('experienceLevel', value as experienceLevelType)
+                  // }
                 />
               </TabsContent>
 

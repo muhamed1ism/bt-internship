@@ -10,6 +10,17 @@ import { Button } from '../../../../components/ui/button';
 import { PenSquare } from 'lucide-react';
 import { ViewProps } from '../RolesTable';
 
+function splitToWords(str: string): string {
+  let result = str.replace(/[_-]/g, ' ');
+
+  result = result.replace(/([a-z])([A-Z])/g, '$1 $2');
+
+  return result
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
 export function RoleTableListView({ roles, onEdit }: ViewProps) {
   return (
     <div className="overflow-hidden rounded-md border">
@@ -23,7 +34,7 @@ export function RoleTableListView({ roles, onEdit }: ViewProps) {
         <TableBody>
           {roles.map((role) => (
             <TableRow key={role.id}>
-              <TableCell className="font-medium">{role.name}</TableCell>
+              <TableCell className="font-medium">{splitToWords(role.name)}</TableCell>
               <TableCell className="text-center">
                 <Button
                   variant="ghost"

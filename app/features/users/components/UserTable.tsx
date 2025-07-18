@@ -9,6 +9,7 @@ import { ActionColumn } from './column/ActionColumn';
 import { StatusFilter } from './StatusFilter';
 import { useGetAllUsers } from '@app/hooks/user/useGetAllUsers';
 import { StatusColumn } from './column/StatusColumn';
+import { Spinner } from '@app/components/ui/spinner';
 
 export const UserTable = () => {
   const { users, isLoading, error } = useGetAllUsers();
@@ -16,8 +17,6 @@ export const UserTable = () => {
   const [statusFilter, setStatusFilter] = useState('all');
 
   const globalFilter = `${searchInput}|||${statusFilter}`;
-
-  // const users = MOCK_USERS;
 
   const columns: ColumnDef<User, any>[] = [
     createColumn<User>('id', 'ID'),
@@ -29,8 +28,19 @@ export const UserTable = () => {
     ActionColumn,
   ];
 
-  if (isLoading) return <div>Loading users...</div>;
-  if (error) return <div>Error loading...</div>;
+  if (isLoading)
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <Spinner size="large" />
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="text-muted-foreground flex h-full w-full items-center justify-center text-xl">
+        Failed to load users
+      </div>
+    );
 
   return (
     <>

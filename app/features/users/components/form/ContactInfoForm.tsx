@@ -29,21 +29,21 @@ export const ContactInfoForm = ({ register, errors }: ContactInfoFormProps) => {
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="github">GitHub Profile</Label>
-        <Input id="github" placeholder="https://github.com/username" {...register('github')} />
-        {errors.github && <p className="text-sm text-red-500">{errors.github.message}</p>}
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="linkedin">LinkedIn Profile</Label>
-        <Input
-          id="linkedin"
-          placeholder="https://linkedin.com/in/username"
-          {...register('linkedin')}
-        />
-        {errors.linkedin && <p className="text-sm text-red-500">{errors.linkedin.message}</p>}
-      </div>
+      {/* <div className="space-y-2"> */}
+      {/*   <Label htmlFor="github">GitHub Profile</Label> */}
+      {/*   <Input id="github" placeholder="https://github.com/username" {...register('github')} /> */}
+      {/*   {errors.github && <p className="text-sm text-red-500">{errors.github.message}</p>} */}
+      {/* </div> */}
+      {/**/}
+      {/* <div className="space-y-2"> */}
+      {/*   <Label htmlFor="linkedin">LinkedIn Profile</Label> */}
+      {/*   <Input */}
+      {/*     id="linkedin" */}
+      {/*     placeholder="https://linkedin.com/in/username" */}
+      {/*     {...register('linkedin')} */}
+      {/*   /> */}
+      {/*   {errors.linkedin && <p className="text-sm text-red-500">{errors.linkedin.message}</p>} */}
+      {/* </div> */}
     </div>
   );
 };

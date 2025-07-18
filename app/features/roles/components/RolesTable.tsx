@@ -3,10 +3,14 @@ import { Input } from '../../../components/ui/input';
 import { Button } from '../../../components/ui/button';
 import { Search, Plus, LayoutGrid, List } from 'lucide-react';
 import { RoleType } from '@app/types/types';
-import { initialRoles } from '@app/constants/constants';
 import { RoleTableListView } from './view/RoleTableListView';
 import { RoleGridView } from './view/RoleGridView';
-import { RoleDialog } from './dialog/RoleDialog';
+import { useGetAllRoles } from '@app/hooks/role/useGetAllRoles';
+import { useUpdateRole } from '@app/hooks/role/useUpdateRole';
+import { Role } from '@app/types/shared';
+import { CreateRoleDialog } from './dialog/CreateRoleDialog';
+import { useGetAllPermissions } from '@app/hooks/role/useGetAllPermissions';
+import { UpdateRoleDialog } from './dialog/UpdateRoleDialog';
 
 export type ViewProps = {
   roles: RoleType[];
@@ -14,44 +18,35 @@ export type ViewProps = {
 };
 
 export default function RolesTable() {
-  const [roles, setRoles] = useState<RoleType[]>(initialRoles);
+  const { roles } = useGetAllRoles();
+  const { permissions } = useGetAllPermissions();
+  const { mutate: updateRole } = useUpdateRole();
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<RoleType | null>(null);
-  const [isNew, setIsNew] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [updateOpen, setUpdateOpen] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<Role | null>(null);
 
   const filteredRoles = useMemo(
-    () => roles.filter((role) => role.name.toLowerCase().includes(searchQuery.toLowerCase())),
+    () =>
+      roles?.filter(
+        (role) =>
+          role.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          role.description?.toLowerCase().includes(searchQuery.toLowerCase()),
+      ),
     [roles, searchQuery],
   );
 
-  const handleNew = () => {
-    setSelectedRole({ id: '', name: '', permissions: {} });
-    setIsNew(true);
-    setDialogOpen(true);
-  };
-
-  const handleEdit = (role: RoleType) => {
-    setSelectedRole({ ...role });
-    setIsNew(false);
-    setDialogOpen(true);
-  };
-
-  const handleSave = (updatedRole: RoleType, createNew = false) => {
-    if (createNew || !updatedRole.id || updatedRole.id === '') {
-      const newRole = { ...updatedRole, id: `role-${Date.now()}` };
-      setRoles((prev) => [...prev, newRole]);
-    } else {
-      setRoles((prev) => prev.map((r) => (r.id === updatedRole.id ? updatedRole : r)));
-    }
+  const handleUpdate = (role: Role) => {
+    setSelectedRole(role);
+    setUpdateOpen(true);
   };
 
   return (
     <div className="mx-auto mt-12 w-full max-w-6xl p-4">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Roles</h1>
-        <Button onClick={handleNew}>
+        <Button onClick={() => setCreateOpen(true)}>
           <Plus className="mr-1 h-4 w-4" /> New Role
         </Button>
       </div>
@@ -87,19 +82,33 @@ export default function RolesTable() {
       </div>
 
       {viewMode === 'list' ? (
-        <RoleTableListView roles={filteredRoles} onEdit={handleEdit} />
+        <RoleTableListView roles={filteredRoles || []} onEdit={handleUpdate} />
       ) : (
-        <RoleGridView roles={filteredRoles} onEdit={handleEdit} />
+        <RoleGridView roles={filteredRoles || []} onEdit={handleUpdate} />
       )}
 
-      <RoleDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        role={selectedRole}
-        allRoles={roles}
-        isNew={isNew}
-        onSave={handleSave}
+      <CreateRoleDialog
+        categorizedPermissions={permissions}
+        onOpenChange={setCreateOpen}
+        open={createOpen}
       />
+
+      <UpdateRoleDialog
+        categorizedPermissions={permissions}
+        onOpenChange={setUpdateOpen}
+        open={updateOpen}
+        role={selectedRole}
+      />
+
+      {/* <RoleDialog */}
+      {/*   open={dialogOpen} */}
+      {/*   onOpenChange={setDialogOpen} */}
+      {/*   role={selectedRole} */}
+      {/*   allRoles={roles || []} */}
+      {/*   isNew={isNew} */}
+      {/*   onCreate={handleCreate} */}
+      {/*   onUpdate={handleUpdate} */}
+      {/* /> */}
     </div>
   );
 }
