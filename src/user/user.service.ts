@@ -19,41 +19,27 @@ export class UserService {
 
   async findAll() {
     const users = await this.prisma.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        phoneNumber: true,
-        dateOfBirth: true,
-        status: true,
+      include: {
         role: {
-          select: {
-            id: true,
-            name: true,
+          include: {
+            permissions: true,
           },
         },
       },
     });
 
-    return users;
+    return users.map((user) => new UserEntity(user));
   }
 
   async updateUserStatus(userId: string, status: UserStatus) {
     try {
-      const user = await this.prisma.user.findUnique({
-        where: {
-          id: userId,
-        },
-      });
+      const user = await this.prisma.user.findUnique({ where: { id: userId } });
 
       if (!user) throw new NotFoundException('User not found');
 
       return this.prisma.user.update({
         where: { id: userId },
-        data: {
-          status,
-        },
+        data: { status },
       });
     } catch (error) {
       console.error('Error updating user status: ', error);
@@ -126,5 +112,22 @@ export class UserService {
       });
 
     return new UserEntity(updatedUser);
+  }
+
+  async getUserById(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        role: {
+          include: {
+            permissions: true,
+          },
+        },
+      },
+    });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    return new UserEntity(user);
   }
 }
