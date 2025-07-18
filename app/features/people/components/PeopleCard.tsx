@@ -10,14 +10,14 @@ import {
   CardTitle,
 } from '@app/components/ui/card';
 import routeNames from '@app/routes/route-names';
-import { UserType } from '@app/types/types';
+import { User } from '@app/types/types';
 import { UserBucketLevel } from '@app/types/bucket';
 import { useNavigate } from 'react-router-dom';
 import { useGetUserBucketsById } from '@app/hooks/bucket';
 import { Target } from 'lucide-react';
 
 interface PeopleCardProps {
-  user: UserType;
+  user: User;
   isActive?: boolean;
   viewMode?: 'grid' | 'list';
 }

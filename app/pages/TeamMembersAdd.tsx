@@ -7,7 +7,7 @@ import { useAddMembersPage } from '@app/features/team/hooks/useAddMembersPage';
 import { useGetTeamById } from '@app/hooks/team';
 import { useGetAvailableUsers } from '@app/hooks/team/useGetAvailableUsers';
 import { AddMemberFormValues } from '@app/schemas';
-import { UserType } from '@app/types/types';
+import { User } from '@app/types/types';
 import { ArrowLeft, Check, LayoutGrid, List, Search, AlertTriangle } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState } from 'react';
@@ -40,14 +40,16 @@ export const TeamMembersAdd = () => {
 
   const handleSaveMembers = () => {
     // Check if any member doesn't have a position assigned
-    const membersWithoutPosition = selectedMembers.filter(member => !member.position.trim());
-    
+    const membersWithoutPosition = selectedMembers.filter((member) => !member.position.trim());
+
     if (membersWithoutPosition.length > 0) {
-      const memberNames = membersWithoutPosition.map(member => {
-        const user = availableUsers?.find(user => user.id === member.userId);
-        return user ? `${user.firstName} ${user.lastName}` : 'Unknown User';
-      }).join(', ');
-      
+      const memberNames = membersWithoutPosition
+        .map((member) => {
+          const user = availableUsers?.find((user) => user.id === member.userId);
+          return user ? `${user.firstName} ${user.lastName}` : 'Unknown User';
+        })
+        .join(', ');
+
       setValidationError(`Please assign positions to the following members: ${memberNames}`);
       setShowValidationError(true);
       return;
@@ -63,13 +65,13 @@ export const TeamMembersAdd = () => {
 
   const handlePositionChange = (userId: string, position: string) => {
     handleChangePosition(userId, position);
-    
+
     // Clear validation error if all members now have positions
-    const updatedMembers = selectedMembers.map(member => 
-      member.userId === userId ? { ...member, position } : member
+    const updatedMembers = selectedMembers.map((member) =>
+      member.userId === userId ? { ...member, position } : member,
     );
-    const membersWithoutPosition = updatedMembers.filter(member => !member.position.trim());
-    
+    const membersWithoutPosition = updatedMembers.filter((member) => !member.position.trim());
+
     if (membersWithoutPosition.length === 0) {
       setValidationError(null);
       setShowValidationError(false);
@@ -147,12 +149,10 @@ export const TeamMembersAdd = () => {
 
       {/* Validation Alert */}
       {showValidationError && validationError && (
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl px-4">
-          <Alert className="border-yellow-200 bg-yellow-50 shadow-lg animate-in slide-in-from-top-2 duration-300">
+        <div className="fixed top-20 left-1/2 z-50 w-full max-w-2xl -translate-x-1/2 transform px-4">
+          <Alert className="animate-in slide-in-from-top-2 border-yellow-200 bg-yellow-50 shadow-lg duration-300">
             <AlertTriangle className="h-4 w-4 text-yellow-600" />
-            <AlertDescription className="text-yellow-800">
-              {validationError}
-            </AlertDescription>
+            <AlertDescription className="text-yellow-800">{validationError}</AlertDescription>
           </Alert>
         </div>
       )}
@@ -270,7 +270,7 @@ export const TeamMembersAdd = () => {
           <div className="w-full">
             {viewMode === 'grid' ? (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-                {filteredUsers.map((user: UserType) => (
+                {filteredUsers.map((user: User) => (
                   <AvailableUserCard
                     user={user}
                     selectMember={handleSelectMember}
@@ -280,7 +280,7 @@ export const TeamMembersAdd = () => {
               </div>
             ) : (
               <div className="w-full space-y-3">
-                {filteredUsers.map((user: UserType) => (
+                {filteredUsers.map((user: User) => (
                   <AvailableUserCard
                     user={user}
                     selectMember={handleSelectMember}

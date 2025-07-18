@@ -7,7 +7,11 @@ import { useGetReportsByUserId } from '@app/hooks/report';
 import { Report } from '@app/types/types';
 import { FileText, Calendar, User, Plus, ExternalLink, ChevronDown } from 'lucide-react';
 import { Spinner } from '@app/components/ui/spinner';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@app/components/ui/collapsible';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@app/components/ui/collapsible';
 import { useNavigate } from 'react-router-dom';
 import routeNames from '@app/routes/route-names';
 import { useAuth } from '@app/context/AuthContext';
@@ -21,7 +25,12 @@ interface UserReportsSectionProps {
   onViewAllReports?: () => void;
 }
 
-export const UserReportsSection = ({ userId, userName, onAddReport, onViewAllReports }: UserReportsSectionProps) => {
+export const UserReportsSection = ({
+  userId,
+  userName,
+  onAddReport,
+  onViewAllReports,
+}: UserReportsSectionProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { reports, isLoading, isSuccess } = useGetReportsByUserId(userId);
   const navigate = useNavigate();
@@ -35,7 +44,7 @@ export const UserReportsSection = ({ userId, userName, onAddReport, onViewAllRep
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString('bs-BA', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -57,7 +66,7 @@ export const UserReportsSection = ({ userId, userName, onAddReport, onViewAllRep
     <Card className="border-border/50 hover:border-border transition-all duration-200">
       <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
         <CollapsibleTrigger asChild>
-          <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
+          <CardHeader className="hover:bg-muted/50 cursor-pointer transition-colors">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex items-center gap-4">
                 <div className="bg-primary/10 rounded-xl p-3">
@@ -65,24 +74,22 @@ export const UserReportsSection = ({ userId, userName, onAddReport, onViewAllRep
                 </div>
                 <div>
                   <CardTitle className="text-xl">Reports</CardTitle>
-                  <p className="text-muted-foreground text-sm">
-                    View reports about {userName}
-                  </p>
+                  <p className="text-muted-foreground text-sm">View reports about {userName}</p>
                 </div>
               </div>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-2">
-                <Badge variant="outline" className="text-xs w-fit">
+                <Badge variant="outline" className="w-fit text-xs">
                   {isLoading ? '...' : reports?.length || 0} reports
                 </Badge>
                 {onViewAllReports && (
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={(e) => {
                       e.stopPropagation();
                       console.log('🔍 UserReportsSection: View All button clicked for user:', {
                         userId,
-                        userName
+                        userName,
                       });
                       onViewAllReports();
                     }}
@@ -111,14 +118,11 @@ export const UserReportsSection = ({ userId, userName, onAddReport, onViewAllRep
         </CollapsibleTrigger>
 
         <CollapsibleContent>
-          <CardContent className="pt-0 px-4 pb-4 lg:px-6">
+          <CardContent className="px-4 pt-0 pb-4 lg:px-6">
             {/* Add Report Button - Only show if not self-reporting */}
             {!isSelfReporting && (
               <div className="mb-4">
-                <Button 
-                  onClick={onAddReport} 
-                  className="flex items-center gap-2 w-full sm:w-auto"
-                >
+                <Button onClick={onAddReport} className="flex w-full items-center gap-2 sm:w-auto">
                   <Plus className="h-4 w-4" />
                   Add Report
                 </Button>
@@ -140,7 +144,7 @@ export const UserReportsSection = ({ userId, userName, onAddReport, onViewAllRep
             {isLoading && (
               <div className="flex items-center justify-center py-8">
                 <Spinner size="medium" />
-                <span className="ml-2 text-muted-foreground">Loading reports...</span>
+                <span className="text-muted-foreground ml-2">Loading reports...</span>
               </div>
             )}
 
@@ -162,25 +166,27 @@ export const UserReportsSection = ({ userId, userName, onAddReport, onViewAllRep
               <div className="flex items-center justify-center py-8">
                 <div className="text-center">
                   <FileText className="text-muted-foreground/50 mx-auto h-8 w-8" />
-                  <p className="text-muted-foreground mt-2 text-sm">No reports available for this user.</p>
+                  <p className="text-muted-foreground mt-2 text-sm">
+                    No reports available for this user.
+                  </p>
                   <p className="text-muted-foreground mt-1 text-xs">
-                    {isSelfReporting 
-                      ? ""
-                      : `Be the first to add a report about ${userName}.`
-                    }
+                    {isSelfReporting ? '' : `Be the first to add a report about ${userName}.`}
                   </p>
                 </div>
               </div>
             )}
 
             {isSuccess && reports && reports.length > 0 && (
-              <div className="max-h-48 space-y-4 overflow-y-auto overflow-x-hidden">
+              <div className="max-h-48 space-y-4 overflow-x-hidden overflow-y-auto">
                 {reports
-                  .sort((a: Report, b: Report) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                  .sort(
+                    (a: Report, b: Report) =>
+                      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+                  )
                   .map((report: Report) => (
-                    <div 
-                      key={report.id} 
-                      className="border rounded-lg p-4 bg-muted/30 hover:bg-muted/50 cursor-pointer transition-colors overflow-hidden"
+                    <div
+                      key={report.id}
+                      className="bg-muted/30 hover:bg-muted/50 cursor-pointer overflow-hidden rounded-lg border p-4 transition-colors"
                       onClick={() => handleReportClick(report.id)}
                     >
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-2">
@@ -188,22 +194,26 @@ export const UserReportsSection = ({ userId, userName, onAddReport, onViewAllRep
                           <Avatar className="h-6 w-6">
                             <AvatarImage src="" />
                             <AvatarFallback className="text-primary-foreground bg-neutral-800 text-xs font-semibold">
-                              {report.author ? getInitials(report.author.firstName, report.author.lastName) : 'U'}
+                              {report.author
+                                ? getInitials(report.author.firstName, report.author.lastName)
+                                : 'U'}
                             </AvatarFallback>
                           </Avatar>
                           <span className="text-sm font-medium">
-                            {report.author ? `${report.author.firstName} ${report.author.lastName}` : 'Unknown Author'}
+                            {report.author
+                              ? `${report.author.firstName} ${report.author.lastName}`
+                              : 'Unknown Author'}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Calendar className="h-3 w-3 text-muted-foreground" />
-                          <span className="text-xs text-muted-foreground">
+                          <Calendar className="text-muted-foreground h-3 w-3" />
+                          <span className="text-muted-foreground text-xs">
                             {formatDate(report.createdAt)}
                           </span>
-                          <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                          <ExternalLink className="text-muted-foreground h-3 w-3" />
                         </div>
                       </div>
-                      <p className="text-sm leading-relaxed text-muted-foreground mt-3 line-clamp-3 overflow-hidden break-words">
+                      <p className="text-muted-foreground mt-3 line-clamp-3 overflow-hidden text-sm leading-relaxed break-words">
                         {truncateText(report.content)}
                       </p>
                     </div>
@@ -215,4 +225,5 @@ export const UserReportsSection = ({ userId, userName, onAddReport, onViewAllRep
       </Collapsible>
     </Card>
   );
-}; 
+};
+

@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@app/components/ui/card';
-import { UserType } from '@app/types/types';
+import { User } from '@app/types/types';
 import { AddMemberFormValues } from '@app/schemas';
 import { Button } from '@app/components/ui/button';
 import { Crown, X } from 'lucide-react';
@@ -20,7 +20,7 @@ import {
 } from '@app/components/ui/select';
 
 interface AvailableUserCardProps {
-  user: UserType | undefined;
+  user: User | undefined;
   member: AddMemberFormValues;
   changePosition: (userId: string, position: string) => void;
   deselectMember: (memberId: string) => void;
@@ -91,7 +91,9 @@ export const SelectedMemberCard = ({
               value={member.position}
               onValueChange={(value) => changePosition(member.userId, value)}
             >
-              <SelectTrigger className={`w-52 ${showValidationError && !member.position.trim() ? 'border-red-300 bg-red-50' : 'border-primary/30'}`}>
+              <SelectTrigger
+                className={`w-52 ${showValidationError && !member.position.trim() ? 'border-red-300 bg-red-50' : 'border-primary/30'}`}
+              >
                 <SelectValue placeholder="Select Position" />
               </SelectTrigger>
               <SelectContent>
@@ -159,7 +161,9 @@ export const SelectedMemberCard = ({
           value={member.position}
           onValueChange={(value) => changePosition(member.userId, value)}
         >
-          <SelectTrigger className={`w-full ${showValidationError && !member.position.trim() ? 'border-red-300 bg-red-50' : 'border-primary/30'}`}>
+          <SelectTrigger
+            className={`w-full ${showValidationError && !member.position.trim() ? 'border-red-300 bg-red-50' : 'border-primary/30'}`}
+          >
             <SelectValue className="w-full" placeholder="Select Position" />
           </SelectTrigger>
           <SelectContent>

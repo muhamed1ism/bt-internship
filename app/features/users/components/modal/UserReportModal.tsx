@@ -1,12 +1,19 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@app/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@app/components/ui/dialog';
 import { Button } from '@app/components/ui/button';
 import { Textarea } from '@app/components/ui/textarea';
 import { Label } from '@app/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@app/components/ui/avatar';
 import { Badge } from '@app/components/ui/badge';
 import { useCreateReport } from '@app/hooks/report';
-import { UserType } from '@app/types/types';
+import { User } from '@app/types/types';
 import { CreateReportFormValues } from '@app/schemas';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,7 +27,7 @@ import { AlertTriangle } from 'lucide-react';
 interface UserReportModalProps {
   isOpen: boolean;
   onClose: () => void;
-  user: UserType | null;
+  user: User | null;
 }
 
 export const UserReportModal = ({ isOpen, onClose, user }: UserReportModalProps) => {
@@ -62,7 +69,7 @@ export const UserReportModal = ({ isOpen, onClose, user }: UserReportModalProps)
     if (!user) return;
 
     setIsSubmitting(true);
-    
+
     createReport(
       { formData: data, userId: user.id },
       {
@@ -76,7 +83,7 @@ export const UserReportModal = ({ isOpen, onClose, user }: UserReportModalProps)
         onSettled: () => {
           setIsSubmitting(false);
         },
-      }
+      },
     );
   };
 
@@ -103,7 +110,7 @@ export const UserReportModal = ({ isOpen, onClose, user }: UserReportModalProps)
               <div className="text-lg font-semibold">
                 Submit Report for {user.firstName} {user.lastName}
               </div>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="mt-1 flex items-center gap-2">
                 <Badge
                   variant="secondary"
                   className={`${getStatusBadgeClass(user.status)} text-xs`}
@@ -117,7 +124,8 @@ export const UserReportModal = ({ isOpen, onClose, user }: UserReportModalProps)
             </div>
           </DialogTitle>
           <DialogDescription>
-            Provide a detailed report about this user's performance, contributions, and areas for improvement.
+            Provide a detailed report about this user's performance, contributions, and areas for
+            improvement.
           </DialogDescription>
         </DialogHeader>
 
@@ -140,9 +148,7 @@ export const UserReportModal = ({ isOpen, onClose, user }: UserReportModalProps)
               {...register('content')}
               disabled={isSelfReporting || false}
             />
-            {errors.content && (
-              <p className="text-destructive text-sm">{errors.content.message}</p>
-            )}
+            {errors.content && <p className="text-destructive text-sm">{errors.content.message}</p>}
           </div>
 
           <DialogFooter>
@@ -164,4 +170,5 @@ export const UserReportModal = ({ isOpen, onClose, user }: UserReportModalProps)
       </DialogContent>
     </Dialog>
   );
-}; 
+};
+

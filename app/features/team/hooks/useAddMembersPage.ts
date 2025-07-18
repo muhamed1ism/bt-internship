@@ -2,10 +2,10 @@ import { useState, useMemo } from 'react';
 import type { ViewMode } from '@app/types/member-management';
 import { useAddMembers } from '@app/hooks/team';
 import { AddMemberFormValues } from '@app/schemas';
-import { UserType } from '@app/types/types';
+import { User } from '@app/types/types';
 import { useNavigate } from 'react-router-dom';
 
-export const useAddMembersPage = (availableUsers: UserType[] | [], teamId: string) => {
+export const useAddMembersPage = (availableUsers: User[] | [], teamId: string) => {
   const {
     mutate: addMembers,
     isPending: isAddingMembers,
@@ -60,8 +60,8 @@ export const useAddMembersPage = (availableUsers: UserType[] | [], teamId: strin
     }
 
     // Check if any member doesn't have a position assigned
-    const membersWithoutPosition = selectedMembers.filter(member => !member.position.trim());
-    
+    const membersWithoutPosition = selectedMembers.filter((member) => !member.position.trim());
+
     if (membersWithoutPosition.length > 0) {
       // Show alert - we'll handle this in the component
       return { hasError: true, membersWithoutPosition };

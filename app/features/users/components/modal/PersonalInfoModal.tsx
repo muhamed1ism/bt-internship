@@ -9,16 +9,16 @@ import { Button } from '@app/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@app/components/ui/tabs';
 
 import { usePersonalInfoForm } from '../../hooks/usePersonalInfoForm';
-import { experienceLevelType, PersonalInfoFormType, UserType } from '@app/types/types';
+import { experienceLevelType, PersonalInfoFormType, User } from '@app/types/types';
 
 import { AvatarPreview } from '../AvatarPreview';
-import { BasicInfoForm } from '../../PersonalInfoModal/BasicInfoForm';
-import { ContactInfoForm } from '../../PersonalInfoModal/ContactInfoForm';
+import { BasicInfoForm } from '../form/BasicInfoForm';
+import { ContactInfoForm } from '../form/ContactInfoForm';
 
 type PersonalInfoModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  user: UserType | null;
+  user: User | null;
 };
 
 export function PersonalInfoModal({ open, onOpenChange, user }: PersonalInfoModalProps) {

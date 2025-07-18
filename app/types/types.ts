@@ -1,26 +1,41 @@
-import { Role, BaseStatus, ExperienceLevel } from './shared';
+import { ExperienceLevel } from './shared';
 
 // User-specific types
 
-export type UserTableRow = UserType & {
+export type UserTableRow = User & {
   actions: any;
 };
 
-export interface UserType {
+export interface User {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
-  phoneNumber?: string;
-  dateOfBirth?: string;
+  phoneNumber: string;
+  dateOfBirth: string;
   status: string;
-  role: UserRoleType;
+  createdAt: Date;
+  updatedAt: Date;
+  role: Role;
 }
 
-export interface UserRoleType {
+export interface Role {
   id: string;
   name: string;
-  description?: string;
+  description?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  permissions: Permission[];
+}
+
+export interface Permission {
+  id: string;
+  action: string;
+  subject: string;
+  conditions?: any | null;
+  fields?: string[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface PersonalInfoFormType {
@@ -43,8 +58,8 @@ export interface Report {
   authorId: string;
   createdAt: string;
   updatedAt: string;
-  user?: UserType;
-  author?: UserType;
+  user?: User;
+  author?: User;
 }
 
 // Re-export shared types for backward compatibility

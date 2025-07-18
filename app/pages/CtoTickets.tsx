@@ -8,7 +8,7 @@ import {
   useRealtimeChat,
   useRealtimeTicket,
 } from '@app/features/tickets/hooks';
-import { UserType } from '@app/types/types';
+import { User } from '@app/types/types';
 import { TicketCard } from '@app/features/tickets/components/TicketCard';
 import { TicketStatusBadge } from '@app/features/tickets/components/TicketStatusBadge';
 import { formatDateTime, isMessageOwner } from '@app/features/tickets/utils/ticketHelpers';
@@ -18,7 +18,7 @@ import { CreateTicketValue } from '@app/schemas/ticketSchema';
 
 export const CtoTickets = () => {
   const { user: currentUser } = useAuth();
-  const [users, setUsers] = useState<UserType[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());

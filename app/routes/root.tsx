@@ -1,5 +1,5 @@
 import { QueryClientProvider } from '@tanstack/react-query';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import { queryClient } from '../utils/query-client.ts';
 import routeNames from './route-names.tsx';
 import '../main.css';
@@ -56,6 +56,7 @@ const routesForAuthenticated = [
     path: '/',
     element: <ProtectedRoute />,
     children: [
+      { path: '/', element: <Navigate to={routeNames.dashboard()} replace /> },
       { path: routeNames.dashboard(), element: <Dashboard /> },
       { path: routeNames.people(), element: <People /> },
       { path: routeNames.userDetail(), element: <UserDetail /> },

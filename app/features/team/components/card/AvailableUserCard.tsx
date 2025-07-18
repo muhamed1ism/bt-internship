@@ -9,11 +9,11 @@ import {
 } from '@app/components/ui/card';
 import { Button } from '@app/components/ui/button';
 import { Plus } from 'lucide-react';
-import { UserType } from '@app/types/types';
+import { User } from '@app/types/types';
 import { AddMemberFormValues } from '@app/schemas';
 
 interface AvailableUserCardProps {
-  user: UserType;
+  user: User;
   selectMember: ({ userId, position }: AddMemberFormValues) => void;
   viewMode?: 'grid' | 'list';
 }

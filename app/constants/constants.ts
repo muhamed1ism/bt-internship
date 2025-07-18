@@ -1,10 +1,10 @@
-import type { UserType } from '@app/types/types';
+import type { User } from '@app/types/types';
 
 // Re-export for backward compatibility
 export type { Role as RoleType } from '@app/types/shared';
 
 // User table columns for sorting and display
-export const USER_TABLE_COLUMNS: (keyof UserType)[] = [
+export const USER_TABLE_COLUMNS: (keyof User)[] = [
   'id',
   'firstName',
   'lastName',

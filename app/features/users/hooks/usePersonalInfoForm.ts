@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { UserType, PersonalInfoFormType } from '@app/types/types';
+import { User, PersonalInfoFormType } from '@app/types/types';
 import { personalInfoSchema } from '../schemas/personalInfoSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-export function usePersonalInfoForm(user: UserType | null) {
+export function usePersonalInfoForm(user: User | null) {
   const {
     register,
     handleSubmit,
