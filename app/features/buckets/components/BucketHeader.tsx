@@ -11,6 +11,8 @@ interface BucketHeaderProps {
   onNavigateBack: () => void;
   breadcrumb?: string;
   onOpenUpdateBucket?: () => void;
+  isEditingLevel?: boolean;
+  isCreatingLevel?: boolean;
 }
 
 export const BucketHeader = ({
@@ -20,6 +22,8 @@ export const BucketHeader = ({
   onNavigateBack,
   breadcrumb = 'Buckets',
   onOpenUpdateBucket,
+  isEditingLevel = false,
+  isCreatingLevel = false,
 }: BucketHeaderProps) => {
   const ability = useAbility(AbilityContext);
 
@@ -28,13 +32,13 @@ export const BucketHeader = ({
       <div className="flex items-center justify-between p-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={onNavigateBack} className="hover:bg-accent">
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="size-5" />
           </Button>
           <div className="text-muted-foreground flex items-center gap-2 text-sm">
             <span>{breadcrumb}</span>
             {title && (
               <>
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight className="size-4" />
                 <span className="text-foreground font-medium">{title}</span>
               </>
             )}
@@ -47,7 +51,7 @@ export const BucketHeader = ({
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="bg-primary/10 rounded-lg p-2">
-                <Award className="text-primary h-6 w-6" />
+                <Award className="text-primary size-6" />
               </div>
               <div>
                 <h1 className="text-foreground text-3xl font-bold">{title}</h1>
@@ -55,20 +59,22 @@ export const BucketHeader = ({
               </div>
             </div>
             <Can I="update" a="BucketCategory" ability={ability}>
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onOpenUpdateBucket}>
-                <Edit2 className="h-4 w-4" />
-              </Button>
+              {!isEditingLevel && !isCreatingLevel && (
+                <Button variant="ghost" size="icon" className="size-8" onClick={onOpenUpdateBucket}>
+                  <Edit2 className="size-4" />
+                </Button>
+              )}
             </Can>
           </div>
 
           <div className="text-muted-foreground flex items-center gap-4 text-sm">
             <div className="flex items-center gap-1">
-              <Target className="h-4 w-4" />
+              <Target className="size-4" />
               <span>{totalLevels} Levels</span>
             </div>
             <Separator orientation="vertical" className="h-4" />
             <div className="flex items-center gap-1">
-              <Clock className="h-4 w-4" />
+              <Clock className="size-4" />
               <span>Progressive Development Path</span>
             </div>
           </div>

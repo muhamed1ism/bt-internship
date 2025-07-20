@@ -44,9 +44,9 @@ export const AppSidebar = () => {
     { title: 'Users', url: routeNames.users(), icon: <BookUser /> },
     { title: 'Roles', url: routeNames.roles(), icon: <ShieldUser /> },
     { title: 'Reports', url: routeNames.reports(), icon: <FileText /> },
-    { title: 'Contact', url: routeNames.contact(), icon: <Contact /> },
     { title: 'CTO Tickets', url: routeNames.ticketCTO(), icon: <Ticket /> },
     { title: 'Employee Tickets', url: routeNames.ticketEmployee(), icon: <MessageSquareText /> },
+    { title: 'Contact', url: routeNames.contact(), icon: <Contact /> },
   ];
 
   const items = allItems.filter((item) => {

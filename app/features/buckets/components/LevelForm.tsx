@@ -1,10 +1,9 @@
 import { Plus, Minus, Save, X } from 'lucide-react';
 import { Button } from '@app/components/ui/button';
-import { Input } from '@app/components/ui/input';
 import { Textarea } from '@app/components/ui/textarea';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@app/components/ui/card';
 import { Separator } from '@app/components/ui/separator';
-import type { Level, EditableField, BucketCategory } from '@app/types/bucket';
+import type { Level, EditableField } from '@app/types/bucket';
 import { SECTION_ICONS } from '@app/constants/bucket';
 import { CreateLevelFormValues, UpdateLevelFormValues } from '@app/schemas';
 import { useCreateLevel, useDeleteLevel, useUpdateLevel } from '@app/hooks/bucket';
@@ -67,7 +66,11 @@ const EditableSection = ({
           </div>
         ))}
 
-        <Button type="button" onClick={onAdd} className="w-full bg-green-600 hover:bg-green-500">
+        <Button
+          type="button"
+          onClick={onAdd}
+          className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg hover:from-emerald-600 hover:to-emerald-700"
+        >
           <Plus className="mr-2 h-4 w-4" />
           Add {title.substring(0, title.length - 1)}
         </Button>
@@ -112,7 +115,6 @@ export const LevelForm = ({
       toAdvance: editingLevel.toAdvance || [],
     };
 
-    console.log('Creating level: ', { formData, categoryId: bucketId ?? '' });
     createLevel({ formData, categoryId: bucketId ?? '' });
   };
 
