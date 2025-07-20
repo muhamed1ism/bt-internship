@@ -53,6 +53,11 @@ export class UserController {
     return filteredUsers;
   }
 
+  @Get('admins')
+  async findAllAdmins() {
+    return this.userService.getAllAdmins();
+  }
+
   @Get(':userId')
   @CheckAbilities((ability: AppAbility) =>
     ability.can(Action.Read, Subject.User),

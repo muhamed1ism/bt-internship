@@ -31,6 +31,21 @@ export class UserService {
     return users.map((user) => new UserEntity(user));
   }
 
+  async getAllAdmins() {
+    const admins = await this.prisma.user.findMany({
+      where: { role: { name: 'admin' } },
+      include: {
+        role: {
+          include: {
+            permissions: true,
+          },
+        },
+      },
+    });
+
+    return admins.map((admin) => new UserEntity(admin));
+  }
+
   async updateUserStatus(userId: string, status: UserStatus) {
     try {
       const user = await this.prisma.user.findUnique({ where: { id: userId } });
