@@ -33,28 +33,40 @@ export class TeamController {
   @CheckAbilities((ability: AppAbility) =>
     ability.can(Action.Read, Subject.Team),
   )
-  getAllTeams(@RequestAbility() ability: AppAbility) {
-    if (ability.cannot(Action.Read, Subject.Team)) {
+  async getAllTeams(@RequestAbility() ability: AppAbility) {
+    const teams = await this.teamService.getAllTeamsWithLeaders();
+
+    const filteredTeams = teams.filter((team) =>
+      ability.can(Action.Read, subject(Subject.Team, team)),
+    );
+
+    if (filteredTeams.length === 0) {
       throw new ForbiddenException(
         'You are not authorized to access this resource',
       );
     }
 
-    return this.teamService.getAllTeams();
+    return filteredTeams;
   }
 
   @Get('all-with-leaders')
   @CheckAbilities((ability: AppAbility) =>
     ability.can(Action.Read, Subject.Team),
   )
-  getAllTeamsWithLeaders(@RequestAbility() ability: AppAbility) {
-    if (ability.cannot(Action.Read, Subject.Team)) {
+  async getAllTeamsWithLeaders(@RequestAbility() ability: AppAbility) {
+    const teams = await this.teamService.getAllTeamsWithLeaders();
+
+    const filteredTeams = teams.filter((team) =>
+      ability.can(Action.Read, subject(Subject.Team, team)),
+    );
+
+    if (filteredTeams.length === 0) {
       throw new ForbiddenException(
         'You are not authorized to access this resource',
       );
     }
 
-    return this.teamService.getAllTeamsWithLeaders();
+    return filteredTeams;
   }
 
   @Get('user')
@@ -62,7 +74,7 @@ export class TeamController {
     ability.can(Action.Read, Subject.Team),
   )
   @UseGuards(FirebaseJwtGuard)
-  getUserTeams(@GetUser() user: User, @RequestAbility() ability: AppAbility) {
+  getUserTeams(@GetUser() user: User) {
     return this.teamService.getUserTeams(user.id);
   }
 
