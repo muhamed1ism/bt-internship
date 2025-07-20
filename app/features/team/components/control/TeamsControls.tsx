@@ -2,6 +2,8 @@ import { Input } from '@app/components/ui/input';
 import { Button } from '@app/components/ui/button';
 import { Search, List, Plus, LayoutGrid } from 'lucide-react';
 import { ViewMode } from '@app/types/team';
+import { Can, useAbility } from '@casl/react';
+import { AbilityContext } from '@app/casl/AbilityContext';
 
 interface TeamsControlsProps {
   searchQuery: string;
@@ -18,6 +20,8 @@ export const TeamsControls = ({
   onViewModeChange,
   onCreateTeam,
 }: TeamsControlsProps) => {
+  const ability = useAbility(AbilityContext);
+
   return (
     <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       {/* Search Bar */}
@@ -51,10 +55,12 @@ export const TeamsControls = ({
           </Button>
         </div>
 
-        <Button onClick={onCreateTeam} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          Create Team
-        </Button>
+        <Can I="create" a="Team" ability={ability}>
+          <Button onClick={onCreateTeam} className="flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            Create Team
+          </Button>
+        </Can>
       </div>
     </div>
   );

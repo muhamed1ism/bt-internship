@@ -32,12 +32,13 @@ const routeNames = {
   userDetail: (params?: Record<string, string>): string => generateRoute('/people/:userId', params),
   profile: (params?: Record<string, string>): string => generateRoute('/profile', params),
   reports: (params?: Record<string, string>): string => generateRoute('/reports', params),
-  reportDetail: (params?: Record<string, string>): string => generateRoute('/reports/:reportId', params),
-  // Test pages - will be role-based later
-  ctoTicketTest: (params?: Record<string, string>): string =>
-    generateRoute('/cto-ticket-test', params),
-  employeeTicketTest: (params?: Record<string, string>): string =>
-    generateRoute('/employee-ticket-test', params),
+  reportDetail: (params?: Record<string, string>): string =>
+    generateRoute('/reports/:reportId', params),
+  ticketCTO: (params?: Record<string, string>): string => generateRoute('/cto-tickets', params),
+  ticketEmployee: (params?: Record<string, string>): string =>
+    generateRoute('/employee-tickets', params),
+  notAuthorized: (params?: Record<string, string>): string =>
+    generateRoute('/not-authorized', params),
 };
 
 export default routeNames;

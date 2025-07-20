@@ -6,6 +6,8 @@ import { Separator } from '@app/components/ui/separator';
 import type { BucketLevel } from '@app/types/bucket';
 import { SECTION_ICONS } from '@app/constants/bucket';
 import { getSectionBackground } from '@app/utils/bucket';
+import { useAbility } from '@casl/react';
+import { AbilityContext, Can } from '@app/casl/AbilityContext';
 
 interface LevelDetailsProps {
   name: string;
@@ -69,6 +71,8 @@ export const LevelDetails = ({
   maxLevel,
   onEditLevel,
 }: LevelDetailsProps) => {
+  const ability = useAbility(AbilityContext);
+
   return (
     <div className="lg:col-span-3">
       <Card className="shadow-lg">
@@ -181,12 +185,15 @@ export const LevelDetails = ({
 
         <CardFooter className="py-1">
           <div className="flex w-full gap-4">
-            <Button onClick={() => onEditLevel(level)} className="flex-1">
-              <Edit2 className="mr-2 h-4 w-4" />
-              Edit Level
-            </Button>
-            <Button variant="outline" className="flex-1">
-              <TrendingUp className="mr-2 h-4 w-4" />
+            <Can I="update" a="BucketLevel" ability={ability}>
+              <Button onClick={() => onEditLevel(level)} className="flex-1">
+                <Edit2 className="mr-2 size-4" />
+                Edit Level
+              </Button>
+            </Can>
+
+            <Button variant="outline" className="border-primary/30 flex-1">
+              <TrendingUp className="mr-2 size-4" />
               Track Progress
             </Button>
           </div>

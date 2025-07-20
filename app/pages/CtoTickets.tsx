@@ -15,8 +15,13 @@ import { formatDateTime, isMessageOwner } from '@app/features/tickets/utils/tick
 import { ChatMessage } from '@app/features/tickets/components/ChatMessage';
 import { MessageInput } from '@app/features/tickets/components/MessageInput';
 import { CreateTicketValue } from '@app/schemas/ticketSchema';
+import { useAbility } from '@casl/react';
+import { AbilityContext } from '@app/casl/AbilityContext';
+import { Navigate } from 'react-router-dom';
+import routeNames from '@app/routes/route-names';
 
 export const CtoTickets = () => {
+  const ability = useAbility(AbilityContext);
   const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
@@ -25,6 +30,10 @@ export const CtoTickets = () => {
   const [employeeId, setEmployeeId] = useState<string>('');
   const [createForm, setCreateForm] = useState<CreateTicketValue>(DEFAULT_CREATE_TICKET_FORM);
   const [newMessage, setNewMessage] = useState('');
+
+  if (ability.cannot('manage', 'Ticket')) {
+    <Navigate to={routeNames.notAuthorized()} />;
+  }
 
   // Real-time ticket management
   const { tickets, ticketCounts, isLoading, createNewTicket, isCreating, hasAwaitingConfirmation } =

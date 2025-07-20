@@ -2,6 +2,8 @@ import { CheckCircle2, Clock, Plus, Star } from 'lucide-react';
 import { Button } from '@app/components/ui/button';
 import { Card, CardContent } from '@app/components/ui/card';
 import type { BucketLevel } from '@app/types/bucket';
+import { AbilityContext, Can } from '@app/casl/AbilityContext';
+import { useAbility } from '@casl/react';
 
 interface LevelSidebarProps {
   name: string;
@@ -24,18 +26,22 @@ export const LevelSidebar = ({
   onCreateLevel,
   showCreateButton = true,
 }: LevelSidebarProps) => {
+  const ability = useAbility(AbilityContext);
+
   return (
     <div className="lg:col-span-1">
       <div className="sticky top-6">
-        {showCreateButton && (
-          <Button
-            onClick={onCreateLevel}
-            className="mb-6 w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg hover:from-emerald-600 hover:to-emerald-700"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Add Level
-          </Button>
-        )}
+        <Can I="create" a="BucketLevel" ability={ability}>
+          {showCreateButton && (
+            <Button
+              onClick={onCreateLevel}
+              className="mb-6 w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg hover:from-emerald-600 hover:to-emerald-700"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add Level
+            </Button>
+          )}
+        </Can>
 
         <div className="space-y-5">
           {levels.map((level, index) => (

@@ -33,7 +33,7 @@ export interface Permission {
   action: string;
   subject: string;
   conditions?: any | null;
-  fields?: string[];
+  fields?: string[] | null;
   createdAt: Date;
   updatedAt: Date;
 }
