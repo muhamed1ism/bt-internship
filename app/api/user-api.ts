@@ -66,6 +66,27 @@ export const getAllUsersApi = async (): Promise<User[] | null> => {
   }
 };
 
+export const getAllAdminsApi = async (): Promise<UserType[] | null> => {
+  try {
+    const authHeaders = await getAuthHeaders();
+    const { uri, method } = ENDPOINTS.user.allAdmins;
+
+    const res = await fetch(BASE_URL + uri, {
+      method,
+      headers: {
+        ...authHeaders,
+      },
+    });
+
+    if (!res.ok) throw new Error('Unauthorized');
+
+    return await res.json();
+  } catch (error) {
+    console.error('Error fetching all admins: ', error);
+    throw error;
+  }
+};
+
 export const activateUser = async (userId: string) => {
   try {
     const authHeaders = await getAuthHeaders();
