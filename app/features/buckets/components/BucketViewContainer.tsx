@@ -24,7 +24,6 @@ export const BucketViewContainer = () => {
     selectedLevel,
     isEditingLevel,
     isCreatingLevel,
-    bucketTitle,
     editingLevel,
 
     // Actions
@@ -33,11 +32,9 @@ export const BucketViewContainer = () => {
     handleEditLevel,
     handleCreateLevel,
     handleCancelEdit,
-    updateBucketTitle,
     addListItem,
     updateListItem,
     removeListItem,
-    handleSaveBucket,
   } = useBucketView();
 
   const [isUpdateBucketOpen, setIsUpdateBucketOpen] = useState(false);
@@ -68,21 +65,39 @@ export const BucketViewContainer = () => {
   // Render bucket creation view when no levels exist
   if (!hasLevels) {
     return (
-      <div className="min-h-screen bg-gray-100">
+      <div className="h-full bg-gray-100">
         <BucketHeader
           title={bucket.name}
           description={bucket.description}
           totalLevels={bucket.bucketLevels.length}
           onNavigateBack={navigateBack}
+          onOpenUpdateBucket={handleOpenUpdateBucket}
+          isEditingLevel={isEditingLevel}
+          isCreatingLevel={isCreatingLevel}
         />
+
         <div className="container mx-auto px-6 py-8">
-          <BucketCreation
-            bucketTitle={bucketTitle}
-            onUpdateTitle={updateBucketTitle}
-            onCreateLevel={handleCreateLevel}
-            onSaveBucket={handleSaveBucket}
-          />
+          {isCreatingLevel ? (
+            <LevelForm
+              bucketId={bucket.id}
+              levelId={selectedLevel?.id}
+              editingLevel={editingLevel}
+              isCreating={isCreatingLevel}
+              onCancel={handleCancelEdit}
+              onAddListItem={addListItem}
+              onUpdateListItem={updateListItem}
+              onRemoveListItem={removeListItem}
+            />
+          ) : (
+            <BucketCreation onCreateLevel={handleCreateLevel} />
+          )}
         </div>
+
+        <UpdateBucketDialog
+          bucket={bucket}
+          isOpen={isUpdateBucketOpen}
+          onClose={handleCloseUpdateBucket}
+        />
       </div>
     );
   }
@@ -90,14 +105,17 @@ export const BucketViewContainer = () => {
   // Render editing/creating form view
   if (isEditingLevel || isCreatingLevel) {
     return (
-      <div className="min-h-screen bg-gray-100">
+      <div className="h-full bg-gray-100">
         <BucketHeader
           title={bucket.name}
           description={bucket.description}
           totalLevels={bucket.bucketLevels.length}
           onNavigateBack={navigateBack}
           breadcrumb="Buckets"
+          isEditingLevel={isEditingLevel}
+          isCreatingLevel={isCreatingLevel}
         />
+
         <div className="container mx-auto px-6 py-8">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
             <LevelSidebar

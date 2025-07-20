@@ -87,11 +87,6 @@ export const useBucketView = () => {
     }));
   };
 
-  // Update bucket title
-  const updateBucketTitle = (title: string) => {
-    setState((prev) => ({ ...prev, bucketTitle: title }));
-  };
-
   // Update editing field
   const updateEditingField = (field: keyof Level, value: string | string[]) => {
     setState((prev) => ({
@@ -125,11 +120,6 @@ export const useBucketView = () => {
     }
   };
 
-  const handleSaveBucket = () => {
-    // TODO: Implement API call to save bucket
-    console.log('Saving bucket:', state.bucketTitle);
-  };
-
   return {
     // Data
     bucket,
@@ -146,10 +136,8 @@ export const useBucketView = () => {
     handleEditLevel,
     handleCreateLevel,
     handleCancelEdit,
-    updateBucketTitle,
     addListItem,
     updateListItem,
     removeListItem,
-    handleSaveBucket,
   };
 };
