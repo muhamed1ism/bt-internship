@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_TEAMS, createTeamFormData } from '@mocks/teams';
 import { ViewMode } from '@app/types/team';
 import {
   useFilteredTeams,
@@ -11,8 +10,7 @@ import {
   useTeamForm,
 } from '@app/features/team';
 import routeNames from '@app/routes/route-names';
-import { useGetAllTeams, useGetAllTeamsWithLeaders } from '@app/hooks/team';
-import { useGetTeamLeaders } from '@app/hooks/team/useGetTeamLeaders';
+import { useGetAllTeamsWithLeaders } from '@app/hooks/team';
 
 export const Teams = () => {
   const navigate = useNavigate();

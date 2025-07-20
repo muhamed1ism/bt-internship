@@ -1,30 +1,30 @@
-import { useGetAllUsers } from '@app/hooks/user/useGetAllUsers';
-import { UserType } from '@app/types/types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@app/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@app/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@app/components/ui/avatar';
 import { Badge } from '@app/components/ui/badge';
 import { Button } from '@app/components/ui/button';
-import { Mail, Shield, Users, MessageSquare } from 'lucide-react';
+import { Mail, Shield, Users, MessageSquare, Phone } from 'lucide-react';
+import { useGetAllAdmins } from '@app/hooks/user/useGetAllAdmins';
 
 export const Contact = () => {
-  const { users, isLoading } = useGetAllUsers();
-  
-  // Filter users with role.name === "admin"
-  const adminUsers = users?.filter(
-    (user: UserType) => user.role.name === 'admin'
-  ) || [];
+  const { admins, isLoading } = useGetAllAdmins();
+
+  if (!admins) {
+    <div className="flex h-full w-full items-center justify-center">
+      <h1 className="text-primary text-3xl">Failed to load admins</h1>
+    </div>;
+  }
 
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-      <div className="container mx-auto px-4 py-12">
+    <div className="h-full bg-gray-100 p-6">
+      <div className="mx-4 mt-4 mb-16 max-w-7xl md:mx-4 lg:mx-auto">
         {/* Header Section */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Contact Us</h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-foreground mb-2 text-3xl font-bold">Contact us</h1>
+          <p className="text-muted-foreground">
             Get in touch with our team of administrators who are here to help you.
           </p>
         </div>
@@ -32,61 +32,70 @@ export const Contact = () => {
         {/* Admin Team Section */}
         <div className="mb-8">
           {isLoading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600">Loading admin team...</p>
+            <div className="py-12 text-center">
+              <div className="border-primary/30 mx-auto h-12 w-12 animate-spin rounded-full border-b-2"></div>
+              <p className="text-muted-foreground mt-4">Loading admin team...</p>
             </div>
-          ) : adminUsers.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {adminUsers.map((admin) => (
-                <Card key={admin.id} className="shadow-lg border-0 hover:shadow-xl transition-shadow duration-300">
-                  <CardHeader className="text-center pb-4">
-                    <div className="flex justify-center mb-4">
+          ) : admins?.length === 0 ? (
+            <div className="py-12 text-center">
+              <div className="bg-primary mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full p-6">
+                <Users className="text-secondary size-12" />
+              </div>
+              <p className="text-muted-foreground">No admin users found in the system.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
+              {admins?.map((admin) => (
+                <Card
+                  key={admin.id}
+                  className="border-0 shadow-lg transition-shadow duration-300 hover:shadow-xl"
+                >
+                  <CardHeader className="text-center">
+                    <div className="mb-4 flex justify-center">
                       <Avatar className="h-20 w-20">
-                        <AvatarImage src={`https://ui-avatars.com/api/?name=${admin.firstName}+${admin.lastName}&background=6366f1&color=fff&size=80`} />
-                        <AvatarFallback className="text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+                        <AvatarImage
+                          src={`https://ui-avatars.com/api/?name=${admin.firstName}+${admin.lastName}&background=6366f1&color=fff&size=80`}
+                        />
+                        <AvatarFallback className="bg-primary text-lg font-semibold text-white">
                           {getInitials(admin.firstName, admin.lastName)}
                         </AvatarFallback>
                       </Avatar>
                     </div>
-                    <CardTitle className="text-xl">{admin.firstName} {admin.lastName}</CardTitle>
+
+                    <CardTitle className="text-xl">
+                      {admin.firstName} {admin.lastName}
+                    </CardTitle>
+
                     <div className="flex items-center justify-center gap-2">
-                      <Shield className="h-4 w-4 text-blue-600" />
                       <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                        <Shield className="size-4" />
                         {admin.role.name.charAt(0).toUpperCase() + admin.role.name.slice(1)}
                       </Badge>
                     </div>
                   </CardHeader>
-                  <CardContent className="text-center pt-0">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-center gap-2 text-gray-600">
-                        <Mail className="h-4 w-4" />
-                        <span className="text-sm">{admin.email}</span>
-                      </div>
-                      <div className="flex items-center justify-center gap-2">
-                        <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">
-                          {admin.status.charAt(0).toUpperCase() + admin.status.slice(1)}
-                        </Badge>
-                      </div>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full mt-4 hover:bg-blue-50 hover:border-blue-200"
-                      >
-                        <MessageSquare className="h-4 w-4 mr-2" />
-                        Contact {admin.firstName}
-                      </Button>
+
+                  <CardContent className="mx-2 space-y-2">
+                    <div className="text-muted-foreground flex items-center justify-start gap-2">
+                      <Mail className="size-4" />
+                      <span className="text-sm">{admin.email}</span>
+                    </div>
+
+                    <div className="text-muted-foreground flex items-center justify-start gap-2">
+                      <Phone className="size-4" />
+                      <span className="text-sm">{admin.phoneNumber}</span>
                     </div>
                   </CardContent>
+
+                  <CardFooter>
+                    <Button size="sm" className="w-full" asChild>
+                      <a href={'mailto:' + admin.email}>
+                        <MessageSquare className="mr-2 size-4" />
+                        Contact {admin.firstName}
+                      </a>
+                    </Button>
+                  </CardFooter>
                 </Card>
               ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="bg-gray-100 rounded-full p-6 w-24 h-24 mx-auto mb-4 flex items-center justify-center">
-                <Users className="h-12 w-12 text-gray-400" />
-              </div>
-              <p className="text-gray-600">No admin users found in the system.</p>
             </div>
           )}
         </div>
