@@ -32,6 +32,7 @@ export const ENDPOINTS = {
     allAdmins: {
       uri: '/user/admins',
       method: 'GET',
+    },
     updateProfile: {
       uri: '/user/profile',
       method: 'PUT',

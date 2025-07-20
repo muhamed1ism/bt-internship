@@ -10,6 +10,7 @@ import { useFilteredUserBuckets } from '@app/features/buckets/hooks/useFilteredU
 import { AddBucketDialog } from '@app/features/buckets/components/AddBucketDialog.tsx';
 import { useAbility } from '@casl/react';
 import { AbilityContext, Can } from '@app/casl/AbilityContext.ts';
+import { Spinner } from '@app/components/ui/spinner.tsx';
 
 function getMaxLevelForCategory(categories: BucketCategory[] | undefined, categoryId: string) {
   const category = categories && categories.find((cat) => cat.id === categoryId);
@@ -101,9 +102,13 @@ export const Buckets = () => {
       {/* User Buckets  */}
       <h1 className="w-full text-start text-2xl font-semibold">User Buckets</h1>
       <div className="mt-12 w-full">
-        {isLoading && <p>Loading...</p>}
+        {isLoading && (
+          <div className="flex h-full w-full items-center justify-center">
+            <Spinner size="medium" />
+          </div>
+        )}
 
-        {!filteredUserBuckets && (
+        {!filteredUserBuckets && !isLoading && (
           <h1 className="w-full text-center text-2xl text-red-600">Failed to load user buckets</h1>
         )}
 
@@ -142,9 +147,13 @@ export const Buckets = () => {
       {/* All Buckets */}
       <h1 className="mt-8 w-full text-start text-2xl font-semibold">All Buckets</h1>
       <div className="my-12 w-full">
-        {isLoading && <p>Loading...</p>}
+        {isLoading && (
+          <div className="flex h-full w-full items-center justify-center">
+            <Spinner size="medium" />
+          </div>
+        )}
 
-        {!filteredBuckets && (
+        {!filteredBuckets && !isLoading && (
           <h1 className="w-full text-center text-2xl text-red-600">Failed to load user buckets</h1>
         )}
 
