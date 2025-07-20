@@ -77,7 +77,6 @@ export const getTeamByIdApi = async (teamId: string) => {
 export const getUserTeamsApi = async () => {
   const { uri, method } = ENDPOINTS.team.getUserTeams;
   const authHeaders = await getAuthHeaders();
-
   try {
     const res = await fetch(BASE_URL + uri, {
       method,

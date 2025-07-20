@@ -1,7 +1,8 @@
-import { ArrowLeft, Edit2, Users, ChevronRight, Award, Target, Clock } from 'lucide-react';
+import { ArrowLeft, Edit2, ChevronRight, Award, Target, Clock } from 'lucide-react';
 import { Button } from '@app/components/ui/button';
-import { Badge } from '@app/components/ui/badge';
 import { Separator } from '@app/components/ui/separator';
+import { AbilityContext, Can } from '@app/casl/AbilityContext';
+import { useAbility } from '@casl/react';
 
 interface BucketHeaderProps {
   title: string;
@@ -20,6 +21,8 @@ export const BucketHeader = ({
   breadcrumb = 'Buckets',
   onOpenUpdateBucket,
 }: BucketHeaderProps) => {
+  const ability = useAbility(AbilityContext);
+
   return (
     <div className="bg-card border-b shadow-sm">
       <div className="flex items-center justify-between p-6">
@@ -37,10 +40,6 @@ export const BucketHeader = ({
             )}
           </div>
         </div>
-        <Badge variant="secondary" className="bg-green-500 px-4 py-2 text-white hover:bg-green-600">
-          <Users className="mr-1 h-4 w-4" />
-          Admin
-        </Badge>
       </div>
 
       {title && (
@@ -55,9 +54,11 @@ export const BucketHeader = ({
                 <p className="text-muted-foreground mt-1">{description}</p>
               </div>
             </div>
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onOpenUpdateBucket}>
-              <Edit2 className="h-4 w-4" />
-            </Button>
+            <Can I="update" a="BucketCategory" ability={ability}>
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onOpenUpdateBucket}>
+                <Edit2 className="h-4 w-4" />
+              </Button>
+            </Can>
           </div>
 
           <div className="text-muted-foreground flex items-center gap-4 text-sm">

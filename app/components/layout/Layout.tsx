@@ -17,7 +17,7 @@ export const Layout = () => {
       <main className="flex-grow pt-14">
         <Outlet />
       </main>
-      
+
       <Toaster />
     </SidebarProvider>
   );

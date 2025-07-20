@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@app/components/ui/card';
+import { Card, CardContent } from '@app/components/ui/card';
 import { Button } from '@app/components/ui/button';
 import { Badge } from '@app/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@app/components/ui/avatar';
@@ -8,15 +8,22 @@ import { useGetReportsByUserId } from '@app/hooks/report';
 import { Report } from '@app/types/types';
 import { FileText, Calendar, User, Search } from 'lucide-react';
 import { Spinner } from '@app/components/ui/spinner';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import routeNames from '@app/routes/route-names';
 import { useGetUserById } from '@app/hooks/user';
 import { useGetAllUsers } from '@app/hooks/user';
+import { useAbility } from '@casl/react';
+import { AbilityContext, Can } from '@app/casl/AbilityContext';
 
 export const Reports = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const ability = useAbility(AbilityContext);
+
+  if (ability.cannot('read', 'Report')) {
+    return <Navigate to={routeNames.notAuthorized()} />;
+  }
 
   // Initialize search query from URL parameter
   useEffect(() => {
@@ -39,17 +46,13 @@ export const Reports = () => {
   const { users } = useGetAllUsers();
 
   // Try to find a user by the search query
-  const searchedUser = users?.find(user => 
-    `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchQuery.toLowerCase())
+  const searchedUser = users?.find((user) =>
+    `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()),
   );
-
-
 
   // Get reports for the searched user if found, otherwise get reports for all users
   const targetUserId = searchedUser?.id;
   const { reports, isLoading, isSuccess } = useGetReportsByUserId(targetUserId || '');
-
-
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -69,7 +72,7 @@ export const Reports = () => {
   // Component to display user information for a report
   const ReportUserInfo = ({ userId }: { userId: string }) => {
     const { user } = useGetUserById(userId);
-    
+
     const getInitials = (firstName: string, lastName: string) => {
       return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
     };
@@ -101,51 +104,48 @@ export const Reports = () => {
               {user ? `${user.firstName} ${user.lastName}` : `User ${userId}`}
             </h3>
             {user && (
-              <Badge
-                variant="secondary"
-                className={`${getStatusBadgeClass(user.status)} text-xs`}
-              >
+              <Badge variant="secondary" className={`${getStatusBadgeClass(user.status)} text-xs`}>
                 {user.status}
               </Badge>
             )}
           </div>
-          <p className="text-muted-foreground text-sm">
-            Report about this user
-          </p>
+          <p className="text-muted-foreground text-sm">Report about this user</p>
         </div>
       </div>
     );
   };
 
-
-
   // If we have a search query but no specific user found, filter reports
-  const filteredReports = reports?.filter((report: Report) => {
-    if (!searchQuery.trim() || searchedUser) {
-      return true; // If we found a user, show all their reports
-    }
+  const filteredReports =
+    reports?.filter((report: Report) => {
+      if (!searchQuery.trim() || searchedUser) {
+        return true; // If we found a user, show all their reports
+      }
 
-    const query = searchQuery.toLowerCase();
-    
-    // Use report.user if available, otherwise fall back to basic filtering
-    const userName = report.user ? `${report.user.firstName} ${report.user.lastName}`.toLowerCase() : '';
-    const authorName = report.author ? `${report.author.firstName} ${report.author.lastName}`.toLowerCase() : '';
-    const content = report.content.toLowerCase();
+      const query = searchQuery.toLowerCase();
 
-    // Simple matching - check if query is found in any field
-    const matches = userName.includes(query) || 
-           authorName.includes(query) || 
-           content.includes(query) ||
-           report.userId.toLowerCase().includes(query);
+      // Use report.user if available, otherwise fall back to basic filtering
+      const userName = report.user
+        ? `${report.user.firstName} ${report.user.lastName}`.toLowerCase()
+        : '';
+      const authorName = report.author
+        ? `${report.author.firstName} ${report.author.lastName}`.toLowerCase()
+        : '';
+      const content = report.content.toLowerCase();
 
-    return matches;
-  }) || [];
+      // Simple matching - check if query is found in any field
+      const matches =
+        userName.includes(query) ||
+        authorName.includes(query) ||
+        content.includes(query) ||
+        report.userId.toLowerCase().includes(query);
+
+      return matches;
+    }) || [];
 
   const handleViewUser = (userId: string) => {
     navigate(routeNames.userDetail({ userId }));
   };
-
-
 
   return (
     <div className="flex h-full w-full flex-col items-center bg-gray-100 px-24 pt-12">
@@ -183,7 +183,7 @@ export const Reports = () => {
         {isLoading && (
           <div className="flex items-center justify-center py-12">
             <Spinner size="large" />
-            <span className="ml-2 text-muted-foreground">Loading reports...</span>
+            <span className="text-muted-foreground ml-2">Loading reports...</span>
           </div>
         )}
 
@@ -207,12 +207,10 @@ export const Reports = () => {
                 {searchQuery ? 'No reports found' : 'No reports available'}
               </h3>
               <p className="text-muted-foreground mt-2 text-sm">
-                {searchQuery 
+                {searchQuery
                   ? `No reports match your search for "${searchQuery}"`
-                  : 'Start by creating your first report about a team member.'
-                }
+                  : 'Start by creating your first report about a team member.'}
               </p>
-
             </div>
           </div>
         )}
@@ -220,48 +218,56 @@ export const Reports = () => {
         {isSuccess && filteredReports.length > 0 && (
           <div className="space-y-4">
             {filteredReports
-              .sort((a: Report, b: Report) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+              .sort(
+                (a: Report, b: Report) =>
+                  new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+              )
               .map((report: Report) => (
-                <Card 
-                  key={report.id} 
-                  className="border-border/50 hover:border-border transition-all duration-200 cursor-pointer"
+                <Card
+                  key={report.id}
+                  className="border-border/50 hover:border-border cursor-pointer transition-all duration-200"
                   onClick={() => navigate(routeNames.reportDetail({ reportId: report.id }))}
                 >
                   <CardContent className="p-6">
-                                        <div className="flex items-start justify-between mb-4">
+                    <div className="mb-4 flex items-start justify-between">
                       <div className="flex items-center gap-4">
                         {/* User the report is about */}
                         <ReportUserInfo userId={report.userId} />
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleViewUser(report.userId);
-                          }}
-                        >
-                          View User
-                        </Button>
+                        <Can I="read" an="User" ability={ability}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleViewUser(report.userId);
+                            }}
+                          >
+                            View User
+                          </Button>
+                        </Can>
                       </div>
                     </div>
 
                     {/* Report content */}
                     <div className="mb-4">
-                      <p className="text-foreground leading-relaxed text-muted-foreground">
+                      <p className="text-foreground text-muted-foreground leading-relaxed">
                         {truncateText(report.content)}
                       </p>
                     </div>
 
                     {/* Report metadata */}
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    <div className="text-muted-foreground flex items-center justify-between text-sm">
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4" />
                           <span>
-                            By {report.author ? `${report.author.firstName} ${report.author.lastName}` : 'Unknown Author'}
+                            By{' '}
+                            {report.author
+                              ? `${report.author.firstName} ${report.author.lastName}`
+                              : 'Unknown Author'}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -278,4 +284,4 @@ export const Reports = () => {
       </div>
     </div>
   );
-}; 
+};

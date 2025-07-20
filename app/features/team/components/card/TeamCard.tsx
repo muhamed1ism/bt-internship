@@ -3,6 +3,8 @@ import { Button } from '../../../../components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '../../../../components/ui/avatar';
 import { Eye, Edit3, Users, UserRound } from 'lucide-react';
 import { TeamCardProps } from '@app/types/team';
+import { useAbility } from '@casl/react';
+import { AbilityContext, Can } from '@app/casl/AbilityContext';
 
 export const TeamCard = ({
   teamName,
@@ -16,6 +18,7 @@ export const TeamCard = ({
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   };
+  const ability = useAbility(AbilityContext);
 
   // List view variant
   if (viewMode === 'list') {
@@ -105,14 +108,16 @@ export const TeamCard = ({
                 <Eye className="mr-1 h-6 w-6" />
                 View
               </Button>
-              <Button
-                onClick={onEdit}
-                size="lg"
-                className="border-amber-500 bg-amber-500 text-white hover:border-amber-600 hover:bg-amber-600"
-              >
-                <Edit3 className="mr-1 h-6 w-6" />
-                Edit
-              </Button>
+              <Can I="update" a="Team" ability={ability}>
+                <Button
+                  onClick={onEdit}
+                  size="lg"
+                  className="border-amber-500 bg-amber-500 text-white hover:border-amber-600 hover:bg-amber-600"
+                >
+                  <Edit3 className="mr-1 h-6 w-6" />
+                  Edit
+                </Button>
+              </Can>
             </div>
           </div>
 
@@ -227,14 +232,16 @@ export const TeamCard = ({
             <Eye className="mr-1 h-4 w-4" />
             View
           </Button>
-          <Button
-            onClick={onEdit}
-            size="default"
-            className="flex-1 border-yellow-600 bg-yellow-400 text-black hover:border-yellow-700 hover:bg-yellow-500"
-          >
-            <Edit3 className="mr-1 h-4 w-4" />
-            Edit
-          </Button>
+          <Can I="update" a="Team" ability={ability}>
+            <Button
+              onClick={onEdit}
+              size="default"
+              className="flex-1 border-yellow-600 bg-yellow-400 text-black hover:border-yellow-700 hover:bg-yellow-500"
+            >
+              <Edit3 className="mr-1 h-4 w-4" />
+              Edit
+            </Button>
+          </Can>
         </div>
       </CardFooter>
     </Card>
