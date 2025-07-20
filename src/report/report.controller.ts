@@ -29,11 +29,17 @@ export class ReportController {
   constructor(private readonly reportService: ReportService) {}
 
   @Get('user')
+  @CheckAbilities((ability: AppAbility) =>
+    ability.can(Action.Read, Subject.Report),
+  )
   getUserReports(@GetUser() user: User) {
     return this.reportService.findReportsByUserId(user.id);
   }
 
   @Get('author')
+  @CheckAbilities((ability: AppAbility) =>
+    ability.can(Action.Read, Subject.Report),
+  )
   getAuthorReports(@GetUser() authorUser: User) {
     return this.reportService.findReportsByAuthorId(authorUser.id);
   }
