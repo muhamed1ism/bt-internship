@@ -9,20 +9,27 @@ import {
 import { useLogout } from '@app/hooks/auth';
 import { useAuth } from '@app/context/AuthContext';
 import { Settings, UserRound } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import routeNames from '@app/routes/route-names';
 
 export const UserMenu = () => {
   const { user } = useAuth();
   const { mutate } = useLogout();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     mutate();
+  };
+
+  const handleProfileClick = () => {
+    navigate(routeNames.profile());
   };
 
   const menuItems = [
     {
       icon: <UserRound />,
       label: 'Profile',
-      onClick: undefined,
+      onClick: handleProfileClick,
     },
     {
       icon: <Settings />,

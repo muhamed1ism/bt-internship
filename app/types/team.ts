@@ -1,4 +1,4 @@
-import { UserType } from './types';
+import { User } from './types';
 
 export interface Team {
   id: string;
@@ -27,7 +27,7 @@ export interface TeamMember {
   position: string;
   joinedAt: Date;
   teamId: string;
-  user: UserType;
+  user: User;
 }
 
 export interface TeamTechnology {
@@ -50,4 +50,5 @@ export interface MemberCardProps {
   member: TeamMember;
   onSubmitReport?: (memberId: string) => void;
   onChangePosition?: (memberId: string) => void;
+  viewMode?: string;
 }

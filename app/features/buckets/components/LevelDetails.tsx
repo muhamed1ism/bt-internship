@@ -1,16 +1,19 @@
-import { Edit2, TrendingUp, Clock, ChevronRight, Sparkles, CheckCircle2, Star } from 'lucide-react';
+import { Edit2, TrendingUp, Clock, Sparkles, CheckCircle2, Star } from 'lucide-react';
 import { Button } from '@app/components/ui/button';
 import { Badge } from '@app/components/ui/badge';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@app/components/ui/card';
 import { Separator } from '@app/components/ui/separator';
-import type { BucketLevel, Level } from '@app/types/bucket';
-import { STATUS_ICONS, SECTION_ICONS, DIFFICULTY_COLORS } from '@app/constants/bucket';
-import { getStatusClasses, getSectionBackground, capitalize } from '@app/utils/bucket';
+import type { BucketLevel } from '@app/types/bucket';
+import { SECTION_ICONS } from '@app/constants/bucket';
+import { getSectionBackground } from '@app/utils/bucket';
+import { useAbility } from '@casl/react';
+import { AbilityContext, Can } from '@app/casl/AbilityContext';
 
 interface LevelDetailsProps {
   name: string;
   level: BucketLevel;
   currentLevel: BucketLevel | null;
+  maxLevel: number;
   onEditLevel: (level: BucketLevel) => void;
 }
 
@@ -45,11 +48,13 @@ const Section = ({ title, items, sectionType, className = '' }: SectionProps) =>
                         : sectionType === 'knowledge'
                           ? 'bg-orange-500'
                           : sectionType === 'toAdvance'
-                            ? 'bg-green-500'
+                            ? 'bg-emerald-500'
                             : 'bg-primary'
                   }`}
                 ></div>
-                <span className={sectionType === 'toAdvance' ? 'text-green-800' : ''}>{item}</span>
+                <span className={sectionType === 'toAdvance' ? 'text-emerald-800' : ''}>
+                  {item}
+                </span>
               </li>
             ))}
           </ul>
@@ -59,7 +64,15 @@ const Section = ({ title, items, sectionType, className = '' }: SectionProps) =>
   );
 };
 
-export const LevelDetails = ({ name, level, currentLevel, onEditLevel }: LevelDetailsProps) => {
+export const LevelDetails = ({
+  name,
+  level,
+  currentLevel,
+  maxLevel,
+  onEditLevel,
+}: LevelDetailsProps) => {
+  const ability = useAbility(AbilityContext);
+
   return (
     <div className="lg:col-span-3">
       <Card className="shadow-lg">
@@ -72,10 +85,10 @@ export const LevelDetails = ({ name, level, currentLevel, onEditLevel }: LevelDe
                     const diff = currentLevel.level - level.level;
 
                     const config =
-                      diff > 0
+                      diff > 0 || (currentLevel.level === maxLevel && diff === 0)
                         ? {
                             icon: <CheckCircle2 className="h-4 w-4" />,
-                            className: 'bg-green-100 text-green-600',
+                            className: 'bg-emerald-100 text-emerald-600',
                           }
                         : diff === 0
                           ? {
@@ -148,17 +161,17 @@ export const LevelDetails = ({ name, level, currentLevel, onEditLevel }: LevelDe
                 {SECTION_ICONS.toAdvance && <SECTION_ICONS.toAdvance className="h-5 w-5" />}
                 <h3 className="text-lg font-semibold">Path to Advancement</h3>
               </div>
-              <Card className="shadow-primary/5 border-green-100 bg-gradient-to-br from-green-50 to-emerald-50 shadow-lg">
+              <Card className="shadow-primary/5 border-emerald-100 bg-gradient-to-br from-emerald-50 to-emerald-50 shadow-lg">
                 <CardContent className="p-6">
                   <div className="mb-4 flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-green-600" />
-                    <span className="font-medium text-green-800">Next Level Goals</span>
+                    <Sparkles className="h-5 w-5 text-emerald-600" />
+                    <span className="font-medium text-emerald-800">Next Level Goals</span>
                   </div>
                   <ul className="space-y-4">
                     {level.toAdvance.map((item, index) => (
                       <li key={index} className="flex items-start gap-3 text-sm">
-                        <div className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-green-500"></div>
-                        <span className="text-green-800">{item}</span>
+                        <div className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-emerald-500"></div>
+                        <span className="text-emerald-800">{item}</span>
                       </li>
                     ))}
                   </ul>
@@ -172,12 +185,15 @@ export const LevelDetails = ({ name, level, currentLevel, onEditLevel }: LevelDe
 
         <CardFooter className="py-1">
           <div className="flex w-full gap-4">
-            <Button onClick={() => onEditLevel(level)} className="flex-1">
-              <Edit2 className="mr-2 h-4 w-4" />
-              Edit Level
-            </Button>
-            <Button variant="outline" className="flex-1">
-              <TrendingUp className="mr-2 h-4 w-4" />
+            <Can I="update" a="BucketLevel" ability={ability}>
+              <Button onClick={() => onEditLevel(level)} className="flex-1">
+                <Edit2 className="mr-2 size-4" />
+                Edit Level
+              </Button>
+            </Can>
+
+            <Button variant="outline" className="border-primary/30 flex-1">
+              <TrendingUp className="mr-2 size-4" />
               Track Progress
             </Button>
           </div>

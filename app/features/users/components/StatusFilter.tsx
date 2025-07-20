@@ -14,7 +14,7 @@ interface Props {
 export const StatusFilter = ({ statusFilter, onStatusFilter }: Props) => {
   return (
     <Select value={statusFilter} onValueChange={onStatusFilter}>
-      <SelectTrigger className="bg-primary-foreground w-full md:w-[180px]">
+      <SelectTrigger className="bg-card w-full md:w-[180px]">
         <SelectValue placeholder="Filter by status" />
       </SelectTrigger>
       <SelectContent>

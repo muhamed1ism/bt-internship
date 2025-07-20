@@ -1,9 +1,7 @@
-import { QueryClientProvider } from '@tanstack/react-query';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { queryClient } from '../utils/query-client.ts';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import routeNames from './route-names.tsx';
 import '../main.css';
-import AuthProvider from '@app/context/AuthContext.tsx';
+import { useAuth } from '@app/context/AuthContext.tsx';
 import { UnauthenticatedRoute } from './UnauthenticatedRoute.tsx';
 import { ProtectedRoute } from './ProtectedRoute.tsx';
 import { Layout } from '@app/components/layout/Layout.tsx';
@@ -23,6 +21,15 @@ import { GoogleRegister } from '@app/pages/GoogleRegister.tsx';
 import { Buckets } from '@app/pages/Buckets.tsx';
 import { BucketView } from '@app/pages/BucketView.tsx';
 import { TeamMembersAdd } from '@app/pages/TeamMembersAdd.tsx';
+import { UserDetail } from '@app/pages/UserDetail.tsx';
+import { Profile } from '@app/pages/Profile.tsx';
+import { Reports } from '@app/pages/Reports.tsx';
+import { ReportDetail } from '@app/pages/ReportDetail.tsx';
+import { TicketCTO } from '@app/pages/TicketCTO.tsx';
+import { TicketEmployee } from '@app/pages/TicketEmployee.tsx';
+import { NotAuthorized } from '@app/pages/NotAuthorized.tsx';
+import { defineAbilityFor } from '@app/casl/ability.ts';
+import { AbilityContext } from '@app/casl/AbilityContext.ts';
 
 const routesForPublic = [
   {
@@ -50,8 +57,11 @@ const routesForAuthenticated = [
     path: '/',
     element: <ProtectedRoute />,
     children: [
+      { path: '/', element: <Navigate to={routeNames.dashboard()} replace /> },
       { path: routeNames.dashboard(), element: <Dashboard /> },
       { path: routeNames.people(), element: <People /> },
+      { path: routeNames.userDetail(), element: <UserDetail /> },
+      { path: routeNames.profile(), element: <Profile /> },
       { path: routeNames.buckets(), element: <Buckets /> },
       { path: routeNames.bucketView(), element: <BucketView /> },
       { path: routeNames.evaluation(), element: <Evaluation /> },
@@ -61,6 +71,11 @@ const routesForAuthenticated = [
       { path: routeNames.teamMembersAdd(), element: <TeamMembersAdd /> },
       { path: routeNames.users(), element: <Users /> },
       { path: routeNames.roles(), element: <Roles /> },
+      { path: routeNames.reports(), element: <Reports /> },
+      { path: routeNames.reportDetail(), element: <ReportDetail /> },
+      { path: routeNames.ticketCTO(), element: <TicketCTO /> },
+      { path: routeNames.ticketEmployee(), element: <TicketEmployee /> },
+      { path: routeNames.notAuthorized(), element: <NotAuthorized /> },
     ],
   },
 ];
@@ -72,11 +87,12 @@ const router = createBrowserRouter([
 ]);
 
 export default function Root() {
+  const { user } = useAuth();
+  const ability = defineAbilityFor(user?.role?.permissions || []);
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <RouterProvider router={router} />
-      </AuthProvider>
-    </QueryClientProvider>
+    <AbilityContext.Provider value={ability}>
+      <RouterProvider router={router} />
+    </AbilityContext.Provider>
   );
 }

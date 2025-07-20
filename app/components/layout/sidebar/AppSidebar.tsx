@@ -2,9 +2,12 @@ import {
   BookUser,
   ClipboardCheck,
   Contact,
+  FileText,
   Home,
   Layers,
+  MessageSquareText,
   ShieldUser,
+  Ticket,
   UserRound,
   UserRoundSearch,
 } from 'lucide-react';
@@ -21,20 +24,57 @@ import { NavLink } from 'react-router-dom';
 import { useEffect } from 'react';
 import { SidebarButton } from './SidebarButton';
 import routeNames from '@app/routes/route-names';
+import { useAbility } from '@casl/react';
+import { AbilityContext } from '@app/casl/AbilityContext';
 
-const items = [
-  { title: 'Dashboard', url: routeNames.dashboard(), icon: <Home /> },
-  { title: 'People', url: routeNames.people(), icon: <UserRoundSearch /> },
-  { title: 'Buckets', url: routeNames.buckets(), icon: <Layers /> },
-  { title: 'Evaluation', url: routeNames.evaluation(), icon: <ClipboardCheck /> },
-  { title: 'Teams', url: routeNames.teams(), icon: <UserRound /> },
-  { title: 'Users', url: routeNames.users(), icon: <BookUser /> },
-  { title: 'Roles', url: routeNames.roles(), icon: <ShieldUser /> },
-  { title: 'Contact', url: routeNames.contact(), icon: <Contact /> },
-];
-
+// TODO: Make sidebar items role-based - show different items based on user role
+// CTO role: Should see "CTO Tickets"
+// Employee role: Should see "Employee Chat"
+// Admin role: Should see both
 export const AppSidebar = () => {
   const { setOpen } = useSidebar();
+  const ability = useAbility(AbilityContext);
+
+  const allItems = [
+    { title: 'Dashboard', url: routeNames.dashboard(), icon: <Home /> },
+    { title: 'People', url: routeNames.people(), icon: <UserRoundSearch /> },
+    { title: 'Buckets', url: routeNames.buckets(), icon: <Layers /> },
+    { title: 'Evaluation', url: routeNames.evaluation(), icon: <ClipboardCheck /> },
+    { title: 'Teams', url: routeNames.teams(), icon: <UserRound /> },
+    { title: 'Users', url: routeNames.users(), icon: <BookUser /> },
+    { title: 'Roles', url: routeNames.roles(), icon: <ShieldUser /> },
+    { title: 'Reports', url: routeNames.reports(), icon: <FileText /> },
+    { title: 'Contact', url: routeNames.contact(), icon: <Contact /> },
+    { title: 'CTO Tickets', url: routeNames.ticketCTO(), icon: <Ticket /> },
+    { title: 'Employee Tickets', url: routeNames.ticketEmployee(), icon: <MessageSquareText /> },
+  ];
+
+  const items = allItems.filter((item) => {
+    switch (item.title) {
+      case 'People':
+        return ability.can('read', 'User');
+      case 'Buckets':
+        return ability.can('read', 'BucketCategory');
+      case 'Evaluation':
+        return ability.can('manage', 'UserBucket');
+      case 'Teams':
+        return ability.can('read', 'Team');
+      case 'Users':
+        return ability.can('manage', 'User');
+      case 'Roles':
+        return ability.can('manage', 'Role');
+      case 'Reports': {
+        return ability.can('read', 'Report');
+      }
+      case 'CTO Tickets':
+        return ability.can('manage', 'Ticket');
+      case 'Employee Tickets':
+        return ability.can('read', 'Ticket');
+
+      default:
+        return true;
+    }
+  });
 
   useEffect(() => {
     const handleResize = () => {

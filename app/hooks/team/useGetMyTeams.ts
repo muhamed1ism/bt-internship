@@ -1,15 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
 import { getUserTeamsApi } from '@app/api/team-api';
 
-export const useGetMyTeams = () => {
+export const useGetUserTeams = () => {
   const {
-    data: reports,
+    data: userTeams,
     isLoading,
     isSuccess,
   } = useQuery({
-    queryKey: ['get-my-teams'],
+    queryKey: ['get-user-teams'],
     queryFn: getUserTeamsApi,
   });
 
-  return { reports, isLoading, isSuccess };
+  return { userTeams, isLoading, isSuccess };
 };

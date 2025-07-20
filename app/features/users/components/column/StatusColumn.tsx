@@ -1,5 +1,5 @@
 import { Badge } from '@app/components/ui/badge';
-import { UserType } from '@app/types/types';
+import { User } from '@app/types/types';
 import { ColumnDef } from '@tanstack/react-table';
 
 const statusColors = {
@@ -8,7 +8,7 @@ const statusColors = {
   pending: 'bg-yellow-100 text-yellow-800',
 };
 
-export const StatusColumn: ColumnDef<UserType> = {
+export const StatusColumn: ColumnDef<User> = {
   accessorKey: 'status',
   header: 'Status',
   cell: ({ row }) => {

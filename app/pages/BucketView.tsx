@@ -1,4 +1,4 @@
-import { BucketViewContainer } from '@app/features/buckets/BucketViewContainer';
+import { BucketViewContainer } from '@app/features/buckets/components/BucketViewContainer';
 
 /**
  * BucketView page component

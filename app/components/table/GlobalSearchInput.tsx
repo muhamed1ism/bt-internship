@@ -17,7 +17,7 @@ export const GlobalSearchInput = ({ value, onChange, placeholder, className }: P
     <div className="relative w-full">
       <Search className="text-muted-foreground absolute top-8.5 left-3 h-4 w-4" />
       <Input
-        className={`bg-primary-foreground h-9 pr-10 pl-10 ${className}`}
+        className={`bg-card h-9 pr-10 pl-10 ${className}`}
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}

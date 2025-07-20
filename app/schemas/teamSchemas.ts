@@ -9,7 +9,7 @@ const teamFormSchema = z.object({
   endDate: z.coerce.date().optional(),
   projectDescription: z.string().optional(),
   documentation: z.string().optional(),
-  githubLink: z.string().url('Invalid GitHub link').optional(),
+  githubLink: z.string().url('Invalid GitHub link').optional().or(z.literal('')),
   technologies: z.array(z.string()).optional(),
 });
 
@@ -24,12 +24,6 @@ const addMembersFormSchema = z.object({
 
 const updateMemberPositionFormSchema = z.object({
   position: z.string().min(3, 'Position name is required'),
-});
-
-const technologySchema = z.object({
-  id: z.string(),
-  name: z.string().min(1, 'Technology name is required'),
-  color: z.string(),
 });
 
 export type AddMemberFormValues = z.infer<typeof addMemberFormSchema>;

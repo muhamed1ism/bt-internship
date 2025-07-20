@@ -1,8 +1,7 @@
-import { MOCK_USERS } from '@app/__mocks__';
 import { createColumn } from '@app/components/table/CreateColumn';
 import { DataTable } from '@app/components/table/DataTable';
 import { GlobalSearchInput } from '@app/components/table/GlobalSearchInput';
-import { UserType } from '@app/types/types';
+import { User } from '@app/types/types';
 import { useState } from 'react';
 import { userGlobalFilterFn } from '../lib/table/globalFilterFns';
 import { ColumnDef } from '@tanstack/react-table';
@@ -10,6 +9,7 @@ import { ActionColumn } from './column/ActionColumn';
 import { StatusFilter } from './StatusFilter';
 import { useGetAllUsers } from '@app/hooks/user/useGetAllUsers';
 import { StatusColumn } from './column/StatusColumn';
+import { Spinner } from '@app/components/ui/spinner';
 
 export const UserTable = () => {
   const { users, isLoading, error } = useGetAllUsers();
@@ -18,20 +18,29 @@ export const UserTable = () => {
 
   const globalFilter = `${searchInput}|||${statusFilter}`;
 
-  // const users = MOCK_USERS;
-
-  const columns: ColumnDef<UserType, any>[] = [
-    createColumn<UserType>('id', 'ID'),
-    createColumn<UserType>('email', 'Email'),
-    createColumn<UserType>('firstName', 'First Name'),
-    createColumn<UserType>('lastName', 'Last Name'),
+  const columns: ColumnDef<User, any>[] = [
+    createColumn<User>('id', 'ID'),
+    createColumn<User>('email', 'Email'),
+    createColumn<User>('firstName', 'First Name'),
+    createColumn<User>('lastName', 'Last Name'),
     StatusColumn,
-    createColumn<UserType>('role', 'Role', (row) => row.role.name),
+    createColumn<User>('role', 'Role', (row) => row.role.name),
     ActionColumn,
   ];
 
-  if (isLoading) return <div>Loading users...</div>;
-  if (error) return <div>Error loading...</div>;
+  if (isLoading)
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <Spinner size="large" />
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="text-muted-foreground flex h-full w-full items-center justify-center text-xl">
+        Failed to load users
+      </div>
+    );
 
   return (
     <>
@@ -46,7 +55,7 @@ export const UserTable = () => {
         <StatusFilter statusFilter={statusFilter} onStatusFilter={setStatusFilter} />
       </div>
 
-      <DataTable<UserType, any>
+      <DataTable<User, any>
         columns={columns}
         data={users ?? []}
         globalFilter={globalFilter}
