@@ -105,4 +105,50 @@ export class TicketController {
 
     return this.ticketService.markAsFinished(ticketId);
   }
+
+  @Get('analytics/overview')
+  @CheckAbilities((ability: AppAbility) => ability.can(Action.Read, Subject.Ticket))
+  async getAnalyticsOverview(@RequestAbility() ability: AppAbility) {
+    if (ability.cannot(Action.Read, Subject.Ticket)) {
+      throw new ForbiddenException('You are not authorized to access this resource');
+    }
+    return this.ticketService.getAnalyticsOverview();
+  }
+
+  @Get('analytics/trends')
+  @CheckAbilities((ability: AppAbility) => ability.can(Action.Read, Subject.Ticket))
+  async getAnalyticsTrends(@RequestAbility() ability: AppAbility, @Param() params) {
+    if (ability.cannot(Action.Read, Subject.Ticket)) {
+      throw new ForbiddenException('You are not authorized to access this resource');
+    }
+    // period and limit from query params
+    return this.ticketService.getAnalyticsTrends(params);
+  }
+
+  @Get('analytics/performance')
+  @CheckAbilities((ability: AppAbility) => ability.can(Action.Read, Subject.Ticket))
+  async getAnalyticsPerformance(@RequestAbility() ability: AppAbility) {
+    if (ability.cannot(Action.Read, Subject.Ticket)) {
+      throw new ForbiddenException('You are not authorized to access this resource');
+    }
+    return this.ticketService.getAnalyticsPerformance();
+  }
+
+  @Get('recent')
+  @CheckAbilities((ability: AppAbility) => ability.can(Action.Read, Subject.Ticket))
+  async getRecentTickets(@RequestAbility() ability: AppAbility, @Param() params) {
+    if (ability.cannot(Action.Read, Subject.Ticket)) {
+      throw new ForbiddenException('You are not authorized to access this resource');
+    }
+    return this.ticketService.getRecentTickets(params);
+  }
+
+  @Get('employee-performance')
+  @CheckAbilities((ability: AppAbility) => ability.can(Action.Read, Subject.Ticket))
+  async getEmployeePerformance(@RequestAbility() ability: AppAbility, @Param() params) {
+    if (ability.cannot(Action.Read, Subject.Ticket)) {
+      throw new ForbiddenException('You are not authorized to access this resource');
+    }
+    return this.ticketService.getEmployeePerformance(params);
+  }
 }
