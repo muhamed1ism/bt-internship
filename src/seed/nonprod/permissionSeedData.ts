@@ -1,4 +1,5 @@
 import { adminPermissions } from './permissions/adminPermissions';
+import { CTOPermissions } from './permissions/CTOPermissions';
 import { teamLeadPermissions } from './permissions/teamLeadPermissions';
 import { userPermissions } from './permissions/userPermissions';
 
@@ -11,6 +12,9 @@ export const permissionSeedData = [
   },
   {
     user: [...userPermissions],
+  },
+  {
+    cto: [...CTOPermissions],
   },
 ];
 

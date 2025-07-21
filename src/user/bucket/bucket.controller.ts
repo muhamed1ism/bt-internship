@@ -42,7 +42,7 @@ export class BucketController {
     @Param('userId') userId: string,
     @RequestAbility() ability: AppAbility,
   ) {
-    if (ability.cannot(Action.Read, subject(Subject.UserBucket, { userId }))) {
+    if (ability.cannot(Action.Read, Subject.UserBucket)) {
       throw new ForbiddenException(
         'You are not authorized to access this resource',
       );
