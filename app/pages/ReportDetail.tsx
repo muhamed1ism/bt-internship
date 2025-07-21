@@ -171,17 +171,17 @@ export const ReportDetail = () => {
             </div>
             {isAuthor && (
               <div className="flex items-center gap-2">
-                <Can I="update" a="Reports" ability={ability}>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleEditReport}
-                    className="flex items-center gap-2"
-                  >
-                    <Edit className="h-4 w-4" />
-                    Edit
-                  </Button>
-                </Can>
+                {/* <Can I="update" a="Reports" ability={ability}> */}
+                {/*   <Button */}
+                {/*     variant="outline" */}
+                {/*     size="sm" */}
+                {/*     onClick={handleEditReport} */}
+                {/*     className="flex items-center gap-2" */}
+                {/*   > */}
+                {/*     <Edit className="h-4 w-4" /> */}
+                {/*     Edit */}
+                {/*   </Button> */}
+                {/* </Can> */}
 
                 <Can I="delete" a="Reports" ability={ability}>
                   <Button

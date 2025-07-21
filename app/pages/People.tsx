@@ -1,13 +1,21 @@
 import { Button } from '@app/components/ui/button';
 import { Input } from '@app/components/ui/input';
+import { useAuth } from '@app/context/AuthContext';
 import { PeopleCard } from '@app/features/people/components/PeopleCard';
 import { useFilteredPeople } from '@app/features/people/hooks/useFilteredPeople';
+import { useGetTeammates } from '@app/hooks/user';
 import { useGetAllUsers } from '@app/hooks/user/useGetAllUsers';
 import { LayoutGrid, List, Search } from 'lucide-react';
 import { useState } from 'react';
 
 export const People = () => {
-  const { users, isLoading, error } = useGetAllUsers();
+  const { user } = useAuth();
+  const { users: allUsers, isLoading: allUsersLoading, error: allUsersError } = useGetAllUsers();
+  const { teammates, isLoading: teammatesLoading, error: teammatesError } = useGetTeammates();
+
+  const users = user?.role.name !== 'user' ? allUsers : teammates;
+  const isLoading = user?.role.name !== 'user' ? allUsersLoading : teammatesLoading;
+  const error = user?.role.name !== 'user' ? allUsersError : teammatesError;
 
   const [viewMode, setViewMode] = useState('grid');
   const [searchQuery, setSearchQuery] = useState('');

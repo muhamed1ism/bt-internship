@@ -3,7 +3,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { useGetAllUsers } from '@app/hooks/user/useGetAllUsers';
 import { useGetUserBucketsById } from '@app/hooks/bucket';
 import { UserBucketLevel } from '@app/types/bucket';
 import { Mail, Phone, Calendar, User, Shield, Target, ArrowLeft } from 'lucide-react';
@@ -12,15 +11,16 @@ import routeNames from '@app/routes/route-names';
 import { UserReportsSection } from '@app/features/users/components/UserReportsSection';
 import { UserReportModal } from '@app/features/users/components/modal/UserReportModal';
 import { useState } from 'react';
-import { User as UserType } from '@app/types/types';
+import { AbilityContext, Can } from '@app/casl/AbilityContext';
+import { useAbility } from '@casl/react';
+import { useGetUserById } from '@app/hooks/user';
 
 export const UserDetail = () => {
+  const ability = useAbility(AbilityContext);
+
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
-  const { users, isLoading } = useGetAllUsers();
-
-  // Find the specific user
-  const user = users?.find((u: UserType) => u.id === userId);
+  const { user, isLoading } = useGetUserById(userId || '');
 
   // Get user buckets
   const { buckets: userBuckets, isLoading: bucketsLoading } = useGetUserBucketsById(userId || '');
@@ -246,20 +246,22 @@ export const UserDetail = () => {
           </Card>
 
           {/* User Reports */}
-          <UserReportsSection
-            userId={user.id}
-            userName={fullName}
-            onAddReport={handleAddReport}
-            onViewAllReports={() => {
-              console.log('🔍 UserDetail: View All Reports clicked for user:', {
-                userId: user.id,
-                userName: fullName,
-                searchQuery: fullName,
-              });
-              // Navigate with search parameter in the URL
-              navigate(`/reports?search=${encodeURIComponent(fullName)}`);
-            }}
-          />
+          <Can I="read" a="Report" ability={ability}>
+            <UserReportsSection
+              userId={user.id}
+              userName={fullName}
+              onAddReport={handleAddReport}
+              onViewAllReports={() => {
+                console.log('🔍 UserDetail: View All Reports clicked for user:', {
+                  userId: user.id,
+                  userName: fullName,
+                  searchQuery: fullName,
+                });
+                // Navigate with search parameter in the URL
+                navigate(`/reports?search=${encodeURIComponent(fullName)}`);
+              }}
+            />
+          </Can>
         </div>
       </div>
 

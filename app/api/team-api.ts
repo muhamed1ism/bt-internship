@@ -101,6 +101,28 @@ export const createTeamApi = async (formData: TeamFormValues) => {
   const { uri, method } = ENDPOINTS.team.add;
   const authHeaders = await getAuthHeaders();
 
+  const payload = {
+    ...formData,
+    startDate: formData.startDate
+      ? new Date(
+          Date.UTC(
+            formData.startDate.getFullYear(),
+            formData.startDate.getMonth(),
+            formData.startDate.getDate(),
+          ),
+        )
+      : '',
+    endDate: formData.endDate
+      ? new Date(
+          Date.UTC(
+            formData.endDate.getFullYear(),
+            formData.endDate.getMonth(),
+            formData.endDate.getDate(),
+          ),
+        )
+      : '',
+  };
+
   try {
     const res = await fetch(BASE_URL + uri, {
       method,
@@ -108,7 +130,7 @@ export const createTeamApi = async (formData: TeamFormValues) => {
         'Content-Type': 'application/json',
         ...authHeaders,
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(payload),
     });
 
     if (!res.ok) {
@@ -127,6 +149,28 @@ export const updateTeamApi = async (formData: TeamFormValues, teamId: string) =>
   const { uri, method } = ENDPOINTS.team.update(teamId);
   const authHeaders = await getAuthHeaders();
 
+  const payload = {
+    ...formData,
+    startDate: formData.startDate
+      ? new Date(
+          Date.UTC(
+            formData.startDate.getFullYear(),
+            formData.startDate.getMonth(),
+            formData.startDate.getDate(),
+          ),
+        )
+      : '',
+    endDate: formData.endDate
+      ? new Date(
+          Date.UTC(
+            formData.endDate.getFullYear(),
+            formData.endDate.getMonth(),
+            formData.endDate.getDate(),
+          ),
+        )
+      : '',
+  };
+
   try {
     const res = await fetch(BASE_URL + uri, {
       method,
@@ -134,7 +178,7 @@ export const updateTeamApi = async (formData: TeamFormValues, teamId: string) =>
         'Content-Type': 'application/json',
         ...authHeaders,
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(payload),
     });
 
     if (!res.ok) {

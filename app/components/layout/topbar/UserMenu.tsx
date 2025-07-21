@@ -31,11 +31,6 @@ export const UserMenu = () => {
       label: 'Profile',
       onClick: handleProfileClick,
     },
-    {
-      icon: <Settings />,
-      label: 'Settings',
-      onClick: undefined,
-    },
   ];
 
   return (

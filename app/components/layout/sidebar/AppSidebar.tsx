@@ -68,8 +68,6 @@ export const AppSidebar = () => {
       }
       case 'CTO Tickets':
         return ability.can('manage', 'Ticket');
-      case 'Employee Tickets':
-        return ability.can('read', 'Ticket');
 
       default:
         return true;

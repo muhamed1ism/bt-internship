@@ -1,7 +1,7 @@
 import { Button } from '../../ui/button';
 import logo from '@app/assets/logo/bloomteq_logo.png';
 import { Link, useNavigate } from 'react-router-dom';
-import { Bell, MessageCircleIcon } from 'lucide-react';
+import { MessageCircleIcon } from 'lucide-react';
 import { TopbarButton } from './TopbarButton';
 import { UserMenu } from './UserMenu';
 import { useAuth } from '@app/context/AuthContext';
@@ -12,7 +12,7 @@ export const Topbar = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-primary fixed z-10 inline-flex h-16 w-full items-center justify-between">
+    <div className="bg-primary fixed z-50 inline-flex h-16 w-full items-center justify-between">
       <div className="inline-flex h-full items-center gap-2 pl-1 md:pl-4">
         {isAuthenticated && <TopbarButton />}
 
@@ -28,16 +28,17 @@ export const Topbar = () => {
         <Button
           variant="ghost"
           className="hover:bg-primary/0 text-secondary hover:text-secondary/80 h-full w-8 cursor-pointer"
+          onClick={() => navigate(routeNames.ticketEmployee())}
         >
           <MessageCircleIcon className="size-6" />
         </Button>
 
-        <Button
-          variant="ghost"
-          className="hover:bg-primary/0 text-secondary hover:text-secondary/80 h-full w-8 cursor-pointer"
-        >
-          <Bell className="size-6" />
-        </Button>
+        {/* <Button */}
+        {/*   variant="ghost" */}
+        {/*   className="hover:bg-primary/0 text-secondary hover:text-secondary/80 h-full w-8 cursor-pointer" */}
+        {/* > */}
+        {/*   <Bell className="size-6" /> */}
+        {/* </Button> */}
 
         {isAuthenticated ? (
           <UserMenu />

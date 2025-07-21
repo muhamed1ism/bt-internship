@@ -8,12 +8,18 @@ import {
 import { Button } from '@app/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@app/components/ui/tabs';
 
-import { usePersonalInfoForm } from '../../hooks/usePersonalInfoForm';
-import { experienceLevelType, PersonalInfoFormType, User } from '@app/types/types';
+import { User } from '@app/types/types';
 
 import { AvatarPreview } from '../AvatarPreview';
 import { BasicInfoForm } from '../form/BasicInfoForm';
 import { ContactInfoForm } from '../form/ContactInfoForm';
+import { useForm } from 'react-hook-form';
+import { UpdateProfileFormValues, userSchemas } from '@app/schemas';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form } from '@app/components/ui/form';
+import { useEffect } from 'react';
+import { useUpdateUser } from '@app/hooks/user';
+import { Spinner } from '@app/components/ui/spinner';
 
 type PersonalInfoModalProps = {
   open: boolean;
@@ -22,23 +28,43 @@ type PersonalInfoModalProps = {
 };
 
 export function PersonalInfoModal({ open, onOpenChange, user }: PersonalInfoModalProps) {
-  const { register, handleSubmit, watch, errors, setValue } = usePersonalInfoForm(user);
+  const { mutate: updateUser, isPending, error } = useUpdateUser();
 
-  const {
-    firstName,
-    lastName,
-    email,
-    // , experienceLevel
-  } = watch();
+  const form = useForm<UpdateProfileFormValues>({
+    mode: 'onTouched',
+    resolver: zodResolver(userSchemas.updateProfile),
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      dateOfBirth: undefined,
+      phoneNumber: '',
+    },
+  });
 
-  const onSubmit = (data: PersonalInfoFormType) => {
-    console.log('Saving personal info:', data);
-    onOpenChange(false);
+  useEffect(() => {
+    if (user) {
+      form.reset({
+        ...form.getValues(),
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        dateOfBirth: new Date(user.dateOfBirth),
+        phoneNumber: user.phoneNumber,
+      });
+    }
+  }, [user]);
+
+  const onSubmit = (formData: UpdateProfileFormValues) => {
+    updateUser({ userId: user?.id || '', formData });
+    if (!error) {
+      onOpenChange(false);
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="overflow-hidden p-0 sm:max-w-[600px]">
+      <DialogContent className="z-50 overflow-hidden p-0 sm:max-w-[600px]">
         {/* HEADER */}
         <div className="bg-primary p-6">
           <DialogHeader>
@@ -52,43 +78,50 @@ export function PersonalInfoModal({ open, onOpenChange, user }: PersonalInfoModa
         </div>
 
         {/* BODY */}
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="p-6">
-            <AvatarPreview firstName={firstName} lastName={lastName} email={email} />
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className="p-6">
+              <AvatarPreview
+                firstName={user?.firstName || ''}
+                lastName={user?.lastName || ''}
+                email={user?.email || ''}
+              />
 
-            <Tabs defaultValue="basic" className="w-full">
-              <TabsList className="mb-4 grid grid-cols-2">
-                <TabsTrigger value="basic">Basic Info</TabsTrigger>
-                <TabsTrigger value="contact">Contact & Social</TabsTrigger>
-              </TabsList>
+              <Tabs defaultValue="basic" className="w-full">
+                <TabsList className="mb-4 grid grid-cols-2">
+                  <TabsTrigger value="basic">Basic Info</TabsTrigger>
+                  <TabsTrigger value="contact">Contact & Social</TabsTrigger>
+                </TabsList>
 
-              <TabsContent value="basic">
-                <BasicInfoForm
-                  register={register}
-                  errors={errors}
-                  // experienceLevel={experienceLevel}
-                  // onExperienceLevelChange={(value) =>
-                  //   setValue('experienceLevel', value as experienceLevelType)
-                  // }
-                />
-              </TabsContent>
+                <TabsContent value="basic">
+                  <BasicInfoForm
+                    form={form}
+                    // experienceLevel={experienceLevel}
+                    // onExperienceLevelChange={(value) =>
+                    //   setValue('experienceLevel', value as experienceLevelType)
+                    // }
+                  />
+                </TabsContent>
 
-              <TabsContent value="contact">
-                <ContactInfoForm register={register} errors={errors} />
-              </TabsContent>
-            </Tabs>
-          </div>
+                <TabsContent value="contact">
+                  <ContactInfoForm form={form} />
+                </TabsContent>
+              </Tabs>
+            </div>
 
-          {/* FOOTER */}
-          <div className="bg-muted/20 flex items-center justify-end gap-2 border-t p-6">
-            <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" className="bg-primary text-white">
-              Save Changes
-            </Button>
-          </div>
-        </form>
+            {error && <div>{error.message}</div>}
+
+            {/* FOOTER */}
+            <div className="bg-muted/20 flex items-center justify-end gap-2 border-t p-6">
+              <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" className="bg-primary text-white">
+                {isPending ? <Spinner size="small" className="text-secondary" /> : 'Save Changes'}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

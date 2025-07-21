@@ -32,11 +32,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { FormInputField } from '@app/components/forms/FormInputField';
 import { FormDatePicker } from '@app/components/forms/FormDatePicker';
 import { Form } from '@app/components/ui/form';
+import { useAbility } from '@casl/react';
+import { AbilityContext, Can } from '@app/casl/AbilityContext';
 
 export const Profile = () => {
   const navigate = useNavigate();
+  const ability = useAbility(AbilityContext);
 
-  const { user, isLoading: userLoading, error: userError } = useAuth();
+  const { user, error: userError } = useAuth();
   const { userBuckets, isLoading: bucketsLoading } = useGetMyUserBuckets();
   const { mutate: updateProfile, isPending, error } = useUpdateProfile();
 
@@ -105,7 +108,7 @@ export const Profile = () => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           {/* Header */}
-          <div className="border-border bg-card sticky top-16 z-3 w-full border-b pb-4">
+          <div className="border-border bg-card sticky top-16 z-50 w-full border-b pb-4">
             <div className="w-full px-4 py-4 sm:px-6">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-4">
@@ -381,18 +384,20 @@ export const Profile = () => {
               </Card>
 
               {/* User Reports */}
-              <div className="bg-card rounded-lg border">
-                <UserReportsSection
-                  userId={user.id}
-                  userName={user.firstName + ' ' + user.lastName}
-                  onAddReport={handleAddReport}
-                  onViewAllReports={() =>
-                    navigate(
-                      `/reports?search=${encodeURIComponent(user.firstName + ' ' + user.lastName)}`,
-                    )
-                  }
-                />
-              </div>
+              <Can I="read" a="Report" ability={ability}>
+                <div className="bg-card rounded-lg border">
+                  <UserReportsSection
+                    userId={user.id}
+                    userName={user.firstName + ' ' + user.lastName}
+                    onAddReport={handleAddReport}
+                    onViewAllReports={() =>
+                      navigate(
+                        `/reports?search=${encodeURIComponent(user.firstName + ' ' + user.lastName)}`,
+                      )
+                    }
+                  />
+                </div>
+              </Can>
             </div>
           </div>
 

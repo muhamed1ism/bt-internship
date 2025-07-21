@@ -87,6 +87,27 @@ export const getAllAdminsApi = async (): Promise<User[] | null> => {
   }
 };
 
+export const getAllTeammatesApi = async (): Promise<User[] | null> => {
+  try {
+    const authHeaders = await getAuthHeaders();
+    const { uri, method } = ENDPOINTS.user.allTeammates;
+
+    const res = await fetch(BASE_URL + uri, {
+      method,
+      headers: {
+        ...authHeaders,
+      },
+    });
+
+    if (!res.ok) throw new Error('Unauthorized');
+
+    return await res.json();
+  } catch (error) {
+    console.error('Error fetching all teammates: ', error);
+    throw error;
+  }
+};
+
 export const activateUser = async (userId: string) => {
   try {
     const authHeaders = await getAuthHeaders();
@@ -134,13 +155,26 @@ export const updateProfileApi = async (profileData: UpdateProfileFormValues) => 
     const authHeaders = await getAuthHeaders();
     const { uri, method } = ENDPOINTS.user.updateProfile;
 
+    const payload = {
+      ...profileData,
+      dateOfBirth: profileData.dateOfBirth
+        ? new Date(
+            Date.UTC(
+              profileData.dateOfBirth.getFullYear(),
+              profileData.dateOfBirth.getMonth(),
+              profileData.dateOfBirth.getDate(),
+            ),
+          )
+        : undefined,
+    };
+
     const res = await fetch(BASE_URL + uri, {
       method,
       headers: {
         'Content-Type': 'application/json',
         ...authHeaders,
       },
-      body: JSON.stringify(profileData),
+      body: JSON.stringify(payload),
     });
 
     if (!res.ok) {
@@ -175,6 +209,45 @@ export const updateUserRoleApi = async (userId: string, roleId: string) => {
     return await res.json();
   } catch (error) {
     console.error('Failed to update user role: ', error);
+    throw error;
+  }
+};
+
+export const updateUserApi = async (userId: string, userData: UpdateProfileFormValues) => {
+  try {
+    const authHeaders = await getAuthHeaders();
+    const { uri, method } = ENDPOINTS.user.updateUser(userId);
+
+    const payload = {
+      ...userData,
+      dateOfBirth: userData.dateOfBirth
+        ? new Date(
+            Date.UTC(
+              userData.dateOfBirth.getFullYear(),
+              userData.dateOfBirth.getMonth(),
+              userData.dateOfBirth.getDate(),
+            ),
+          )
+        : undefined,
+    };
+
+    const res = await fetch(BASE_URL + uri, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeaders,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message || 'Failed to update user');
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error('Failed to update user: ', error);
     throw error;
   }
 };

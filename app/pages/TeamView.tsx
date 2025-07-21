@@ -13,8 +13,12 @@ import { PositionChangeModal } from '@app/features/team/components/modal/Positio
 import { ReportModal } from '@app/features/team/components/modal/ReportModal';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@app/components/ui/tabs';
 import { Users, FileText } from 'lucide-react';
+import { useAbility } from '@casl/react';
+import { AbilityContext, Can } from '@app/casl/AbilityContext';
 
 export const TeamView = () => {
+  const ability = useAbility(AbilityContext);
+
   // In a real app, you'd fetch team data based on the ID from params
   const { teamId } = useParams<{ teamId: string }>();
   const { team, isLoading, error } = useGetTeamById(teamId || '');
@@ -143,15 +147,17 @@ export const TeamView = () => {
 
         {/* Team Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="flex w-full items-center justify-between">
             <TabsTrigger value="members" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
               Team Members
             </TabsTrigger>
-            <TabsTrigger value="reports" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              Reports
-            </TabsTrigger>
+            <Can I="read" a="Report" ability={ability}>
+              <TabsTrigger value="reports" className="flex items-center gap-2">
+                <FileText className="h-4 w-4" />
+                Reports
+              </TabsTrigger>
+            </Can>
           </TabsList>
 
           <TabsContent value="members" className="space-y-6">
@@ -167,9 +173,11 @@ export const TeamView = () => {
             />
           </TabsContent>
 
-          <TabsContent value="reports" className="space-y-6">
-            <ReportsSection members={team.members || []} />
-          </TabsContent>
+          <Can I="read" a="Report" ability={ability}>
+            <TabsContent value="reports" className="space-y-6">
+              <ReportsSection members={team.members || []} />
+            </TabsContent>
+          </Can>
         </Tabs>
 
         {/* Team Form Modal */}

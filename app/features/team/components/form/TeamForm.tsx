@@ -147,7 +147,7 @@ export const TeamForm = ({ team, onClose, mode }: TeamFormProps) => {
             name="projectDescription"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Project Description *</FormLabel>
+                <FormLabel>Project Description</FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder="Describe the project goals, requirements, and objectives..."
