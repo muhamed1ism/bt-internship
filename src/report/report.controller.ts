@@ -28,6 +28,19 @@ import { subject } from '@casl/ability';
 export class ReportController {
   constructor(private readonly reportService: ReportService) {}
 
+  @Get('all')
+  @CheckAbilities((ability: AppAbility) =>
+    ability.can(Action.Read, Subject.Report),
+  )
+  getAllReports(@RequestAbility() ability: AppAbility) {
+    if (ability.cannot(Action.Read, Subject.Report)) {
+      throw new ForbiddenException(
+        'You are not authorized to access this resource',
+      );
+    }
+    return this.reportService.getAllReports();
+  }
+
   @Get('user')
   @CheckAbilities((ability: AppAbility) =>
     ability.can(Action.Read, Subject.Report),

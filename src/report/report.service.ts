@@ -52,4 +52,18 @@ export class ReportService {
 
     return reports;
   }
+
+  async getAllReports() {
+    return this.prisma.report.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        author: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
+    });
+  }
 }
