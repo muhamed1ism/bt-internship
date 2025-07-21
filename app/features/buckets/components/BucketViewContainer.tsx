@@ -70,10 +70,6 @@ export const BucketViewContainer = () => {
 
   // Render bucket creation view when no levels exist
   if (!hasLevels) {
-    if (ability.cannot('create', 'BucketLevel')) {
-      return <Navigate to={routeNames.notAuthorized()} />;
-    }
-
     return (
       <div className="h-full bg-gray-100">
         <BucketHeader
@@ -87,19 +83,27 @@ export const BucketViewContainer = () => {
         />
 
         <div className="container mx-auto px-6 py-8">
-          {isCreatingLevel ? (
-            <LevelForm
-              bucketId={bucket.id}
-              levelId={selectedLevel?.id}
-              editingLevel={editingLevel}
-              isCreating={isCreatingLevel}
-              onCancel={handleCancelEdit}
-              onAddListItem={addListItem}
-              onUpdateListItem={updateListItem}
-              onRemoveListItem={removeListItem}
-            />
+          {ability.can('create', 'BucketLevel') ? (
+            isCreatingLevel ? (
+              <LevelForm
+                bucketId={bucket.id}
+                levelId={selectedLevel?.id}
+                editingLevel={editingLevel}
+                isCreating={isCreatingLevel}
+                onCancel={handleCancelEdit}
+                onAddListItem={addListItem}
+                onUpdateListItem={updateListItem}
+                onRemoveListItem={removeListItem}
+              />
+            ) : (
+              <BucketCreation onCreateLevel={handleCreateLevel} />
+            )
           ) : (
-            <BucketCreation onCreateLevel={handleCreateLevel} />
+            <div className="flex h-full w-full items-center justify-center">
+              <h1 className="text-muted-foreground text-2xl font-semibold">
+                There are no bucket levels defined
+              </h1>
+            </div>
           )}
         </div>
 

@@ -160,7 +160,7 @@ export const Buckets = () => {
         )}
 
         {filteredBuckets?.length === 0 && (
-          <h1 className="text-muted w-full text-center text-2xl">No assigned user buckets</h1>
+          <h1 className="text-muted w-full text-center text-2xl">No available buckets</h1>
         )}
 
         <div

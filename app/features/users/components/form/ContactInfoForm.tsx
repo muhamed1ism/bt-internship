@@ -1,32 +1,18 @@
-import { Input } from '@app/components/ui/input';
-import { Label } from '@app/components/ui/label';
-import { PersonalInfoFormType } from '@app/types/types';
-import { FieldErrors, UseFormRegister } from 'react-hook-form';
+import { FormInputField } from '@app/components/forms/FormInputField';
+import { UpdateProfileFormValues } from '@app/schemas';
+import { UseFormReturn } from 'react-hook-form';
 
 interface ContactInfoFormProps {
-  register: UseFormRegister<PersonalInfoFormType>;
-  errors: FieldErrors<PersonalInfoFormType>;
+  form: UseFormReturn<UpdateProfileFormValues>;
 }
 
-export const ContactInfoForm = ({ register, errors }: ContactInfoFormProps) => {
+export const ContactInfoForm = ({ form }: ContactInfoFormProps) => {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="dateOfBirth">Date of Birth</Label>
-          <Input id="dateOfBirth" placeholder="DD.MM.YYYY." {...register('dateOfBirth')} />
-          {errors.dateOfBirth && (
-            <p className="text-sm text-red-500">{errors.dateOfBirth.message}</p>
-          )}
-        </div>
+        <FormInputField control={form.control} name="email" label="Email" />
 
-        <div className="space-y-2">
-          <Label htmlFor="phoneNumber">Phone Number</Label>
-          <Input id="phoneNumber" placeholder="+387 61 234 5678 91" {...register('phoneNumber')} />
-          {errors.phoneNumber && (
-            <p className="text-sm text-red-500">{errors.phoneNumber.message}</p>
-          )}
-        </div>
+        <FormInputField control={form.control} name="phoneNumber" label="Phone Number" />
       </div>
 
       {/* <div className="space-y-2"> */}

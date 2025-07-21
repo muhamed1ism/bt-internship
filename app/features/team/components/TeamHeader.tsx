@@ -5,6 +5,8 @@ import { Badge } from '@app/components/ui/badge';
 import { Users, Edit3, Settings, Calendar, UserRound } from 'lucide-react';
 import { Team } from '@app/types/team';
 import { splitToWords } from '@app/utils/splitToWords';
+import { useAbility } from '@casl/react';
+import { AbilityContext, Can } from '@app/casl/AbilityContext';
 
 interface TeamHeaderProps {
   team: Team;
@@ -16,6 +18,7 @@ export const TeamHeader = ({ team, onManageMembers, onEdit }: TeamHeaderProps) =
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   };
+  const ability = useAbility(AbilityContext);
 
   const statusBadgeClass =
     team.status === 'ACTIVE'
@@ -93,31 +96,33 @@ export const TeamHeader = ({ team, onManageMembers, onEdit }: TeamHeaderProps) =
                 </div>
 
                 {/* Status Badges */}
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap items-center justify-center gap-2">
                   <Badge className={statusBadgeClass}>{splitToWords(status.toLowerCase())}</Badge>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex justify-center gap-3">
-                <Button
-                  onClick={onManageMembers}
-                  variant="outline"
-                  size="lg"
-                  className="border-primary/30 hover:border-primary/50 transition-colors"
-                >
-                  <Settings className="mr-2 h-4 w-4" />
-                  Manage Members
-                </Button>
-                <Button
-                  onClick={onEdit}
-                  size="lg"
-                  className="border-yellow-600 bg-yellow-400 text-black hover:border-yellow-700 hover:bg-yellow-500"
-                >
-                  <Edit3 className="mr-2 h-4 w-4" />
-                  Edit
-                </Button>
-              </div>
+              <Can I="edit" a="Team" ability={ability}>
+                <div className="flex justify-center gap-3">
+                  <Button
+                    onClick={onManageMembers}
+                    variant="outline"
+                    size="lg"
+                    className="border-primary/30 hover:border-primary/50 transition-colors"
+                  >
+                    <Settings className="mr-2 h-4 w-4" />
+                    Manage Members
+                  </Button>
+                  <Button
+                    onClick={onEdit}
+                    size="lg"
+                    className="border-yellow-600 bg-yellow-400 text-black hover:border-yellow-700 hover:bg-yellow-500"
+                  >
+                    <Edit3 className="mr-2 h-4 w-4" />
+                    Edit
+                  </Button>
+                </div>
+              </Can>
             </div>
           </div>
 

@@ -23,9 +23,7 @@ import { Spinner } from '@app/components/ui/spinner';
 import { useDeleteCategory, useUpdateCategory } from '@app/hooks/bucket';
 import { BucketCategory } from '@app/types/bucket';
 import { useAbility } from '@casl/react';
-import { AbilityContext } from '@app/casl/AbilityContext';
-import routeNames from '@app/routes/route-names';
-import { Navigate } from 'react-router-dom';
+import { AbilityContext, Can } from '@app/casl/AbilityContext';
 import { Trash } from 'lucide-react';
 
 interface UpdateBucketDialogProps {
@@ -58,10 +56,6 @@ export const UpdateBucketDialog = ({ isOpen, onClose, bucket }: UpdateBucketDial
     if (!error) handleClose();
   };
 
-  if (ability.cannot('update', 'BucketCategory')) {
-    return <Navigate to={routeNames.notAuthorized()} />;
-  }
-
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent>
@@ -69,55 +63,57 @@ export const UpdateBucketDialog = ({ isOpen, onClose, bucket }: UpdateBucketDial
           <DialogTitle>Update new bucket</DialogTitle>
         </DialogHeader>
 
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit, (errors) => {
-              console.log('Form invalid', errors);
-            })}
-            className="w-full space-y-4"
-          >
-            {/* Bucket Name */}
-            <FormInputField control={form.control} name="name" label="Name *" />
+        <Can I="update" a="BucketCategory" ability={ability}>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit, (errors) => {
+                console.log('Form invalid', errors);
+              })}
+              className="w-full space-y-4"
+            >
+              {/* Bucket Name */}
+              <FormInputField control={form.control} name="name" label="Name *" />
 
-            {/* Bucket Description */}
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Bucket Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Describe the bucket category..."
-                      className="bg-card border-primary/30 min-h-[120px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              {/* Bucket Description */}
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Bucket Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Describe the bucket category..."
+                        className="bg-card border-primary/30 min-h-[120px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <DialogFooter>
-              <div className="flex w-full items-center justify-between">
-                <Button className="bg-red-500" onClick={() => removeCategory(bucket.id)}>
-                  <Trash className="size-4" />
-                  Remove
-                </Button>
-
-                <div className="flex gap-2">
-                  {error && <p className="text-sm text-red-500">{error.message}</p>}
-                  <Button variant="outline" className="border-primary/30" onClick={handleClose}>
-                    Cancel
+              <DialogFooter>
+                <div className="flex w-full items-center justify-between">
+                  <Button className="bg-red-500" onClick={() => removeCategory(bucket.id)}>
+                    <Trash className="size-4" />
+                    Remove
                   </Button>
-                  <Button type="submit">
-                    {isPending ? <Spinner className="text-secondary" /> : 'Update'}
-                  </Button>
+
+                  <div className="flex gap-2">
+                    {error && <p className="text-sm text-red-500">{error.message}</p>}
+                    <Button variant="outline" className="border-primary/30" onClick={handleClose}>
+                      Cancel
+                    </Button>
+                    <Button type="submit">
+                      {isPending ? <Spinner className="text-secondary" /> : 'Update'}
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </DialogFooter>
-          </form>
-        </Form>
+              </DialogFooter>
+            </form>
+          </Form>
+        </Can>
       </DialogContent>
     </Dialog>
   );

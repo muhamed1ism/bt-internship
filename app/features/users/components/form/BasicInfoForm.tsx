@@ -1,4 +1,4 @@
-import { FieldErrors, UseFormRegister } from 'react-hook-form';
+import { FieldErrors, UseFormRegister, UseFormReturn } from 'react-hook-form';
 import { experienceLevelType, PersonalInfoFormType } from '@app/types/types';
 import { EXPERIENCE_LEVELS } from '@mocks/users';
 import {
@@ -10,44 +10,30 @@ import {
 } from '@app/components/ui/select';
 import { Label } from '@app/components/ui/label';
 import { FormInput } from '@app/components/ui/form-input';
+import { UpdateProfileFormValues } from '@app/schemas';
+import { FormInputField } from '@app/components/forms/FormInputField';
+import { FormDatePicker } from '@app/components/forms/FormDatePicker';
 
 interface BasicInfoFormProps {
-  register: UseFormRegister<PersonalInfoFormType>;
-  errors: FieldErrors<PersonalInfoFormType>;
+  form: UseFormReturn<UpdateProfileFormValues>;
   // experienceLevel: experienceLevelType;
   // onExperienceLevelChange: (value: experienceLevelType) => void;
 }
 
 export const BasicInfoForm = ({
-  register,
-  errors,
+  form,
   // experienceLevel,
   // onExperienceLevelChange,
 }: BasicInfoFormProps) => {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
-        <FormInput
-          id="firstName"
-          label="First Name"
-          register={register}
-          error={errors.firstName?.message}
-        />
-        <FormInput
-          id="lastName"
-          label="Last Name"
-          register={register}
-          error={errors.lastName?.message}
-        />
+        <FormInputField control={form.control} name="firstName" label="First Name" />
+
+        <FormInputField control={form.control} name="lastName" label="Last Name" />
       </div>
 
-      <FormInput
-        id="email"
-        label="Email"
-        type="email"
-        register={register}
-        error={errors.email?.message}
-      />
+      <FormDatePicker control={form.control} name="dateOfBirth" label="Date of Birth" />
 
       {/* <div className="grid grid-cols-2 gap-4"> */}
       {/*   <FormInput */}

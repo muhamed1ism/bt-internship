@@ -6,13 +6,26 @@ import { RegisterFormValues } from '@app/schemas';
 export const registerApi = async (formData: RegisterFormValues) => {
   const { uri, method } = ENDPOINTS.auth.register;
 
+  const payload = {
+    ...formData,
+    dateOfBirth: formData.dateOfBirth
+      ? new Date(
+          Date.UTC(
+            formData.dateOfBirth.getFullYear(),
+            formData.dateOfBirth.getMonth(),
+            formData.dateOfBirth.getDate(),
+          ),
+        )
+      : undefined,
+  };
+
   try {
     const res = await fetch(BASE_URL + uri, {
       method,
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(payload),
     });
 
     if (!res.ok) {
@@ -68,13 +81,26 @@ export const googleRegisterApi = async (formData: RegisterFormValues) => {
     const authHeaders = await getAuthHeaders();
     const { uri, method } = ENDPOINTS.auth.googleRegister;
 
+    const payload = {
+      ...formData,
+      dateOfBirth: formData.dateOfBirth
+        ? new Date(
+            Date.UTC(
+              formData.dateOfBirth.getFullYear(),
+              formData.dateOfBirth.getMonth(),
+              formData.dateOfBirth.getDate(),
+            ),
+          )
+        : undefined,
+    };
+
     const res = await fetch(BASE_URL + uri, {
       method,
       headers: {
         'Content-Type': 'application/json',
         ...authHeaders,
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(payload),
     });
 
     if (!res.ok) {

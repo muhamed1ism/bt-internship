@@ -8,6 +8,8 @@ import { useAuth } from '@app/context/AuthContext';
 import { useGetUserBucketsById } from '@app/hooks/bucket';
 import { UserBucketLevel } from '@app/types/bucket';
 import { splitToWords } from '@app/utils/splitToWords';
+import { useAbility } from '@casl/react';
+import { AbilityContext, Can } from '@app/casl/AbilityContext';
 
 export const MemberCard = ({
   member,
@@ -15,6 +17,8 @@ export const MemberCard = ({
   onChangePosition,
   viewMode = 'grid',
 }: MemberCardProps) => {
+  const ability = useAbility(AbilityContext);
+
   const { buckets: userBuckets } = useGetUserBucketsById(member.user.id);
   const { user: currentUser } = useAuth();
 
@@ -157,29 +161,34 @@ export const MemberCard = ({
 
       <CardFooter className="min-w-50">
         <div className="grid w-full grid-cols-1 gap-3">
-          <Button
-            onClick={() => onSubmitReport?.(member.id)}
-            variant="outline"
-            size="sm"
-            className="border-primary/30 hover:border-primary/50 flex-1 transition-colors"
-            disabled={isSelfReporting || false}
-            title={
-              isSelfReporting
-                ? 'You cannot write a report about yourself'
-                : 'Submit a report about this team member'
-            }
-          >
-            <FileText className="mr-1 size-4" />
-            Submit Report
-          </Button>
-          <Button
-            onClick={() => onChangePosition?.(member.id)}
-            size="sm"
-            className="border-yellow-600 bg-yellow-400 text-black hover:border-yellow-700 hover:bg-yellow-500"
-          >
-            <UserCog className="mr-1 size-4" />
-            Change Position
-          </Button>
+          <Can I="create" a="Report" ability={ability}>
+            <Button
+              onClick={() => onSubmitReport?.(member.id)}
+              variant="outline"
+              size="sm"
+              className="border-primary/30 hover:border-primary/50 flex-1 transition-colors"
+              disabled={isSelfReporting || false}
+              title={
+                isSelfReporting
+                  ? 'You cannot write a report about yourself'
+                  : 'Submit a report about this team member'
+              }
+            >
+              <FileText className="mr-1 size-4" />
+              Submit Report
+            </Button>
+          </Can>
+
+          <Can I="edit" a="TeamMember" ability={ability}>
+            <Button
+              onClick={() => onChangePosition?.(member.id)}
+              size="sm"
+              className="border-yellow-600 bg-yellow-400 text-black hover:border-yellow-700 hover:bg-yellow-500"
+            >
+              <UserCog className="mr-1 size-4" />
+              Change Position
+            </Button>
+          </Can>
         </div>
       </CardFooter>
     </Card>

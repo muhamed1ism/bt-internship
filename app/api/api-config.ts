@@ -33,10 +33,18 @@ export const ENDPOINTS = {
       uri: '/user/admins',
       method: 'GET',
     },
+    allTeammates: {
+      uri: '/user/teammates',
+      method: 'GET',
+    },
     updateProfile: {
       uri: '/user/profile',
       method: 'PUT',
     },
+    updateUser: (userId: string) => ({
+      uri: `/user/${userId}`,
+      method: 'PUT',
+    }),
     updateRole: (userId: string, roleId: string) => ({
       uri: `/user/${userId}/role/${roleId}`,
       method: 'PUT',
@@ -163,7 +171,6 @@ export const ENDPOINTS = {
       method: 'POST',
     },
   },
-
 
   team: {
     add: {
