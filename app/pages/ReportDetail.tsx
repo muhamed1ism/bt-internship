@@ -3,14 +3,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { useGetReportById } from '@app/hooks/report';
+import { useGetReportById, useGetAuthorReports } from '@app/hooks/report';
 import { Report } from '@app/types/types';
 import { Mail, Calendar, User, ArrowLeft, FileText, Edit, Trash2 } from 'lucide-react';
 import { Spinner } from '@app/components/ui/spinner';
 import routeNames from '@app/routes/route-names';
 import { useState } from 'react';
 import { useDeleteReport } from '@app/hooks/report';
-import { useGetUserById } from '@app/hooks/user';
+import { useGetAllUsers } from '@app/hooks/user';
 import { toast } from 'sonner';
 import { useAuth } from '@app/context/AuthContext';
 
@@ -24,8 +24,29 @@ export const ReportDetail = () => {
 
 
 
-  // Get user data for the report
-  const { user: reportUser, isLoading: userLoading } = useGetUserById(report?.userId || '');
+  // Get all users to find the report user
+  const { users, isLoading: usersLoading } = useGetAllUsers();
+  const reportUser = users?.find(u => u.id === report?.userId);
+  
+  // Debug: Get all author reports to see what's available
+  const { reports: authorReports } = useGetAuthorReports();
+  
+  console.log('🔍 ReportDetail Debug:', {
+    reportId,
+    report,
+    reportUserId: report?.userId,
+    usersCount: users?.length,
+    usersLoading,
+    reportUser,
+    foundUser: !!reportUser,
+    reportType: typeof report,
+    isArray: Array.isArray(report),
+    reportLength: Array.isArray(report) ? report.length : 'N/A',
+    authorReportsCount: authorReports?.length,
+    availableReportIds: authorReports?.map((r: Report) => r.id),
+    reportExists: authorReports?.some((r: Report) => r.id === reportId),
+    authorReports: authorReports
+  });
 
   // Check if current user is the author of the report
   const isAuthor = currentUser && report && currentUser.id === report.authorId;
@@ -88,7 +109,9 @@ export const ReportDetail = () => {
     });
   };
 
-  if (isLoading || userLoading) {
+  console.log('🔄 ReportDetail Loading States:', { isLoading, usersLoading });
+  
+  if (isLoading || usersLoading) {
     return (
       <div className="flex h-full items-center justify-center">
         <Spinner />
@@ -101,7 +124,9 @@ export const ReportDetail = () => {
       <div className="flex h-full items-center justify-center">
         <div className="text-center">
           <h2 className="mb-4 text-2xl font-bold">Report Not Found</h2>
-          <p className="mb-4 text-gray-600">The report you're looking for doesn't exist or you don't have permission to view it.</p>
+          <p className="mb-4 text-gray-600">
+            {error ? `Error: ${error.message}` : 'The report you\'re looking for doesn\'t exist or you don\'t have permission to view it.'}
+          </p>
           <Button onClick={handleBackButton}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Reports
@@ -110,6 +135,12 @@ export const ReportDetail = () => {
       </div>
     );
   }
+
+  console.log('👤 ReportDetail User Display:', { 
+    reportUser, 
+    displayName: reportUser ? `${reportUser.firstName} ${reportUser.lastName}` : `User ${report.userId}`,
+    userId: report.userId 
+  });
 
   return (
     <div className="h-full bg-gray-100">
@@ -260,7 +291,7 @@ export const ReportDetail = () => {
                       <h3 className="text-foreground text-lg font-semibold">
                         {reportUser ? `${reportUser.firstName} ${reportUser.lastName}` : `User ${report.userId}`}
                       </h3>
-                      {reportUser && (
+                      {reportUser ? (
                         <div className="flex items-center gap-2 mt-1">
                           <Badge
                             variant="secondary"
@@ -269,11 +300,20 @@ export const ReportDetail = () => {
                             {reportUser.status}
                           </Badge>
                         </div>
+                      ) : (
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge
+                            variant="secondary"
+                            className="bg-gray-500 text-white text-xs"
+                          >
+                            User not found
+                          </Badge>
+                        </div>
                       )}
                     </div>
                   </div>
                 
-                {reportUser && (
+                {reportUser ? (
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <Mail className="h-4 w-4 text-muted-foreground" />
@@ -287,6 +327,19 @@ export const ReportDetail = () => {
                         <span className="text-sm font-medium">{reportUser.phoneNumber}</span>
                       </div>
                     )}
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">Email</span>
+                      <span className="text-sm font-medium text-muted-foreground">Not available</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">Phone</span>
+                      <span className="text-sm font-medium text-muted-foreground">Not available</span>
+                    </div>
                   </div>
                 )}
 

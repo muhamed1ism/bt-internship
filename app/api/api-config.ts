@@ -131,6 +131,10 @@ export const ENDPOINTS = {
       uri: `/report/${userId}`,
       method: 'GET',
     }),
+    getAll: {
+      uri: '/report/all',
+      method: 'GET',
+    },
     getUserReports: {
       uri: '/report/user',
       method: 'GET',
@@ -140,6 +144,14 @@ export const ENDPOINTS = {
       method: 'GET',
     },
   },
+
+  evaluation: {
+    analyze: {
+      uri: '/evaluation/analyze',
+      method: 'POST',
+    },
+  },
+
 
   team: {
     add: {

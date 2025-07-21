@@ -1,29 +1,47 @@
-import { getReportsByUserIdApi } from '@app/api/report-api';
+import { getReportByIdApi } from '@app/api/report-api';
 import { useQuery } from '@tanstack/react-query';
-import { useGetAllUsers } from '@app/hooks/user';
+import { Report } from '@app/types/types';
+import { useGetAuthorReports } from './useGetAuthorReports';
 
 export const useGetReportById = (reportId: string) => {
-  // Get all users
-  const { users } = useGetAllUsers();
+  // Get author reports as fallback
+  const { reports: authorReports } = useGetAuthorReports();
+  
+  const {
+    data: report,
+    isLoading,
+    isSuccess,
+    error,
+  } = useQuery<Report>({
+    queryKey: ['report', reportId],
+    queryFn: () => getReportByIdApi(reportId),
+    enabled: !!reportId,
+  });
 
-  // Fetch reports for all users to find the specific report
-  const userReportsQueries = users?.map(user => 
-    useQuery({
-      queryKey: ['user-reports', user.id],
-      queryFn: () => getReportsByUserIdApi(user.id),
-      enabled: !!reportId && !!users,
-    })
-  ) || [];
+  // If the API returns an empty array, try to find the report in author reports
+  const fallbackReport = Array.isArray(report) && report.length === 0 && authorReports 
+    ? authorReports.find((r: Report) => r.id === reportId)
+    : null;
 
-  // Combine all reports from all users
-  const allReports = userReportsQueries.flatMap(query => query.data || []);
+  const finalReport = fallbackReport || report;
 
-  // Find the specific report by ID
-  const report = allReports.find((r: any) => r.id === reportId);
+  console.log('🔍 useGetReportById Debug:', {
+    reportId,
+    report,
+    fallbackReport,
+    finalReport,
+    isLoading,
+    isSuccess,
+    error,
+    reportType: typeof report,
+    isArray: Array.isArray(report),
+    authorReportsCount: authorReports?.length
+  });
 
-  // Combine loading states
-  const isLoading = userReportsQueries.some(query => query.isLoading);
-  const error = userReportsQueries.find(query => query.error)?.error;
-
-  return { report, isLoading, isSuccess: !!report, error };
+  return { 
+    report: finalReport, 
+    isLoading, 
+    isSuccess: isSuccess || !!fallbackReport, 
+    error: fallbackReport ? null : error 
+  };
 }; 

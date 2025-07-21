@@ -4,7 +4,7 @@ import { Button } from '@app/components/ui/button';
 import { Badge } from '@app/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@app/components/ui/avatar';
 import { Input } from '@app/components/ui/input';
-import { useGetReportsByUserId } from '@app/hooks/report';
+import { useGetReportsByUserId, useGetAuthorReports } from '@app/hooks/report';
 import { Report } from '@app/types/types';
 import { FileText, Calendar, User, Search } from 'lucide-react';
 import { Spinner } from '@app/components/ui/spinner';
@@ -45,9 +45,26 @@ export const Reports = () => {
 
 
 
-  // Get reports for the searched user if found, otherwise get reports for all users
+  // Get reports for the searched user if found, otherwise get reports authored by current user
   const targetUserId = searchedUser?.id;
-  const { reports, isLoading, isSuccess } = useGetReportsByUserId(targetUserId || '');
+  const { reports: userReports, isLoading: userReportsLoading, isSuccess: userReportsSuccess } = useGetReportsByUserId(targetUserId || '');
+  const { reports: authorReports, isLoading: authorReportsLoading, isSuccess: authorReportsSuccess } = useGetAuthorReports();
+  
+  // Use user reports if we have a specific user, otherwise use author reports
+  const reports = targetUserId ? userReports : authorReports;
+  const isLoading = targetUserId ? userReportsLoading : authorReportsLoading;
+  const isSuccess = targetUserId ? userReportsSuccess : authorReportsSuccess;
+  
+  console.log('📊 Reports Page Debug:', {
+    searchQuery,
+    searchedUser,
+    targetUserId,
+    userReportsCount: userReports?.length,
+    authorReportsCount: authorReports?.length,
+    finalReportsCount: reports?.length,
+    isLoading,
+    isSuccess
+  });
 
 
 
@@ -68,7 +85,15 @@ export const Reports = () => {
 
   // Component to display user information for a report
   const ReportUserInfo = ({ userId }: { userId: string }) => {
-    const { user } = useGetUserById(userId);
+    // Find user from the users list instead of making individual API calls
+    const user = users?.find(u => u.id === userId);
+    
+    console.log('🔍 Reports UserInfo Debug:', {
+      userId,
+      usersCount: users?.length,
+      foundUser: !!user,
+      user
+    });
     
     const getInitials = (firstName: string, lastName: string) => {
       return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
