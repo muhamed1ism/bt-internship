@@ -8,7 +8,7 @@ import {
 import { Button } from '@app/components/ui/button';
 import { FormInputField } from '@app/components/forms/FormInputField';
 import { useForm } from 'react-hook-form';
-import { bucketSchema, CreateCategoryFormValues, UpdateCategoryFormValues } from '@app/schemas';
+import { bucketSchema, UpdateCategoryFormValues } from '@app/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
@@ -20,8 +20,13 @@ import {
 } from '@app/components/ui/form';
 import { Textarea } from '@app/components/ui/textarea';
 import { Spinner } from '@app/components/ui/spinner';
-import { useUpdateCategory } from '@app/hooks/bucket';
+import { useDeleteCategory, useUpdateCategory } from '@app/hooks/bucket';
 import { BucketCategory } from '@app/types/bucket';
+import { useAbility } from '@casl/react';
+import { AbilityContext } from '@app/casl/AbilityContext';
+import routeNames from '@app/routes/route-names';
+import { Navigate } from 'react-router-dom';
+import { Trash } from 'lucide-react';
 
 interface UpdateBucketDialogProps {
   isOpen: boolean;
@@ -30,7 +35,11 @@ interface UpdateBucketDialogProps {
 }
 
 export const UpdateBucketDialog = ({ isOpen, onClose, bucket }: UpdateBucketDialogProps) => {
+  const ability = useAbility(AbilityContext);
+
   const { mutate: updateCategory, isPending, error } = useUpdateCategory();
+  const { mutate: removeCategory } = useDeleteCategory();
+
   const form = useForm<UpdateCategoryFormValues>({
     resolver: zodResolver(bucketSchema.createCategory),
     defaultValues: {
@@ -38,8 +47,6 @@ export const UpdateBucketDialog = ({ isOpen, onClose, bucket }: UpdateBucketDial
       description: bucket.description ?? '',
     },
   });
-
-  console.log({ form });
 
   const handleClose = () => {
     form.reset();
@@ -50,6 +57,10 @@ export const UpdateBucketDialog = ({ isOpen, onClose, bucket }: UpdateBucketDial
     updateCategory({ formData, categoryId: bucket.id });
     if (!error) handleClose();
   };
+
+  if (ability.cannot('update', 'BucketCategory')) {
+    return <Navigate to={routeNames.notAuthorized()} />;
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -88,13 +99,22 @@ export const UpdateBucketDialog = ({ isOpen, onClose, bucket }: UpdateBucketDial
             />
 
             <DialogFooter>
-              {error && <p className="text-sm text-red-500">{error.message}</p>}
-              <Button variant="outline" className="border-primary/30" onClick={handleClose}>
-                Cancel
-              </Button>
-              <Button type="submit">
-                {isPending ? <Spinner className="text-secondary" /> : 'Update'}
-              </Button>
+              <div className="flex w-full items-center justify-between">
+                <Button className="bg-red-500" onClick={() => removeCategory(bucket.id)}>
+                  <Trash className="size-4" />
+                  Remove
+                </Button>
+
+                <div className="flex gap-2">
+                  {error && <p className="text-sm text-red-500">{error.message}</p>}
+                  <Button variant="outline" className="border-primary/30" onClick={handleClose}>
+                    Cancel
+                  </Button>
+                  <Button type="submit">
+                    {isPending ? <Spinner className="text-secondary" /> : 'Update'}
+                  </Button>
+                </div>
+              </div>
             </DialogFooter>
           </form>
         </Form>

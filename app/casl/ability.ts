@@ -1,5 +1,5 @@
 // src/casl/ability.js
-import { Permission } from '@app/types/types';
+import { Permission } from '@app/types/shared';
 import { PureAbility } from '@casl/ability';
 
 export function defineAbilityFor(permissions: Permission[]) {

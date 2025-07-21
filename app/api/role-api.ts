@@ -52,6 +52,31 @@ export const getAllPermissionsApi = async () => {
   }
 };
 
+export const getRolePermissionsApi = async (roleId: string) => {
+  const { uri, method } = ENDPOINTS.role.getRolePermissions(roleId);
+  const authHeaders = await getAuthHeaders();
+
+  try {
+    const res = await fetch(BASE_URL + uri, {
+      method,
+      headers: {
+        ...authHeaders,
+      },
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message || 'Failed to fetch role permissions');
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch role permissions: ', error);
+    throw error;
+  }
+};
+
 export const createRoleApi = async (formData: CreateRoleFormValues) => {
   const { uri, method } = ENDPOINTS.role.createRole;
   const authHeaders = await getAuthHeaders();

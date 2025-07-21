@@ -66,7 +66,7 @@ export const getAllUsersApi = async (): Promise<User[] | null> => {
   }
 };
 
-export const getAllAdminsApi = async (): Promise<UserType[] | null> => {
+export const getAllAdminsApi = async (): Promise<User[] | null> => {
   try {
     const authHeaders = await getAuthHeaders();
     const { uri, method } = ENDPOINTS.user.allAdmins;
@@ -151,6 +151,30 @@ export const updateProfileApi = async (profileData: UpdateProfileFormValues) => 
     return await res.json();
   } catch (error) {
     console.error('Failed to update profile: ', error);
+    throw error;
+  }
+};
+
+export const updateUserRoleApi = async (userId: string, roleId: string) => {
+  try {
+    const authHeaders = await getAuthHeaders();
+    const { uri, method } = ENDPOINTS.user.updateRole(userId, roleId);
+
+    const res = await fetch(BASE_URL + uri, {
+      method,
+      headers: {
+        ...authHeaders,
+      },
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message || 'Failed to update user role');
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error('Failed to update user role: ', error);
     throw error;
   }
 };

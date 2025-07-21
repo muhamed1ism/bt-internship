@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { UserType } from '@app/types/types';
+import { User } from '@app/types/types';
 import { getAllAdminsApi } from '@app/api/user-api';
 
 export const useGetAllAdmins = () => {
@@ -7,7 +7,7 @@ export const useGetAllAdmins = () => {
     data: admins,
     isLoading,
     error,
-  } = useQuery<UserType[] | null>({
+  } = useQuery<User[] | null>({
     queryKey: ['get-all-admins'],
     queryFn: getAllAdminsApi,
   });

@@ -1,15 +1,14 @@
 import { deleteLevelApi } from '@app/api/bucket-api';
-import routeNames from '@app/routes/route-names';
-import { useMutation } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-export const useDeleteLevel = () => {
-  const navigate = useNavigate();
+export const useDeleteLevel = (categoryId: string) => {
+  const queryClient = useQueryClient();
 
   const { mutate, isPending, error } = useMutation({
     mutationFn: (levelId: string) => deleteLevelApi(levelId),
     onSuccess: () => {
-      navigate(routeNames.buckets());
+      queryClient.invalidateQueries({ queryKey: ['get-my-category-level', categoryId] });
+      queryClient.invalidateQueries({ queryKey: ['get-category-by-id'] });
     },
   });
 

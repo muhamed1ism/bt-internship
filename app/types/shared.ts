@@ -1,7 +1,7 @@
 // Shared types used across multiple features
 // This file eliminates duplicate type definitions
 
-import { UserType } from './types';
+import { User } from './types';
 
 // Common position interface - used by both team members and member management
 export interface Position {
@@ -64,7 +64,7 @@ export interface Role {
   id: string;
   name: string;
   description?: string;
-  users: UserType[];
+  users: User[];
   permissions: Permission[];
 }
 
@@ -85,7 +85,7 @@ export type CategorizedPermissions = Record<string, Permission[]>;
 export type ExperienceLevel = 'intern' | 'junior' | 'medior' | 'senior' | 'lead';
 
 // Modal types
-export type UserModalType = 'personal' | 'skills' | 'roles';
+export type UserModalType = 'personal' | 'buckets' | 'roles';
 
 // User card types
 export interface Skill {

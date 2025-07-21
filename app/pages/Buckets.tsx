@@ -24,6 +24,8 @@ export const Buckets = () => {
   const { userBuckets, isLoading } = useGetMyUserBuckets();
   const { categories } = useGetCategories();
 
+  console.log({ userBuckets });
+
   const [viewMode, setViewMode] = useState('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [isAddBucketOpen, setIsAddBucketOpen] = useState(false);

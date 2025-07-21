@@ -6,6 +6,10 @@ import { LevelForm } from './LevelForm';
 import { LevelDetails } from './LevelDetails';
 import { UpdateBucketDialog } from './dialog/UpdateBucketDialog';
 import { useState } from 'react';
+import { useAbility } from '@casl/react';
+import { AbilityContext } from '@app/casl/AbilityContext';
+import { Navigate } from 'react-router-dom';
+import routeNames from '@app/routes/route-names';
 
 /**
  * BucketViewContainer is the main container component that manages
@@ -13,6 +17,8 @@ import { useState } from 'react';
  * sub-components based on the current state.
  */
 export const BucketViewContainer = () => {
+  const ability = useAbility(AbilityContext);
+
   const {
     // Data
     bucket,
@@ -64,6 +70,10 @@ export const BucketViewContainer = () => {
 
   // Render bucket creation view when no levels exist
   if (!hasLevels) {
+    if (ability.cannot('create', 'BucketLevel')) {
+      return <Navigate to={routeNames.notAuthorized()} />;
+    }
+
     return (
       <div className="h-full bg-gray-100">
         <BucketHeader
@@ -104,6 +114,10 @@ export const BucketViewContainer = () => {
 
   // Render editing/creating form view
   if (isEditingLevel || isCreatingLevel) {
+    if (ability.cannot('create', 'BucketLevel') || ability.cannot('update', 'BucketLevel')) {
+      return <Navigate to={routeNames.notAuthorized()} />;
+    }
+
     return (
       <div className="h-full bg-gray-100">
         <BucketHeader
@@ -170,8 +184,10 @@ export const BucketViewContainer = () => {
               name={bucket.name}
               currentLevel={currentLevel}
               level={selectedLevel}
+              allLevels={bucket.bucketLevels}
               maxLevel={maxLevel}
               onEditLevel={handleEditLevel}
+              onLevelSelect={handleLevelSelect}
             />
           )}
         </div>

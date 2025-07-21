@@ -1,13 +1,12 @@
-import { assignUserBucketsApi } from '@app/api/bucket-api';
-import { AssignUserBucketsFormValues } from '@app/schemas';
+import { unassignUserBucketApi } from '@app/api/bucket-api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-export const useAssignUserBuckets = () => {
+export const useUnssignUserBucket = () => {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, error } = useMutation({
-    mutationFn: ({ formData, userId }: { formData: AssignUserBucketsFormValues; userId: string }) =>
-      assignUserBucketsApi(formData, userId),
+    mutationFn: ({ userId, bucketLevelId }: { userId: string; bucketLevelId: string }) =>
+      unassignUserBucketApi(userId, bucketLevelId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['get-user-buckets'] });
     },

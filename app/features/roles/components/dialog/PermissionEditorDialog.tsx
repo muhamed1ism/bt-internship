@@ -7,7 +7,6 @@ import {
   DialogFooter,
 } from '../../../../components/ui/dialog';
 import { Button } from '../../../../components/ui/button';
-import { PermissionTabs } from '../PermissionTabs';
 
 interface PermissionEditorDialogProps {
   open: boolean;
@@ -49,12 +48,12 @@ export function PermissionEditorDialog({
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
-          <PermissionTabs
-            selectedPermissions={selectedPermissions}
-            setSelectedPermissions={setSelectedPermissions}
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-          />
+          {/* <PermissionTabs */}
+          {/*   selectedPermissions={selectedPermissions} */}
+          {/*   setSelectedPermissions={setSelectedPermissions} */}
+          {/*   activeTab={activeTab} */}
+          {/*   setActiveTab={setActiveTab} */}
+          {/* /> */}
         </div>
 
         <DialogFooter>

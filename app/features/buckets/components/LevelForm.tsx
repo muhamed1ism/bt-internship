@@ -89,9 +89,8 @@ export const LevelForm = ({
   onUpdateListItem,
   onRemoveListItem,
 }: LevelFormProps) => {
-  const { mutate: createLevel } = useCreateLevel();
+  const { mutate: createLevel } = useCreateLevel(bucketId);
   const { mutate: updateLevel } = useUpdateLevel();
-  const { mutate: deleteLevel } = useDeleteLevel();
 
   const handleAddItem = (field: EditableField) => {
     onAddListItem(field);
@@ -116,6 +115,7 @@ export const LevelForm = ({
     };
 
     createLevel({ formData, categoryId: bucketId ?? '' });
+    onCancel();
   };
 
   const handleUpdateLevel = () => {
@@ -127,12 +127,8 @@ export const LevelForm = ({
       toAdvance: editingLevel.toAdvance || [],
     };
 
-    console.log('Updating level: ', { formData, levelId: levelId ?? '' });
     updateLevel({ formData, levelId: levelId ?? '' });
-  };
-
-  const handleDeleteLevel = () => {
-    deleteLevel(levelId ?? '');
+    onCancel();
   };
 
   return (
