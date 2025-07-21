@@ -5,12 +5,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@app/components/ui/dropdown-menu';
-import { User as UserType } from '@app/types/types';
+import { UserModalType, User as UserType } from '@app/types/types';
 import { ColumnDef } from '@tanstack/react-table';
 import { Code, MoreVertical, Shield, User } from 'lucide-react';
 import { useState } from 'react';
 import { PersonalInfoModal } from '../modal/PersonalInfoModal';
-import { SkillsModal } from '../modal/SkillsModal';
+import { BucketsModal } from '../modal/BucketsModal';
 import { UserPermissionsModal } from '../modal/UserPermissionsModal';
 
 export const ActionColumn: ColumnDef<UserType> = {
@@ -21,7 +21,6 @@ export const ActionColumn: ColumnDef<UserType> = {
 
     const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
     const [activeModal, setActiveModal] = useState<null | UserModalType>(null);
-    const [dropdownOpenUserId, setDropdownOpenUserId] = useState<string | number | null>(null);
 
     const openModal = (type: UserModalType, user: UserType) => {
       setSelectedUser(user);
@@ -30,7 +29,6 @@ export const ActionColumn: ColumnDef<UserType> = {
 
     const handleOpenModal = (modalType: UserModalType, user: UserType) => {
       openModal(modalType, user);
-      setDropdownOpenUserId(null);
     };
 
     return (
@@ -45,9 +43,9 @@ export const ActionColumn: ColumnDef<UserType> = {
             <User className="mr-2 h-4 w-4" />
             <span>Personal Info</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleOpenModal('skills', user)}>
+          <DropdownMenuItem onClick={() => handleOpenModal('buckets', user)}>
             <Code className="mr-2 h-4 w-4" />
-            <span>Skills</span>
+            <span>Buckets</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleOpenModal('roles', user)}>
             <Shield className="mr-2 h-4 w-4" />
@@ -61,8 +59,14 @@ export const ActionColumn: ColumnDef<UserType> = {
           user={user}
         />
 
-        <SkillsModal
-          open={activeModal === 'skills'}
+        <BucketsModal
+          open={activeModal === 'buckets'}
+          onOpenChange={() => setActiveModal(null)}
+          user={selectedUser}
+        />
+
+        <UserPermissionsModal
+          open={activeModal === 'roles'}
           onOpenChange={() => setActiveModal(null)}
           user={selectedUser}
         />

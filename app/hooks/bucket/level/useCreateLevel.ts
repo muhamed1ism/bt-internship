@@ -1,8 +1,10 @@
 import { createLevelApi } from '@app/api/bucket-api';
 import { CreateLevelFormValues } from '@app/schemas';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-export const useCreateLevel = () => {
+export const useCreateLevel = (categoryId: string) => {
+  const queryClient = useQueryClient();
+
   const { mutate, isPending, error } = useMutation({
     mutationFn: ({
       formData,
@@ -12,7 +14,8 @@ export const useCreateLevel = () => {
       categoryId: string;
     }) => createLevelApi(formData, categoryId),
     onSuccess: () => {
-      window.location.reload();
+      queryClient.invalidateQueries({ queryKey: ['get-my-category-level', categoryId] });
+      queryClient.invalidateQueries({ queryKey: ['get-category-by-id'] });
     },
   });
 

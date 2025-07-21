@@ -4,6 +4,7 @@ import { Card, CardContent } from '@app/components/ui/card';
 import { Badge } from '@app/components/ui/badge';
 import { Users, Edit3, Settings, Calendar, UserRound } from 'lucide-react';
 import { Team } from '@app/types/team';
+import { splitToWords } from '@app/utils/splitToWords';
 
 interface TeamHeaderProps {
   team: Team;
@@ -93,7 +94,7 @@ export const TeamHeader = ({ team, onManageMembers, onEdit }: TeamHeaderProps) =
 
                 {/* Status Badges */}
                 <div className="flex flex-wrap gap-2">
-                  <Badge className={statusBadgeClass}>{status}</Badge>
+                  <Badge className={statusBadgeClass}>{splitToWords(status.toLowerCase())}</Badge>
                 </div>
               </div>
 

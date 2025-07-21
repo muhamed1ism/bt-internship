@@ -18,13 +18,24 @@ export const UserTable = () => {
 
   const globalFilter = `${searchInput}|||${statusFilter}`;
 
+  const splitToWords = (str: string): string => {
+    let result = str.replace(/[_-]/g, ' ');
+
+    result = result.replace(/([a-z])([A-Z])/g, '$1 $2');
+
+    return result
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
   const columns: ColumnDef<User, any>[] = [
     createColumn<User>('id', 'ID'),
-    createColumn<User>('email', 'Email'),
     createColumn<User>('firstName', 'First Name'),
     createColumn<User>('lastName', 'Last Name'),
+    createColumn<User>('email', 'Email'),
     StatusColumn,
-    createColumn<User>('role', 'Role', (row) => row.role.name),
+    createColumn<User>('role', 'Role', (row) => splitToWords(row.role.name)),
     ActionColumn,
   ];
 

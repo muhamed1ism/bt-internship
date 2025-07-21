@@ -42,7 +42,7 @@ export const useBucketView = () => {
   const navigateBack = () => navigate('/buckets');
 
   // Level selection
-  const handleLevelSelect = (level: BucketLevel) => {
+  const handleLevelSelect = (level: BucketLevel | null) => {
     setState((prev) => ({
       ...prev,
       selectedLevel: level,

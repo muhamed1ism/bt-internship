@@ -333,6 +333,30 @@ export const assignUserBucketsApi = async (
   }
 };
 
+export const unassignUserBucketApi = async (userId: string, bucketLevelId: string) => {
+  const { uri, method } = ENDPOINTS.bucket.user.unassign(userId, bucketLevelId);
+  const authHeaders = await getAuthHeaders();
+
+  try {
+    const res = await fetch(BASE_URL + uri, {
+      method,
+      headers: {
+        ...authHeaders,
+      },
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message || "Failed to unassign user's buckets");
+    }
+
+    return res.json();
+  } catch (error) {
+    console.error("Failed to unassign user's buckets: ", error);
+    throw error;
+  }
+};
+
 export const promoteUserBucketApi = async (userId: string, categoryId: string) => {
   const { uri, method } = ENDPOINTS.bucket.user.promote(userId, categoryId);
   const authHeaders = await getAuthHeaders();

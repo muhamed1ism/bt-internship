@@ -37,12 +37,16 @@ export const ENDPOINTS = {
       uri: '/user/profile',
       method: 'PUT',
     },
+    updateRole: (userId: string, roleId: string) => ({
+      uri: `/user/${userId}/role/${roleId}`,
+      method: 'PUT',
+    }),
     activate: (userId: string) => ({
-      uri: `user/${userId}/activate`,
+      uri: `/user/${userId}/activate`,
       method: 'PUT',
     }),
     deactivate: (userId: string) => ({
-      uri: `user/${userId}/deactivate`,
+      uri: `/user/${userId}/deactivate`,
       method: 'PUT',
     }),
   },
@@ -106,6 +110,10 @@ export const ENDPOINTS = {
       assign: (userId: string) => ({
         uri: `/user/bucket/${userId}/assign`,
         method: 'POST',
+      }),
+      unassign: (userId: string, bucketLevelId: string) => ({
+        uri: `/user/bucket/${userId}/unassign/${bucketLevelId}`,
+        method: 'DELETE',
       }),
       promote: (userId: string, categoryId: string) => ({
         uri: `/user/bucket/${userId}/promote/${categoryId}`,
@@ -243,6 +251,10 @@ export const ENDPOINTS = {
       uri: '/roles/permissions',
       method: 'GET',
     },
+    getRolePermissions: (roleId: string) => ({
+      uri: `/roles/${roleId}/permissions`,
+      method: 'GET',
+    }),
     createRole: {
       uri: '/roles',
       method: 'POST',
