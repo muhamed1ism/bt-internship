@@ -156,4 +156,94 @@ export class UserService {
 
     return new UserEntity(user);
   }
+
+  async getTeammatesForUser(userId: string) {
+    // Find all team IDs where the user is a member
+    const teamMemberships = await this.prisma.teamMember.findMany({
+      where: { userId },
+      select: { teamId: true },
+    });
+    const teamIds = teamMemberships.map((tm) => tm.teamId);
+    if (teamIds.length === 0) return [];
+
+    // Find all users who are members of these teams
+    const teamMembers = await this.prisma.teamMember.findMany({
+      where: { teamId: { in: teamIds } },
+      select: { userId: true },
+    });
+    const userIds = Array.from(new Set(teamMembers.map((tm) => tm.userId)));
+
+    // Fetch user details with roles
+    const users = await this.prisma.user.findMany({
+      where: { id: { in: userIds } },
+      include: {
+        role: {
+          include: {
+            permissions: true,
+          },
+        },
+      },
+    });
+    return users.map((user) => new UserEntity(user));
+  }
+
+  async updateUser(userId: string, dto: UpdateProfileDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    // Check if email is already taken by another user
+    const emailExists = await this.prisma.user.findFirst({
+      where: {
+        AND: [{ email: dto.email }, { email: { not: user.email } }],
+      },
+    });
+
+    if (emailExists) {
+      throw new ConflictException('Email already exists');
+    }
+
+    await this.firebase
+      .getAuth()
+      .updateUser(user.firebaseUid, {
+        email: dto.email,
+        displayName: `${dto.firstName} ${dto.lastName}`,
+      })
+      .catch((error) => {
+        throw new BadRequestException(
+          'Firebase update failed: ',
+          error.message,
+        );
+      });
+
+    // Update user profile
+    const updatedUser = await this.prisma.user
+      .update({
+        where: { id: userId },
+        data: {
+          firstName: dto.firstName,
+          lastName: dto.lastName,
+          email: dto.email,
+          phoneNumber: dto.phoneNumber,
+          dateOfBirth: dto.dateOfBirth,
+        },
+        include: {
+          role: {
+            include: {
+              permissions: true,
+            },
+          },
+        },
+      })
+      .catch((error) => {
+        throw new BadRequestException(
+          'Database update failed: ',
+          error.message,
+        );
+      });
+
+    return new UserEntity(updatedUser);
+  }
 }

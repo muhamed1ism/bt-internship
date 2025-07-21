@@ -92,7 +92,7 @@ export class TeamController {
       throw new NotFoundException('Team not found');
     }
 
-    if (ability.cannot(Action.Read, subject(Subject.Team, { team }))) {
+    if (ability.cannot(Action.Read, subject(Subject.Team, team))) {
       throw new ForbiddenException(
         'You are not authorized to access this team',
       );

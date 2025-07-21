@@ -58,6 +58,11 @@ export class UserController {
     return this.userService.getAllAdmins();
   }
 
+  @Get('teammates')
+  async getTeammates(@GetUser() user: User) {
+    return this.userService.getTeammatesForUser(user.id);
+  }
+
   @Get(':userId')
   @CheckAbilities((ability: AppAbility) =>
     ability.can(Action.Read, Subject.User),
@@ -68,11 +73,12 @@ export class UserController {
   ) {
     const user = this.userService.getUserById(userId);
 
-    if (ability.cannot(Action.Read, subject(Subject.User, user))) {
-      throw new ForbiddenException(
-        'You are not authorized to access this resource',
-      );
-    }
+    //
+    // if (ability.cannot(Action.Read, subject(Subject.User, user))) {
+    //   throw new ForbiddenException(
+    //     'You are not authorized to access this resource',
+    //   );
+    // }
 
     return user;
   }
@@ -146,5 +152,23 @@ export class UserController {
     }
 
     return this.userService.updateRole(userId, roleId);
+  }
+
+  @Put(':userId')
+  @CheckAbilities((ability: AppAbility) =>
+    ability.can(Action.Update, Subject.User),
+  )
+  async updateUser(
+    @Param('userId') userId: string,
+    @Body() userData: UpdateProfileDto,
+    @RequestAbility() ability: AppAbility,
+  ) {
+    if (ability.cannot(Action.Update, Subject.User)) {
+      throw new ForbiddenException(
+        'You are not authorized to update user profiles',
+      );
+    }
+
+    return this.userService.updateUser(userId, userData);
   }
 }
