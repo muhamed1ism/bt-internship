@@ -13,6 +13,8 @@ import { TeamModule } from './team/team.module';
 import { ReportModule } from './report/report.module';
 import { TicketModule } from './ticket/ticket.module';
 import { RoleModule } from './role/role.module';
+import { EvaluationModule } from './evaluation/evaluation.module';
+import { PromotionModule } from './promotion/promotion.module';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { RoleModule } from './role/role.module';
     ReportModule,
     TicketModule,
     RoleModule,
+    EvaluationModule,
+    PromotionModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppConfigService],

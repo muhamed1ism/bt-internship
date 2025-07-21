@@ -7,5 +7,6 @@ import { CaslModule } from 'src/casl/casl.module';
   imports: [CaslModule],
   providers: [ReportService],
   controllers: [ReportController],
+  exports: [ReportService]
 })
 export class ReportModule {}
