@@ -162,6 +162,8 @@ export class LevelService {
         }
         await Promise.all(updates);
       }
+
+      return { message: 'Removed successfully' };
     } catch (error) {
       console.error(error);
       throw new Error('Error deleting bucket level: ', error);

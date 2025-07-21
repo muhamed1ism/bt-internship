@@ -77,6 +77,25 @@ export class UserController {
     return user;
   }
 
+  @Put('profile')
+  @CheckAbilities((ability: AppAbility) =>
+    ability.can(Action.Update, Subject.User),
+  )
+  async updateProfile(
+    @Headers('authorization') authHeader: string,
+    @Body() updateProfileDto: UpdateProfileDto,
+    @RequestAbility() ability: AppAbility,
+  ) {
+    // Ensure user can only update their own profile
+    if (ability.cannot(Action.Update, Subject.User)) {
+      throw new ForbiddenException(
+        'You are not authorized to update user profiles',
+      );
+    }
+
+    return this.userService.updateProfile(authHeader, updateProfileDto);
+  }
+
   @Put(':userId/activate')
   @CheckAbilities((ability: AppAbility) =>
     ability.can(Action.Update, Subject.User, 'status'),
@@ -111,22 +130,21 @@ export class UserController {
     return this.userService.deactivateUser(userId);
   }
 
-  @Put('profile')
+  @Put(':userId/role/:roleId')
   @CheckAbilities((ability: AppAbility) =>
-    ability.can(Action.Update, Subject.User),
+    ability.can(Action.Update, Subject.User, 'role'),
   )
-  async updateProfile(
-    @Headers('authorization') authHeader: string,
-    @Body() updateProfileDto: UpdateProfileDto,
+  async updateRole(
+    @Param('userId') userId: string,
+    @Param('roleId') roleId: string,
     @RequestAbility() ability: AppAbility,
   ) {
-    // Ensure user can only update their own profile
     if (ability.cannot(Action.Update, Subject.User)) {
       throw new ForbiddenException(
-        'You are not authorized to update user profiles',
+        'You are not authorized to access this resource',
       );
     }
 
-    return this.userService.updateProfile(authHeader, updateProfileDto);
+    return this.userService.updateRole(userId, roleId);
   }
 }

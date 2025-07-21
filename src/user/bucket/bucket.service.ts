@@ -69,7 +69,7 @@ export class BucketService {
       results.push(await this.assignBucketToUser(userId, bucketLevelId));
     }
 
-    await Promise.all(results);
+    return Promise.all(results);
   }
 
   async promoteUserBucketLevel(userId: string, categoryId: string) {
