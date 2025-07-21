@@ -6,6 +6,13 @@ export const getReportByIdApi = async (reportId: string) => {
   const { uri, method } = ENDPOINTS.report.getById(reportId);
   const authHeaders = await getAuthHeaders();
 
+  console.log('🔍 getReportByIdApi Debug:', {
+    reportId,
+    uri,
+    method,
+    fullUrl: BASE_URL + uri
+  });
+
   try {
     const res = await fetch(BASE_URL + uri, {
       method,
@@ -14,12 +21,20 @@ export const getReportByIdApi = async (reportId: string) => {
       },
     });
 
+    console.log('🔍 getReportByIdApi Response:', {
+      status: res.status,
+      ok: res.ok,
+      statusText: res.statusText
+    });
+
     if (!res.ok) {
       const error = await res.json();
+      console.error('🔍 getReportByIdApi Error Response:', error);
       throw new Error(error.message || "Failed to fetch report");
     }
 
     const data = await res.json();
+    console.log('🔍 getReportByIdApi Success Data:', data);
     return data;
   } catch (error) {
     console.error("Failed to fetch report: ", error);
@@ -95,6 +110,30 @@ export const getUserReportsApi = async () => {
     return res.json();
   } catch (error) {
     console.error("Failed to fetch user's reports: ", error);
+    throw error;
+  }
+};
+
+export const getAllReportsApi = async () => {
+  const { uri, method } = ENDPOINTS.report.getAll;
+  const authHeaders = await getAuthHeaders();
+
+  try {
+    const res = await fetch(BASE_URL + uri, {
+      method,
+      headers: {
+        ...authHeaders,
+      },
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message || "Failed to fetch all reports");
+    }
+
+    return res.json();
+  } catch (error) {
+    console.error("Failed to fetch all reports: ", error);
     throw error;
   }
 };
