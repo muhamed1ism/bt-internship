@@ -100,7 +100,7 @@ export class CategoryService {
         where: { categoryId },
       });
 
-      await this.prisma.bucketCategory.delete({
+      return this.prisma.bucketCategory.delete({
         where: { id: categoryId },
       });
     } catch (error) {

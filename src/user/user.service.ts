@@ -129,6 +129,17 @@ export class UserService {
     return new UserEntity(updatedUser);
   }
 
+  async updateRole(userId: string, roleId: string) {
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data: { roleId },
+    });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    return user;
+  }
+
   async getUserById(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },

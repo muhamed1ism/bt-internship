@@ -19,6 +19,11 @@ export class RoleController {
     return this.roleService.getGroupedPermissins();
   }
 
+  @Get(':roleId/permissions')
+  async getRolePermissions(@Param('roleId') roleId: string) {
+    return this.roleService.getRolePermissions(roleId);
+  }
+
   @Get()
   async findAll() {
     return this.roleService.getAllRoles();

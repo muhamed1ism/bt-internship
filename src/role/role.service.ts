@@ -30,6 +30,25 @@ export class RoleService {
     return grouped;
   }
 
+  async getRolePermissions(roleId: string) {
+    const grouped = {};
+    const role = await this.prisma.role.findUnique({
+      where: { id: roleId },
+      include: { permissions: true },
+    });
+
+    if (!role) throw new NotFoundException('Role not found');
+
+    if (role.permissions.length === 0) return grouped;
+
+    for (const perm of role.permissions) {
+      if (!grouped[perm.subject]) grouped[perm.subject] = [];
+      grouped[perm.subject].push(perm);
+    }
+
+    return grouped;
+  }
+
   async getAllRoles() {
     return this.prisma.role.findMany({
       include: { permissions: true },
