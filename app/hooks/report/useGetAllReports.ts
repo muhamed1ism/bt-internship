@@ -9,8 +9,6 @@ export const useGetAllReports = () => {
   } = useQuery({
     queryKey: ['all-reports'],
     queryFn: getAllReportsApi,
-    staleTime: 30000, // 30 seconds
-    retry: 1,
   });
 
   return { reports, isLoading, isSuccess };

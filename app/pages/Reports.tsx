@@ -4,7 +4,7 @@ import { Button } from '@app/components/ui/button';
 import { Badge } from '@app/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@app/components/ui/avatar';
 import { Input } from '@app/components/ui/input';
-import { useGetReportsByUserId, useGetAuthorReports } from '@app/hooks/report';
+import { useGetAllReports } from '@app/hooks/report/useGetAllReports';
 import { Report } from '@app/types/types';
 import { FileText, Calendar, User, Search } from 'lucide-react';
 import { Spinner } from '@app/components/ui/spinner';
@@ -42,39 +42,12 @@ export const Reports = () => {
     }
   }, [searchQuery, setSearchParams]);
 
-  // Get all users
-  const { users } = useGetAllUsers();
-
-  // Try to find a user by the search query
-  const searchedUser = users?.find((user) =>
-    `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
-
-  // Get reports for the searched user if found, otherwise get reports authored by current user
-  const targetUserId = searchedUser?.id;
-  const {
-    reports: userReports,
-    isLoading: userReportsLoading,
-    isSuccess: userReportsSuccess,
-  } = useGetReportsByUserId(targetUserId || '');
-  const {
-    reports: authorReports,
-    isLoading: authorReportsLoading,
-    isSuccess: authorReportsSuccess,
-  } = useGetAuthorReports();
-
-  // Use user reports if we have a specific user, otherwise use author reports
-  const reports = targetUserId ? userReports : authorReports;
-  const isLoading = targetUserId ? userReportsLoading : authorReportsLoading;
-  const isSuccess = targetUserId ? userReportsSuccess : authorReportsSuccess;
+  // Get all reports
+  const { reports, isLoading, isSuccess } = useGetAllReports();
 
   console.log('📊 Reports Page Debug:', {
     searchQuery,
-    searchedUser,
-    targetUserId,
-    userReportsCount: userReports?.length,
-    authorReportsCount: authorReports?.length,
-    finalReportsCount: reports?.length,
+    reportsCount: reports?.length,
     isLoading,
     isSuccess,
   });
@@ -140,11 +113,11 @@ export const Reports = () => {
     );
   };
 
-  // If we have a search query but no specific user found, filter reports
+  // Filter reports based on search query
   const filteredReports =
     reports?.filter((report: Report) => {
-      if (!searchQuery.trim() || searchedUser) {
-        return true; // If we found a user, show all their reports
+      if (!searchQuery.trim()) {
+        return true; // Show all reports if no search query
       }
 
       const query = searchQuery.toLowerCase();
