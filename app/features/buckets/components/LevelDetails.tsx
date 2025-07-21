@@ -1,4 +1,4 @@
-import { Edit2, TrendingUp, Clock, Sparkles, CheckCircle2, Star } from 'lucide-react';
+import { Edit2, TrendingUp, Clock, Sparkles, CheckCircle2, Star, Trash } from 'lucide-react';
 import { Button } from '@app/components/ui/button';
 import { Badge } from '@app/components/ui/badge';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@app/components/ui/card';
@@ -6,13 +6,18 @@ import { Separator } from '@app/components/ui/separator';
 import type { BucketLevel } from '@app/types/bucket';
 import { SECTION_ICONS } from '@app/constants/bucket';
 import { getSectionBackground } from '@app/utils/bucket';
+import { useAbility } from '@casl/react';
+import { AbilityContext, Can } from '@app/casl/AbilityContext';
+import { useDeleteLevel } from '@app/hooks/bucket';
 
 interface LevelDetailsProps {
   name: string;
   level: BucketLevel;
+  allLevels: BucketLevel[];
   currentLevel: BucketLevel | null;
   maxLevel: number;
   onEditLevel: (level: BucketLevel) => void;
+  onLevelSelect: (level: BucketLevel | null) => void;
 }
 
 interface SectionProps {
@@ -65,42 +70,67 @@ const Section = ({ title, items, sectionType, className = '' }: SectionProps) =>
 export const LevelDetails = ({
   name,
   level,
+  allLevels,
   currentLevel,
   maxLevel,
   onEditLevel,
+  onLevelSelect,
 }: LevelDetailsProps) => {
+  const ability = useAbility(AbilityContext);
+
+  const { mutate: removeLevel } = useDeleteLevel(level.categoryId);
+
+  const handleRemove = () => {
+    removeLevel(level.id);
+    const newSelect = allLevels.find((lvl) => lvl.level === level.level - 1);
+    console.log({ newSelect });
+    if (newSelect) {
+      onLevelSelect(newSelect);
+    } else {
+      onLevelSelect(null);
+    }
+  };
+
   return (
     <div className="lg:col-span-3">
       <Card className="shadow-lg">
         <CardHeader className="border-b">
           <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-3 text-2xl">
-                {currentLevel &&
-                  (() => {
-                    const diff = currentLevel.level - level.level;
+            <div className="w-full">
+              <CardTitle className="flex w-full items-center justify-between">
+                <div className="flex items-center gap-3 text-2xl">
+                  {currentLevel &&
+                    (() => {
+                      const diff = currentLevel.level - level.level;
 
-                    const config =
-                      diff > 0 || (currentLevel.level === maxLevel && diff === 0)
-                        ? {
-                            icon: <CheckCircle2 className="h-4 w-4" />,
-                            className: 'bg-emerald-100 text-emerald-600',
-                          }
-                        : diff === 0
+                      const config =
+                        diff > 0 || (currentLevel.level === maxLevel && diff === 0)
                           ? {
-                              icon: <Clock className="h-4 w-4" />,
-                              className: 'bg-blue-100 text-blue-600',
+                              icon: <CheckCircle2 className="h-4 w-4" />,
+                              className: 'bg-emerald-100 text-emerald-600',
                             }
-                          : {
-                              icon: <Star className="h-4 w-4" />,
-                              className: 'bg-gray-100 text-gray-600',
-                            };
+                          : diff === 0
+                            ? {
+                                icon: <Clock className="h-4 w-4" />,
+                                className: 'bg-blue-100 text-blue-600',
+                              }
+                            : {
+                                icon: <Star className="h-4 w-4" />,
+                                className: 'bg-gray-100 text-gray-600',
+                              };
 
-                    return (
-                      <div className={`rounded-lg p-2 ${config.className}`}>{config.icon}</div>
-                    );
-                  })()}
-                {name} {level.level}
+                      return (
+                        <div className={`rounded-lg p-2 ${config.className}`}>{config.icon}</div>
+                      );
+                    })()}
+                  {name} {level.level}
+                </div>
+
+                <Can I="delete" a="BucketLevel" ability={ability}>
+                  <Button size="lg" onClick={handleRemove} className="bg-red-500 hover:bg-red-600">
+                    <Trash className="size-4" />
+                  </Button>
+                </Can>
               </CardTitle>
               {/* <div className="mt-3 flex items-center gap-4"> */}
               {/* <Badge variant="outline" className={DIFFICULTY_COLORS[level.difficulty]}> */}
@@ -181,12 +211,15 @@ export const LevelDetails = ({
 
         <CardFooter className="py-1">
           <div className="flex w-full gap-4">
-            <Button onClick={() => onEditLevel(level)} className="flex-1">
-              <Edit2 className="mr-2 h-4 w-4" />
-              Edit Level
-            </Button>
-            <Button variant="outline" className="flex-1">
-              <TrendingUp className="mr-2 h-4 w-4" />
+            <Can I="update" a="BucketLevel" ability={ability}>
+              <Button onClick={() => onEditLevel(level)} className="flex-1">
+                <Edit2 className="mr-2 size-4" />
+                Edit Level
+              </Button>
+            </Can>
+
+            <Button variant="outline" className="border-primary/30 flex-1">
+              <TrendingUp className="mr-2 size-4" />
               Track Progress
             </Button>
           </div>

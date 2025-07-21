@@ -33,8 +33,8 @@ export function useUserPermissions(user: User | null) {
   useEffect(() => {
     if (user) {
       const assignedRoles = user.role ? [user.role] : [];
-      const customRoleName = user.customRole?.name || `${user.firstName}'s Custom Role`;
-      const userPermissions = user.customRole?.permissions || {};
+      const customRoleName = user.role?.name || `${user.firstName}'s Custom Role`;
+      const userPermissions = user.role?.permissions || {};
 
       reset({
         assignedRoles,

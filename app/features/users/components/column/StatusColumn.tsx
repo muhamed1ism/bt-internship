@@ -3,9 +3,9 @@ import { User } from '@app/types/types';
 import { ColumnDef } from '@tanstack/react-table';
 
 const statusColors = {
-  active: 'bg-green-100 text-green-800',
-  inactive: 'bg-red-100 text-red-800',
-  pending: 'bg-yellow-100 text-yellow-800',
+  active: 'bg-green-100 text-green-800 border-green-200',
+  inactive: 'bg-red-100 text-red-800 border-red-200',
+  pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
 };
 
 export const StatusColumn: ColumnDef<User> = {

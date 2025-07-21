@@ -9,6 +9,7 @@ export * from './level/useDeleteLevel';
 export * from './level/useGetCategoryLevels';
 export * from './level/useGetUserCategoryLevel';
 export * from './user/useAssignUserBuckets';
+export * from './user/useUnassignUserBucket';
 export * from './user/useGetUserBucketsById';
 export * from './user/useGetMyUserBuckets';
 export * from './user/usePromoteUserBucket';

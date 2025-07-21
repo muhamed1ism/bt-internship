@@ -12,7 +12,7 @@ import { TeamFormModal } from '@app/features/team/components/modal/TeamFormModal
 
 export const Teams = () => {
   const navigate = useNavigate();
-  const { teams, isSuccess } = useGetAllTeamsWithLeaders();
+  const { teams, isLoading } = useGetAllTeamsWithLeaders();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
@@ -56,9 +56,10 @@ export const Teams = () => {
             viewMode={viewMode}
             onViewTeam={handleViewTeam}
             onEditTeam={openEditForm}
+            isLoading={isLoading}
           />
         ) : (
-          <TeamsEmptyState onCreateTeam={openCreateForm} />
+          <TeamsEmptyState isLoading={isLoading} onCreateTeam={openCreateForm} />
         )}
 
         {/* Team Form Modal */}

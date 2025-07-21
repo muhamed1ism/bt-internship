@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@app/components/ui/button';
 import { Label } from '@app/components/ui/label';
-import { Circle, Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -10,61 +10,56 @@ import {
   SelectValue,
 } from '@app/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@app/components/ui/card';
-import { MOCK_AVAILABLE_BUCKETS as fake_availableBuckets } from '@mocks/users';
-
-type AvailableBucket = {
-  id: string;
-  name: string;
-  description: string;
-};
-
-const availableBuckets: AvailableBucket[] = fake_availableBuckets;
+import { BucketCategory } from '@app/types/bucket';
+import {
+  useAssignUserBuckets,
+  useGetUserBucketsById,
+  useUnssignUserBucket,
+} from '@app/hooks/bucket';
+import { User } from '@app/types/types';
+import { AssignUserBucketsFormValues } from '@app/schemas';
 
 interface BucketsFormProps {
-  buckets: { id: string; name: string; level: number }[];
-  onBucketsChange: (buckets: { id: string; name: string; level: number }[]) => void;
+  user: User | null;
+  buckets: BucketCategory[];
 }
 
-export const BucketsForm = ({ buckets, onBucketsChange }: BucketsFormProps) => {
+export const BucketsForm = ({ user, buckets }: BucketsFormProps) => {
   const [selectedBucket, setSelectedBucket] = useState<string>('');
+  const [selectedLevel, setSelectedLevel] = useState<string>('');
+  const { buckets: userBuckets } = useGetUserBucketsById(user?.id || '');
+  const { mutate: assignBuckets, error } = useAssignUserBuckets();
+  const { mutate: unassignBucket } = useUnssignUserBucket();
 
-  const addBucket = () => {
-    if (selectedBucket && !buckets.some((b: { id: string }) => b.id === selectedBucket)) {
-      const bucketToAdd = availableBuckets.find((b: AvailableBucket) => b.id === selectedBucket);
-      if (bucketToAdd) {
-        onBucketsChange([...buckets, { id: bucketToAdd.id, name: bucketToAdd.name, level: 1 }]);
-        setSelectedBucket('');
-      }
-    }
+  const selectedBucketLevels = buckets.find((bucket) => bucket.id === selectedBucket)?.bucketLevels;
+
+  const addBucket = (bucketLevelId: string) => {
+    const formData: AssignUserBucketsFormValues = { bucketLevelIds: [bucketLevelId] };
+
+    if (!user?.id) return;
+
+    assignBuckets({ userId: user.id, formData });
   };
 
-  const updateBucketLevel = (id: string, level: number) => {
-    onBucketsChange(buckets.map((bucket) => (bucket.id === id ? { ...bucket, level } : bucket)));
-  };
+  const removeBucket = (bucketLevelId: string) => {
+    if (!user?.id) return;
 
-  const removeBucket = (id: string) => {
-    onBucketsChange(buckets.filter((bucket) => bucket.id !== id));
+    unassignBucket({ userId: user.id, bucketLevelId });
   };
-
-  // Get available buckets that haven't been selected yet
-  const availableBucketsToAdd = availableBuckets.filter(
-    (bucket: AvailableBucket) =>
-      !buckets.some((userBucket: { id: string }) => userBucket.id === bucket.id),
-  );
 
   return (
     <div className="space-y-4">
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <Label>Professional Buckets</Label>
-          <div className="flex space-x-2">
+          <div className="mx-2 flex space-x-2">
             <Select value={selectedBucket} onValueChange={setSelectedBucket}>
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="border-primary/30 w-[200px]">
                 <SelectValue placeholder="Select bucket" />
               </SelectTrigger>
               <SelectContent>
-                {availableBucketsToAdd.length > 0 ? (
-                  availableBucketsToAdd.map((bucket) => (
+                {buckets.length > 0 ? (
+                  buckets.map((bucket) => (
                     <SelectItem key={bucket.id} value={bucket.id}>
                       {bucket.name}
                     </SelectItem>
@@ -77,60 +72,87 @@ export const BucketsForm = ({ buckets, onBucketsChange }: BucketsFormProps) => {
               </SelectContent>
             </Select>
 
+            {selectedBucketLevels?.length && selectedBucketLevels.length > 0 ? (
+              <Select value={selectedLevel} onValueChange={setSelectedLevel}>
+                <SelectTrigger className="border-primary/30 w-[125px]">
+                  <SelectValue placeholder="Select level" />
+                </SelectTrigger>
+                <SelectContent>
+                  {selectedBucketLevels.map((level) => (
+                    <SelectItem key={level.id} value={level.id}>
+                      {level.level.toString()}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <Select>
+                <SelectTrigger disabled className="border-primary/30">
+                  <SelectValue placeholder="No levels" />
+                </SelectTrigger>
+              </Select>
+            )}
+
             <Button
-              size="sm"
               type="button"
-              onClick={addBucket}
-              variant="secondary"
-              disabled={!selectedBucket || availableBucketsToAdd.length === 0}
+              onClick={() => addBucket(selectedLevel)}
+              disabled={!selectedBucket || !selectedLevel || buckets.length === 0}
             >
               <Plus className="mr-1 h-4 w-4" /> Add
             </Button>
           </div>
         </div>
 
+        {error && <p className="text-red-500">{error.message}</p>}
+
         <div className="mt-4 max-h-96 space-y-3 overflow-y-auto pr-2">
-          {buckets.length > 0 ? (
-            buckets.map((bucket) => (
-              <Card key={bucket.id} className="overflow-hidden">
+          {userBuckets?.length !== 0 ? (
+            userBuckets?.map((userBucket) => (
+              <Card key={userBucket.bucketLevelId} className="bg-accent overflow-hidden">
                 <CardHeader className="p-4 pb-2">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-base font-medium">{bucket.name}</CardTitle>
+                    <CardTitle className="text-base font-medium">
+                      {userBucket.bucket.category.name}
+                    </CardTitle>
                     <Button
                       type="button"
-                      variant="ghost"
                       size="icon"
-                      className="text-muted-foreground hover:text-destructive h-8 w-8"
-                      onClick={() => removeBucket(bucket.id)}
+                      className="h-8 w-8 bg-red-500 hover:bg-red-600"
+                      onClick={() => removeBucket(userBucket.bucketLevelId)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                   <CardDescription>
-                    {availableBuckets.find((b: AvailableBucket) => b.id === bucket.id)?.description}
+                    {
+                      buckets.find((bucket) => bucket.id === userBucket.bucket.categoryId)
+                        ?.description
+                    }
                   </CardDescription>
                 </CardHeader>
 
                 <CardContent className="p-4 pt-0">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Proficiency Level: {bucket.level}</span>
-                      <div className="flex">
-                        {[1, 2, 3, 4, 5].map((level) => (
-                          <button
-                            key={level}
-                            type="button"
-                            onClick={() => updateBucketLevel(bucket.id, level)}
-                            className="transition-transform hover:scale-110 focus:outline-none"
-                          >
-                            {level <= bucket.level ? (
-                              <Circle className="fill-primary text-primary h-5 w-5" />
-                            ) : (
-                              <Circle className="h-5 w-5 text-gray-300" />
-                            )}
-                          </button>
-                        ))}
-                      </div>
+                      <span className="text-sm font-medium">
+                        Proficiency Level: {userBucket.bucket.level}
+                      </span>
+                      {/* <div className="flex"> */}
+                      {/*   {userBuckets.map((bucket) => ( */}
+                      {/*     <button */}
+                      {/*       key={bucket.bucketLevelId} */}
+                      {/*       type="button" */}
+                      {/*       onClick={() => updateBucketLevel(userBucket.id, level.id)} */}
+                      {/*       className="transition-transform hover:scale-110 focus:outline-none" */}
+                      {/*     > */}
+                      {/*       {level <= userBucket.level ? ( */}
+                      {/*         <Circle className="fill-primary text-primary h-5 w-5" /> */}
+                      {/*       ) : ( */}
+                      {/*         <Circle className="h-5 w-5 text-gray-300" /> */}
+                      {/*       )} */}
+                      {/*     </button> */}
+                      {/*   ))} */}
+                      {/* </div> */}
                     </div>
                   </div>
                 </CardContent>

@@ -7,19 +7,13 @@ import {
   TableRow,
 } from '../../../../components/ui/table';
 import { Button } from '../../../../components/ui/button';
-import { PenSquare } from 'lucide-react';
+import { Eye, PenSquare } from 'lucide-react';
 import { ViewProps } from '../RolesTable';
+import { splitToWords } from '@app/utils/splitToWords';
 
-function splitToWords(str: string): string {
-  let result = str.replace(/[_-]/g, ' ');
-
-  result = result.replace(/([a-z])([A-Z])/g, '$1 $2');
-
-  return result
-    .split(' ')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-}
+const isDisabled = (roleName: string) => {
+  return ['admin', 'team_lead', 'user'].find((name) => name === roleName) ? true : false;
+};
 
 export function RoleTableListView({ roles, onEdit }: ViewProps) {
   return (
@@ -36,15 +30,27 @@ export function RoleTableListView({ roles, onEdit }: ViewProps) {
             <TableRow key={role.id}>
               <TableCell className="font-medium">{splitToWords(role.name)}</TableCell>
               <TableCell className="text-center">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onEdit(role)}
-                  className="h-8 w-8"
-                >
-                  <PenSquare className="h-4 w-4" />
-                  <span className="sr-only">Edit</span>
-                </Button>
+                {isDisabled(role.name) ? (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onEdit(role)}
+                    className="h-8 w-8"
+                  >
+                    <Eye className="h-4 w-4" />
+                    <span className="sr-only">View</span>
+                  </Button>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onEdit(role)}
+                    className="h-8 w-8"
+                  >
+                    <PenSquare className="h-4 w-4" />
+                    <span className="sr-only">Edit</span>
+                  </Button>
+                )}
               </TableCell>
             </TableRow>
           ))}

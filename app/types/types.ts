@@ -1,4 +1,4 @@
-import { ExperienceLevel } from './shared';
+import { ExperienceLevel, Role } from './shared';
 
 // User-specific types
 
@@ -19,21 +19,21 @@ export interface User {
   role: Role;
 }
 
-export interface Role {
+export interface OldRole {
   id: string;
   name: string;
   description?: string | null;
   createdAt: string;
   updatedAt: string;
-  permissions: Permission[];
+  permissions: OldPermission[];
 }
 
-export interface Permission {
+export interface OldPermission {
   id: string;
   action: string;
   subject: string;
   conditions?: any | null;
-  fields?: string[];
+  fields?: string[] | null;
   createdAt: Date;
   updatedAt: Date;
 }

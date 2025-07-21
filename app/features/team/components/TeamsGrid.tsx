@@ -1,14 +1,30 @@
 import { Team, ViewMode } from '@app/types/team';
 import { TeamCard } from './card/TeamCard';
+import { Spinner } from '@app/components/ui/spinner';
 
 interface TeamsGridProps {
   teams: Team[];
   viewMode: ViewMode;
   onViewTeam: (teamId: string) => void;
   onEditTeam: (team: Team) => void;
+  isLoading: boolean;
 }
 
-export const TeamsGrid = ({ teams, viewMode, onViewTeam, onEditTeam }: TeamsGridProps) => {
+export const TeamsGrid = ({
+  teams,
+  viewMode,
+  onViewTeam,
+  onEditTeam,
+  isLoading,
+}: TeamsGridProps) => {
+  if (isLoading) {
+    return (
+      <div className="text-primary my-16 flex h-full w-full items-center justify-center">
+        <Spinner size="medium" />
+      </div>
+    );
+  }
+
   return (
     <div
       className={` ${

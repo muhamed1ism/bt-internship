@@ -22,6 +22,17 @@ interface PeopleCardProps {
   viewMode?: 'grid' | 'list';
 }
 
+const splitToWords = (str: string): string => {
+  let result = str.replace(/[_-]/g, ' ');
+
+  result = result.replace(/([a-z])([A-Z])/g, '$1 $2');
+
+  return result
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
 export const PeopleCard = ({ user, isActive, viewMode = 'grid' }: PeopleCardProps) => {
   const navigate = useNavigate();
   const { buckets: userBuckets } = useGetUserBucketsById(user.id);
@@ -105,12 +116,12 @@ export const PeopleCard = ({ user, isActive, viewMode = 'grid' }: PeopleCardProp
             <CardDescription className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 {/* Role Badge */}
-                <Badge variant="secondary" className="bg-accent text-xs uppercase">
-                  {user.role.name}
+                <Badge variant="secondary" className="bg-accent text-xs">
+                  {splitToWords(user.role.name.toLowerCase())}
                 </Badge>
                 {/* Status Badge */}
                 <Badge variant="outline" className={`${getStatusColor(user.status)} text-xs`}>
-                  {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                  {splitToWords(user.status.toLowerCase())}
                 </Badge>
               </div>
 
@@ -147,14 +158,14 @@ export const PeopleCard = ({ user, isActive, viewMode = 'grid' }: PeopleCardProp
 
           <CardDescription className="text-center">
             {/* Role Badge */}
-            <Badge variant="secondary" className="bg-accent text-xs uppercase">
-              {user.role.name}
+            <Badge variant="secondary" className="bg-accent text-xs">
+              {splitToWords(user.role.name.toLowerCase())}
             </Badge>
           </CardDescription>
           <CardContent className="space-y-2 text-center">
             {/* Status Badge */}
             <Badge variant="outline" className={`${getStatusColor(user.status)} text-xs`}>
-              {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+              {splitToWords(user.status.toLowerCase())}
             </Badge>
 
             {/* User Buckets */}

@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
@@ -13,24 +13,30 @@ import { useDeleteReport } from '@app/hooks/report';
 import { useGetAllUsers } from '@app/hooks/user';
 import { toast } from 'sonner';
 import { useAuth } from '@app/context/AuthContext';
+import { AbilityContext, Can } from '@app/casl/AbilityContext';
+import { useAbility } from '@casl/react';
 
 export const ReportDetail = () => {
   const { reportId } = useParams<{ reportId: string }>();
+  const ability = useAbility(AbilityContext);
+
+  if (ability.cannot('read', 'Reports')) {
+    <Navigate to={routeNames.notAuthorized()} />;
+  }
+
   const navigate = useNavigate();
+  const { user: currentUser } = useAuth();
   const { report, isLoading, isSuccess, error } = useGetReportById(reportId || '');
   const { mutate: deleteReport } = useDeleteReport();
   const [isDeleting, setIsDeleting] = useState(false);
-  const { user: currentUser } = useAuth();
-
-
 
   // Get all users to find the report user
   const { users, isLoading: usersLoading } = useGetAllUsers();
-  const reportUser = users?.find(u => u.id === report?.userId);
-  
+  const reportUser = users?.find((u) => u.id === report?.userId);
+
   // Debug: Get all author reports to see what's available
   const { reports: authorReports } = useGetAuthorReports();
-  
+
   console.log('🔍 ReportDetail Debug:', {
     reportId,
     report,
@@ -45,7 +51,7 @@ export const ReportDetail = () => {
     authorReportsCount: authorReports?.length,
     availableReportIds: authorReports?.map((r: Report) => r.id),
     reportExists: authorReports?.some((r: Report) => r.id === reportId),
-    authorReports: authorReports
+    authorReports: authorReports,
   });
 
   // Check if current user is the author of the report
@@ -110,7 +116,7 @@ export const ReportDetail = () => {
   };
 
   console.log('🔄 ReportDetail Loading States:', { isLoading, usersLoading });
-  
+
   if (isLoading || usersLoading) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -125,7 +131,9 @@ export const ReportDetail = () => {
         <div className="text-center">
           <h2 className="mb-4 text-2xl font-bold">Report Not Found</h2>
           <p className="mb-4 text-gray-600">
-            {error ? `Error: ${error.message}` : 'The report you\'re looking for doesn\'t exist or you don\'t have permission to view it.'}
+            {error
+              ? `Error: ${error.message}`
+              : "The report you're looking for doesn't exist or you don't have permission to view it."}
           </p>
           <Button onClick={handleBackButton}>
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -136,10 +144,12 @@ export const ReportDetail = () => {
     );
   }
 
-  console.log('👤 ReportDetail User Display:', { 
-    reportUser, 
-    displayName: reportUser ? `${reportUser.firstName} ${reportUser.lastName}` : `User ${report.userId}`,
-    userId: report.userId 
+  console.log('👤 ReportDetail User Display:', {
+    reportUser,
+    displayName: reportUser
+      ? `${reportUser.firstName} ${reportUser.lastName}`
+      : `User ${report.userId}`,
+    userId: report.userId,
   });
 
   return (
@@ -161,29 +171,30 @@ export const ReportDetail = () => {
             </div>
             {isAuthor && (
               <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleEditReport}
-                  className="flex items-center gap-2"
-                >
-                  <Edit className="h-4 w-4" />
-                  Edit
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={handleDeleteReport}
-                  disabled={isDeleting}
-                  className="flex items-center gap-2"
-                >
-                  {isDeleting ? (
-                    <Spinner size="small" />
-                  ) : (
-                    <Trash2 className="h-4 w-4" />
-                  )}
-                  Delete
-                </Button>
+                <Can I="update" a="Reports" ability={ability}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleEditReport}
+                    className="flex items-center gap-2"
+                  >
+                    <Edit className="h-4 w-4" />
+                    Edit
+                  </Button>
+                </Can>
+
+                <Can I="delete" a="Reports" ability={ability}>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={handleDeleteReport}
+                    disabled={isDeleting}
+                    className="flex items-center gap-2"
+                  >
+                    {isDeleting ? <Spinner size="small" /> : <Trash2 className="h-4 w-4" />}
+                    Delete
+                  </Button>
+                </Can>
               </div>
             )}
           </div>
@@ -200,9 +211,7 @@ export const ReportDetail = () => {
                 <FileText className="h-5 w-5" />
                 Report Content
               </CardTitle>
-              <CardDescription>
-                Detailed feedback and evaluation
-              </CardDescription>
+              <CardDescription>Detailed feedback and evaluation</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="prose max-w-none">
@@ -226,14 +235,14 @@ export const ReportDetail = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">Created</span>
+                <Calendar className="text-muted-foreground h-4 w-4" />
+                <span className="text-muted-foreground text-sm">Created</span>
                 <span className="text-sm font-medium">{formatDate(report.createdAt)}</span>
               </div>
               {report.updatedAt !== report.createdAt && (
                 <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">Updated</span>
+                  <Calendar className="text-muted-foreground h-4 w-4" />
+                  <span className="text-muted-foreground text-sm">Updated</span>
                   <span className="text-sm font-medium">{formatDate(report.updatedAt)}</span>
                 </div>
               )}
@@ -280,50 +289,49 @@ export const ReportDetail = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                                  <div className="flex items-center gap-3">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src="" />
-                      <AvatarFallback className="text-primary-foreground bg-neutral-800 text-lg font-semibold">
-                        {reportUser ? getInitials(reportUser.firstName, reportUser.lastName) : 'U'}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h3 className="text-foreground text-lg font-semibold">
-                        {reportUser ? `${reportUser.firstName} ${reportUser.lastName}` : `User ${report.userId}`}
-                      </h3>
-                      {reportUser ? (
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge
-                            variant="secondary"
-                            className={`${getStatusBadgeClass(reportUser.status)} text-xs`}
-                          >
-                            {reportUser.status}
-                          </Badge>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge
-                            variant="secondary"
-                            className="bg-gray-500 text-white text-xs"
-                          >
-                            User not found
-                          </Badge>
-                        </div>
-                      )}
-                    </div>
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src="" />
+                    <AvatarFallback className="text-primary-foreground bg-neutral-800 text-lg font-semibold">
+                      {reportUser ? getInitials(reportUser.firstName, reportUser.lastName) : 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h3 className="text-foreground text-lg font-semibold">
+                      {reportUser
+                        ? `${reportUser.firstName} ${reportUser.lastName}`
+                        : `User ${report.userId}`}
+                    </h3>
+                    {reportUser ? (
+                      <div className="mt-1 flex items-center gap-2">
+                        <Badge
+                          variant="secondary"
+                          className={`${getStatusBadgeClass(reportUser.status)} text-xs`}
+                        >
+                          {reportUser.status}
+                        </Badge>
+                      </div>
+                    ) : (
+                      <div className="mt-1 flex items-center gap-2">
+                        <Badge variant="secondary" className="bg-gray-500 text-xs text-white">
+                          User not found
+                        </Badge>
+                      </div>
+                    )}
                   </div>
-                
+                </div>
+
                 {reportUser ? (
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">Email</span>
+                      <Mail className="text-muted-foreground h-4 w-4" />
+                      <span className="text-muted-foreground text-sm">Email</span>
                       <span className="text-sm font-medium">{reportUser.email}</span>
                     </div>
                     {reportUser.phoneNumber && (
                       <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">Phone</span>
+                        <Mail className="text-muted-foreground h-4 w-4" />
+                        <span className="text-muted-foreground text-sm">Phone</span>
                         <span className="text-sm font-medium">{reportUser.phoneNumber}</span>
                       </div>
                     )}
@@ -331,25 +339,31 @@ export const ReportDetail = () => {
                 ) : (
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">Email</span>
-                      <span className="text-sm font-medium text-muted-foreground">Not available</span>
+                      <Mail className="text-muted-foreground h-4 w-4" />
+                      <span className="text-muted-foreground text-sm">Email</span>
+                      <span className="text-muted-foreground text-sm font-medium">
+                        Not available
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">Phone</span>
-                      <span className="text-sm font-medium text-muted-foreground">Not available</span>
+                      <Mail className="text-muted-foreground h-4 w-4" />
+                      <span className="text-muted-foreground text-sm">Phone</span>
+                      <span className="text-muted-foreground text-sm font-medium">
+                        Not available
+                      </span>
                     </div>
                   </div>
                 )}
 
-                <Button
-                  onClick={() => handleViewUser(report.userId)}
-                  className="w-full"
-                  variant="outline"
-                >
-                  View User Profile
-                </Button>
+                <Can I="read" a="User" ability={ability}>
+                  <Button
+                    onClick={() => handleViewUser(report.userId)}
+                    className="w-full"
+                    variant="outline"
+                  >
+                    View User Profile
+                  </Button>
+                </Can>
               </div>
             </CardContent>
           </Card>
@@ -357,4 +371,4 @@ export const ReportDetail = () => {
       </div>
     </div>
   );
-}; 
+};

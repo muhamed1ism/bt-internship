@@ -6,6 +6,10 @@ import { LevelForm } from './LevelForm';
 import { LevelDetails } from './LevelDetails';
 import { UpdateBucketDialog } from './dialog/UpdateBucketDialog';
 import { useState } from 'react';
+import { useAbility } from '@casl/react';
+import { AbilityContext } from '@app/casl/AbilityContext';
+import { Navigate } from 'react-router-dom';
+import routeNames from '@app/routes/route-names';
 
 /**
  * BucketViewContainer is the main container component that manages
@@ -13,6 +17,8 @@ import { useState } from 'react';
  * sub-components based on the current state.
  */
 export const BucketViewContainer = () => {
+  const ability = useAbility(AbilityContext);
+
   const {
     // Data
     bucket,
@@ -24,7 +30,6 @@ export const BucketViewContainer = () => {
     selectedLevel,
     isEditingLevel,
     isCreatingLevel,
-    bucketTitle,
     editingLevel,
 
     // Actions
@@ -33,11 +38,9 @@ export const BucketViewContainer = () => {
     handleEditLevel,
     handleCreateLevel,
     handleCancelEdit,
-    updateBucketTitle,
     addListItem,
     updateListItem,
     removeListItem,
-    handleSaveBucket,
   } = useBucketView();
 
   const [isUpdateBucketOpen, setIsUpdateBucketOpen] = useState(false);
@@ -67,37 +70,66 @@ export const BucketViewContainer = () => {
 
   // Render bucket creation view when no levels exist
   if (!hasLevels) {
+    if (ability.cannot('create', 'BucketLevel')) {
+      return <Navigate to={routeNames.notAuthorized()} />;
+    }
+
     return (
-      <div className="min-h-screen bg-gray-100">
+      <div className="h-full bg-gray-100">
         <BucketHeader
           title={bucket.name}
           description={bucket.description}
           totalLevels={bucket.bucketLevels.length}
           onNavigateBack={navigateBack}
+          onOpenUpdateBucket={handleOpenUpdateBucket}
+          isEditingLevel={isEditingLevel}
+          isCreatingLevel={isCreatingLevel}
         />
+
         <div className="container mx-auto px-6 py-8">
-          <BucketCreation
-            bucketTitle={bucketTitle}
-            onUpdateTitle={updateBucketTitle}
-            onCreateLevel={handleCreateLevel}
-            onSaveBucket={handleSaveBucket}
-          />
+          {isCreatingLevel ? (
+            <LevelForm
+              bucketId={bucket.id}
+              levelId={selectedLevel?.id}
+              editingLevel={editingLevel}
+              isCreating={isCreatingLevel}
+              onCancel={handleCancelEdit}
+              onAddListItem={addListItem}
+              onUpdateListItem={updateListItem}
+              onRemoveListItem={removeListItem}
+            />
+          ) : (
+            <BucketCreation onCreateLevel={handleCreateLevel} />
+          )}
         </div>
+
+        <UpdateBucketDialog
+          bucket={bucket}
+          isOpen={isUpdateBucketOpen}
+          onClose={handleCloseUpdateBucket}
+        />
       </div>
     );
   }
 
   // Render editing/creating form view
   if (isEditingLevel || isCreatingLevel) {
+    if (ability.cannot('create', 'BucketLevel') || ability.cannot('update', 'BucketLevel')) {
+      return <Navigate to={routeNames.notAuthorized()} />;
+    }
+
     return (
-      <div className="min-h-screen bg-gray-100">
+      <div className="h-full bg-gray-100">
         <BucketHeader
           title={bucket.name}
           description={bucket.description}
           totalLevels={bucket.bucketLevels.length}
           onNavigateBack={navigateBack}
           breadcrumb="Buckets"
+          isEditingLevel={isEditingLevel}
+          isCreatingLevel={isCreatingLevel}
         />
+
         <div className="container mx-auto px-6 py-8">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
             <LevelSidebar
@@ -152,8 +184,10 @@ export const BucketViewContainer = () => {
               name={bucket.name}
               currentLevel={currentLevel}
               level={selectedLevel}
+              allLevels={bucket.bucketLevels}
               maxLevel={maxLevel}
               onEditLevel={handleEditLevel}
+              onLevelSelect={handleLevelSelect}
             />
           )}
         </div>

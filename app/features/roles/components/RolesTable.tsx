@@ -20,7 +20,6 @@ export type ViewProps = {
 export default function RolesTable() {
   const { roles } = useGetAllRoles();
   const { permissions } = useGetAllPermissions();
-  const { mutate: updateRole } = useUpdateRole();
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [createOpen, setCreateOpen] = useState(false);
@@ -38,6 +37,7 @@ export default function RolesTable() {
   );
 
   const handleUpdate = (role: Role) => {
+    console.log({ role });
     setSelectedRole(role);
     setUpdateOpen(true);
   };
@@ -45,10 +45,7 @@ export default function RolesTable() {
   return (
     <div className="mx-auto mt-12 w-full max-w-6xl p-4">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Roles</h1>
-        <Button onClick={() => setCreateOpen(true)}>
-          <Plus className="mr-1 h-4 w-4" /> New Role
-        </Button>
+        <h1 className="text-foreground mb-2 text-3xl font-bold">Roles</h1>
       </div>
 
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -63,7 +60,7 @@ export default function RolesTable() {
           />
         </div>
 
-        <div className="flex rounded-lg border-1">
+        <div className="flex rounded-lg">
           <Button
             size="icon"
             onClick={() => setViewMode('list')}
@@ -77,6 +74,10 @@ export default function RolesTable() {
             className={`rounded-l-none ${viewMode === 'grid' ? 'text-secondary bg-primary' : 'text-primary bg-card hover:bg-primary/10'}`}
           >
             <LayoutGrid className="h-4 w-4" />
+          </Button>
+
+          <Button className="ml-3" onClick={() => setCreateOpen(true)}>
+            <Plus className="mr-1 h-4 w-4" /> New Role
           </Button>
         </div>
       </div>

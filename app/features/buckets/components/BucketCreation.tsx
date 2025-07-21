@@ -1,21 +1,12 @@
 import { Plus, BookOpen, Target } from 'lucide-react';
 import { Button } from '@app/components/ui/button';
-import { Input } from '@app/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@app/components/ui/card';
 
 interface BucketCreationProps {
-  bucketTitle: string;
-  onUpdateTitle: (title: string) => void;
   onCreateLevel: () => void;
-  onSaveBucket: () => void;
 }
 
-export const BucketCreation = ({
-  bucketTitle,
-  onUpdateTitle,
-  onCreateLevel,
-  onSaveBucket,
-}: BucketCreationProps) => {
+export const BucketCreation = ({ onCreateLevel }: BucketCreationProps) => {
   return (
     <div className="mx-auto max-w-4xl">
       <div className="mb-8 text-center">
@@ -37,31 +28,13 @@ export const BucketCreation = ({
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div>
-            <label className="mb-2 block text-sm font-medium">Bucket Title</label>
-            <Input
-              value={bucketTitle}
-              onChange={(e) => onUpdateTitle(e.target.value)}
-              placeholder="Enter your career bucket title (e.g., Software Engineer, Product Manager)"
-              className="w-full"
-            />
-            <p className="text-muted-foreground mt-2 text-sm">
-              This will be the name of your career development path.
-            </p>
-          </div>
-
-          <div className="flex gap-4">
-            <Button onClick={onSaveBucket} variant="outline" className="flex-1">
-              Save Bucket
-            </Button>
-            <Button
-              onClick={onCreateLevel}
-              className="from-primary to-primary/80 flex-1 bg-gradient-to-r"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add First Level
-            </Button>
-          </div>
+          <Button
+            onClick={onCreateLevel}
+            className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg hover:from-emerald-600 hover:to-emerald-700"
+          >
+            <Plus className="mr-2 size-4" />
+            Add First Level
+          </Button>
         </CardContent>
       </Card>
 

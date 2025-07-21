@@ -7,6 +7,7 @@ import { MemberCardProps } from '@app/types/team';
 import { useAuth } from '@app/context/AuthContext';
 import { useGetUserBucketsById } from '@app/hooks/bucket';
 import { UserBucketLevel } from '@app/types/bucket';
+import { splitToWords } from '@app/utils/splitToWords';
 
 export const MemberCard = ({
   member,
@@ -58,16 +59,16 @@ export const MemberCard = ({
 
   const positionBadgeClass =
     member.position.toLowerCase() === 'team lead'
-      ? 'bg-purple-100 text-purple-800'
+      ? 'bg-purple-100 text-purple-800 border-purple-200'
       : member.position.toLowerCase() === 'tech lead'
-        ? 'bg-blue-100 text-blue-800'
+        ? 'bg-blue-100 text-blue-800 border-blue-200'
         : member.position.toLowerCase() === 'frontend developer'
-          ? 'bg-green-100 text-green-800'
+          ? 'bg-green-100 text-green-800 border-green-200'
           : member.position.toLowerCase() === 'backend developer'
-            ? 'bg-orange-100 text-orange-800'
+            ? 'bg-orange-100 text-orange-800 border-orange-200'
             : member.position.toLowerCase() === 'project manager'
-              ? 'bg-pink-100 text-pink-800'
-              : 'bg-gray-100 text-gray-800';
+              ? 'bg-pink-100 text-pink-800 border-pink-200'
+              : 'bg-gray-100 text-gray-800 border-gray-200';
 
   const statusBadgeClass =
     member.user.status.toLowerCase() === 'active'
@@ -107,13 +108,10 @@ export const MemberCard = ({
             </p>
             <div className="flex items-center gap-2">
               <Badge variant="secondary" className={`${statusBadgeClass} px-2 py-1 text-xs`}>
-                {member.user.status}
+                {splitToWords(member.user.status.toLowerCase())}
               </Badge>
               {member.position && (
-                <Badge
-                  variant="outline"
-                  className={`${positionBadgeClass} border-primary/30 px-2 py-1 text-xs`}
-                >
+                <Badge variant="outline" className={`${positionBadgeClass} px-2 py-1 text-xs`}>
                   {member.position}
                 </Badge>
               )}
@@ -165,7 +163,11 @@ export const MemberCard = ({
             size="sm"
             className="border-primary/30 hover:border-primary/50 flex-1 transition-colors"
             disabled={isSelfReporting || false}
-            title={isSelfReporting ? "You cannot write a report about yourself" : "Submit a report about this team member"}
+            title={
+              isSelfReporting
+                ? 'You cannot write a report about yourself'
+                : 'Submit a report about this team member'
+            }
           >
             <FileText className="mr-1 size-4" />
             Submit Report

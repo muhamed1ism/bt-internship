@@ -8,6 +8,9 @@ import { Button } from '@app/components/ui/button.tsx';
 import { useFilteredBuckets } from '@app/features/buckets/hooks/useFilteredBuckets.ts';
 import { useFilteredUserBuckets } from '@app/features/buckets/hooks/useFilteredUserBuckets.ts';
 import { AddBucketDialog } from '@app/features/buckets/components/AddBucketDialog.tsx';
+import { useAbility } from '@casl/react';
+import { AbilityContext, Can } from '@app/casl/AbilityContext.ts';
+import { Spinner } from '@app/components/ui/spinner.tsx';
 
 function getMaxLevelForCategory(categories: BucketCategory[] | undefined, categoryId: string) {
   const category = categories && categories.find((cat) => cat.id === categoryId);
@@ -16,8 +19,12 @@ function getMaxLevelForCategory(categories: BucketCategory[] | undefined, catego
 }
 
 export const Buckets = () => {
+  const ability = useAbility(AbilityContext);
+
   const { userBuckets, isLoading } = useGetMyUserBuckets();
   const { categories } = useGetCategories();
+
+  console.log({ userBuckets });
 
   const [viewMode, setViewMode] = useState('grid');
   const [searchQuery, setSearchQuery] = useState('');
@@ -66,8 +73,8 @@ export const Buckets = () => {
         </div>
 
         {/* Create Bucket Button and View Mode Toggle */}
-        <div className="ml-auto flex items-center justify-end gap-2">
-          <div className="mr-3 flex rounded-lg border-1">
+        <div className="ml-auto flex items-center justify-end gap-3">
+          <div className="flex rounded-lg border-1">
             <Button
               size="icon"
               onClick={handleSetListMode}
@@ -85,19 +92,25 @@ export const Buckets = () => {
             </Button>
           </div>
 
-          <Button onClick={handleOpenAddBucketModal} className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            Create Bucket
-          </Button>
+          <Can I="create" a="BucketCategory" ability={ability}>
+            <Button onClick={handleOpenAddBucketModal} className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              Create Bucket
+            </Button>
+          </Can>
         </div>
       </div>
 
       {/* User Buckets  */}
       <h1 className="w-full text-start text-2xl font-semibold">User Buckets</h1>
       <div className="mt-12 w-full">
-        {isLoading && <p>Loading...</p>}
+        {isLoading && (
+          <div className="flex h-full w-full items-center justify-center">
+            <Spinner size="medium" />
+          </div>
+        )}
 
-        {!filteredUserBuckets && (
+        {!filteredUserBuckets && !isLoading && (
           <h1 className="w-full text-center text-2xl text-red-600">Failed to load user buckets</h1>
         )}
 
@@ -136,9 +149,13 @@ export const Buckets = () => {
       {/* All Buckets */}
       <h1 className="mt-8 w-full text-start text-2xl font-semibold">All Buckets</h1>
       <div className="my-12 w-full">
-        {isLoading && <p>Loading...</p>}
+        {isLoading && (
+          <div className="flex h-full w-full items-center justify-center">
+            <Spinner size="medium" />
+          </div>
+        )}
 
-        {!filteredBuckets && (
+        {!filteredBuckets && !isLoading && (
           <h1 className="w-full text-center text-2xl text-red-600">Failed to load user buckets</h1>
         )}
 

@@ -48,6 +48,11 @@ export interface Bucket {
 export interface UserBucket {
   id: string;
   level: number;
+  expectations: string[];
+  skills: string[];
+  tools: string[];
+  knowledge: string[];
+  toAdvance: string[];
   categoryId: string;
   category: BucketCategory;
 }
