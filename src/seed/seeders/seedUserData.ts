@@ -15,13 +15,14 @@ export const seedUserData = async (prisma: Prisma.TransactionClient) => {
 
     if (!user) {
       const userRole = await prisma.role.findFirst({
-        where: { isDefault: true },
+        where: { name: 'admin' },
       });
 
       if (userRole) {
         await prisma.user.create({
           data: {
             ...data,
+            status: 'ACTIVE',
             roleId: userRole.id,
           },
         });
@@ -31,7 +32,10 @@ export const seedUserData = async (prisma: Prisma.TransactionClient) => {
         where: {
           id: user.id,
         },
-        data,
+        data: {
+          ...data,
+          status: 'ACTIVE',
+        },
       });
     }
   }

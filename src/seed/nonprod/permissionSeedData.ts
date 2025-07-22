@@ -14,7 +14,7 @@ export const permissionSeedData = [
     user: [...userPermissions],
   },
   {
-    cto: [...CTOPermissions],
+    CTO: [...CTOPermissions],
   },
 ];
 

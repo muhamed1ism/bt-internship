@@ -14,6 +14,11 @@ export const roleSeedData = [
     description: 'Regular user with limited access',
     isDefault: true,
   },
+  {
+    name: 'CTO',
+    description: 'CTO description',
+    isDefault: true,
+  },
 ];
 
 export type RoleSeedData = typeof roleSeedData;
