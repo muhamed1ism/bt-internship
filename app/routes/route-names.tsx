@@ -39,6 +39,9 @@ const routeNames = {
     generateRoute('/employee-tickets', params),
   notAuthorized: (params?: Record<string, string>): string =>
     generateRoute('/not-authorized', params),
+  notActivated: (params?: Record<string, string>): string =>
+    generateRoute('/not-activated', params),
+  deactivated: (params?: Record<string, string>): string => generateRoute('/deactivated', params),
 };
 
 export default routeNames;

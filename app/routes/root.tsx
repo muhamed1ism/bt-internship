@@ -30,12 +30,27 @@ import { TicketEmployee } from '@app/pages/TicketEmployee.tsx';
 import { NotAuthorized } from '@app/pages/NotAuthorized.tsx';
 import { defineAbilityFor } from '@app/casl/ability.ts';
 import { AbilityContext } from '@app/casl/AbilityContext.ts';
+import { NotActivated } from '@app/pages/NotActivated.tsx';
+import { Deactivated } from '@app/pages/Deactivated.tsx';
+import { children } from 'happy-dom/lib/PropertySymbol.js';
+import { ErrorRoute } from './ErrorRoute.tsx';
 
 const routesForPublic = [
   {
     path: '/',
     element: <Layout />,
     children: [{ path: routeNames.contact(), element: <Contact /> }],
+  },
+];
+
+const routesForErrors = [
+  {
+    path: '/',
+    element: <ErrorRoute />,
+    children: [
+      { path: routeNames.notActivated(), element: <NotActivated /> },
+      { path: routeNames.deactivated(), element: <Deactivated /> },
+    ],
   },
 ];
 
@@ -83,6 +98,7 @@ const routesForAuthenticated = [
 const router = createBrowserRouter([
   ...routesForAuthenticated,
   ...routesForNotAuthenticated,
+  ...routesForErrors,
   ...routesForPublic,
 ]);
 
