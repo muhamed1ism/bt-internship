@@ -13,17 +13,16 @@ import { Button } from '@app/components/ui/button';
 import { Plus, X } from 'lucide-react';
 import { useAbility } from '@casl/react';
 import { AbilityContext } from '@app/casl/AbilityContext';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import routeNames from '@app/routes/route-names';
 
 // Interfaces now imported from @app/features/tickets
 
 export const TicketCTO = () => {
-  const navigate = useNavigate();
   const ability = useAbility(AbilityContext);
 
-  if (ability.cannot('read', 'Tickets')) {
-    navigate(routeNames.notAuthorized());
+  if (ability.cannot('manage', 'Ticket')) {
+    return <Navigate to={routeNames.notAuthorized()} />;
   }
 
   const { user: currentUser } = useAuth();
